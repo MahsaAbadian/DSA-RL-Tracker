@@ -1,5 +1,45 @@
 # Installation Guide
 
+## Stable PyTorch + CUDA Setup for GPU
+
+This guide helps you set up a **stable** PyTorch + CUDA configuration for reliable GPU usage.
+
+## Quick Start (Recommended)
+
+**Option 1: Using automated setup script (easiest)**
+```bash
+# This script handles existing environments and guides you through setup
+./setup_conda_env.sh
+```
+
+**Option 2: Using conda environment file manually**
+```bash
+# Check your CUDA version first
+nvidia-smi
+
+# Edit environment.yml to match your CUDA version (pytorch-cuda=11.8 or 12.1)
+# Then create environment:
+conda env create -f environment.yml
+conda activate dsa_rl
+
+# Verify setup:
+python3 check_gpu_setup.py
+```
+
+**If you get "DirectoryNotACondaEnvironmentError":**
+```bash
+# Remove the problematic directory first
+conda env remove -n RL-mahsa
+
+# Then create new environment
+conda env create -f environment.yml
+# or use the setup script:
+./setup_conda_env.sh
+```
+
+**Option 2: Manual installation (more control)**
+See detailed steps below.
+
 ## PyTorch Installation (Conda - Recommended)
 
 PyTorch should be installed separately via conda with your preferred CUDA configuration. This allows you to choose the exact CUDA version and PyTorch build that matches your cluster.
@@ -42,10 +82,74 @@ pip install -r requirements.txt
 conda install numpy scipy opencv matplotlib -c conda-forge
 ```
 
-### Step 3: Verify Installation
+### Step 3: Verify Installation & CUDA Compatibility
+
+**Quick CUDA version check:**
+```bash
+./check_cuda_compatibility.sh
+```
+
+This script will:
+- ✅ Check system CUDA version (from nvidia-smi)
+- ✅ Check PyTorch CUDA version
+- ✅ Verify compatibility between them
+- ✅ Show GPU allocation status
+
+**Comprehensive GPU test (recommended):**
+```bash
+python3 check_gpu_setup.py
+```
+
+This script will:
+- ✅ Check PyTorch installation
+- ✅ Verify CUDA availability
+- ✅ Check CUDA version compatibility
+- ✅ Show detailed GPU information
+- ✅ Test GPU computation (matrix multiplication, memory, performance)
+- ✅ Confirm training script will use GPU
+- ✅ Provide troubleshooting guidance
+
+## Stable Configuration Tips
+
+### 1. Match CUDA Versions
+**Critical:** Your PyTorch CUDA version should match (or be compatible with) your system's CUDA driver version.
 
 ```bash
-python3 -c "import torch; print(f'PyTorch {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
+# Check system CUDA version
+nvidia-smi
+
+# Install matching PyTorch CUDA version
+# If nvidia-smi shows CUDA 11.8, use pytorch-cuda=11.8
+# If nvidia-smi shows CUDA 12.1, use pytorch-cuda=12.1
+```
+
+### 2. Use Specific PyTorch Version (Recommended for Stability)
+Instead of installing the latest PyTorch, pin a stable version:
+
+```bash
+# Example: Install PyTorch 2.1.0 with CUDA 11.8
+conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=11.8 -c pytorch -c nvidia
+```
+
+### 3. Create a Dedicated Conda Environment
+```bash
+# Create environment
+conda create -n dsa_rl python=3.9
+
+# Activate environment
+conda activate dsa_rl
+
+# Install PyTorch with CUDA
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+
+# Install other dependencies
+pip install -r requirements.txt
+```
+
+### 4. Verify Before Training
+Always run the verification script before training:
+```bash
+python3 check_gpu_setup.py
 ```
 
 ## Why PyTorch is Separate?
@@ -55,6 +159,7 @@ PyTorch is commented out in `requirements.txt` because:
 2. Conda provides better CUDA integration than pip
 3. You may want specific PyTorch builds optimized for your hardware
 4. Allows flexibility in choosing PyTorch version and CUDA configuration
+5. **Stability**: You can pin specific versions that work reliably on your cluster
 
 ## Alternative: Install Everything via Conda
 

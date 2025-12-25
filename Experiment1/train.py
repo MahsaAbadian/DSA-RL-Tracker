@@ -21,7 +21,13 @@ import json
 from datetime import datetime
 
 # ---------- GLOBALS ----------
+# Auto-detect device: use GPU if available, otherwise CPU
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+if DEVICE == "cuda":
+    print(f"✅ GPU detected: {torch.cuda.get_device_name(0)}")
+    print(f"   CUDA Version: {torch.version.cuda}")
+else:
+    print("⚠️  GPU not available, using CPU (training will be slower)")
 
 # 8 Movement Actions + 1 Stop Action = 9 Total
 ACTIONS_MOVEMENT = [(-1, 0), (1, 0), (0,-1), (0, 1), (-1,-1), (-1,1), (1,-1), (1,1)]

@@ -91,8 +91,8 @@ LATEST_RUN=$(ls -td runs/*/ 2>/dev/null | head -1)
 # Print completion information
 echo ""
 echo "=========================================="
-echo "Training completed"
 if [ -n "$LATEST_RUN" ]; then
+    echo "Training completed"
     echo "Results saved to: $LATEST_RUN"
     echo "  - Checkpoints: $LATEST_RUN/checkpoints/"
     echo "  - Final weights: $LATEST_RUN/weights/"
