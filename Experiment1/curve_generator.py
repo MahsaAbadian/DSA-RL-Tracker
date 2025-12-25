@@ -81,15 +81,117 @@ class CurveMakerFlexible:
         
         return pts
 
-    def _draw_aa_curve(self, img, pts, thickness, intensity):
-        # OpenCV draw
-        pts_xy = pts[:, ::-1] * 16 
-        pts_int = pts_xy.astype(np.int32).reshape((-1, 1, 2))
-        canvas = np.zeros((self.h, self.w), dtype=np.uint8)
-        cv2.polylines(canvas, [pts_int], isClosed=False, color=255, 
-                      thickness=int(thickness), lineType=cv2.LINE_AA, shift=4)
-        canvas_float = canvas.astype(np.float32) / 255.0
-        img[:] = np.maximum(img, canvas_float * intensity)
+    def _draw_aa_curve(self, img, pts, thickness, intensity, width_variation="none", start_width=None, end_width=None,
+                       intensity_variation="none", start_intensity=None, end_intensity=None):
+        """Draw a curve with optional variable width and intensity.
+        
+        Args:
+            img: Image to draw on
+            pts: Array of (y, x) points
+            thickness: Base thickness (or end thickness if width_variation is used)
+            intensity: Base intensity value
+            width_variation: "none", "wide_to_narrow", "narrow_to_wide", or "custom"
+            start_width: Starting width (for custom or wide_to_narrow/narrow_to_wide)
+            end_width: Ending width (for custom or wide_to_narrow/narrow_to_wide)
+            intensity_variation: "none", "bright_to_dim", "dim_to_bright", or "custom"
+            start_intensity: Starting intensity (for variable intensity)
+            end_intensity: Ending intensity (for variable intensity)
+        """
+        # Determine intensity values
+        if intensity_variation == "none":
+            start_i = end_i = intensity
+        elif intensity_variation == "bright_to_dim":
+            start_i = start_intensity if start_intensity is not None else intensity * 1.5
+            end_i = end_intensity if end_intensity is not None else intensity * 0.5
+        elif intensity_variation == "dim_to_bright":
+            start_i = start_intensity if start_intensity is not None else intensity * 0.5
+            end_i = end_intensity if end_intensity is not None else intensity * 1.5
+        elif intensity_variation == "custom":
+            start_i = start_intensity if start_intensity is not None else intensity
+            end_i = end_intensity if end_intensity is not None else intensity
+        else:
+            start_i = end_i = intensity
+        
+        if width_variation == "none":
+            # Constant width, but may have variable intensity
+            if intensity_variation == "none":
+                # Original constant width and intensity drawing
+                pts_xy = pts[:, ::-1] * 16 
+                pts_int = pts_xy.astype(np.int32).reshape((-1, 1, 2))
+                canvas = np.zeros((self.h, self.w), dtype=np.uint8)
+                cv2.polylines(canvas, [pts_int], isClosed=False, color=255, 
+                              thickness=int(thickness), lineType=cv2.LINE_AA, shift=4)
+                canvas_float = canvas.astype(np.float32) / 255.0
+                img[:] = np.maximum(img, canvas_float * intensity)
+            else:
+                # Constant width but variable intensity - draw segment by segment
+                n_pts = len(pts)
+                canvas = np.zeros((self.h, self.w), dtype=np.uint8)
+                segment_length = max(1, n_pts // 50)
+                
+                for i in range(0, n_pts - 1, segment_length):
+                    end_idx = min(i + segment_length, n_pts - 1)
+                    t_start = i / (n_pts - 1) if n_pts > 1 else 0.0
+                    t_end = end_idx / (n_pts - 1) if n_pts > 1 else 1.0
+                    intensity_start = start_i + (end_i - start_i) * t_start
+                    intensity_end = start_i + (end_i - start_i) * t_end
+                    intensity_avg = (intensity_start + intensity_end) / 2.0
+                    
+                    segment_pts = pts[i:end_idx+1]
+                    pts_xy = segment_pts[:, ::-1] * 16
+                    pts_int = pts_xy.astype(np.int32).reshape((-1, 1, 2))
+                    cv2.polylines(canvas, [pts_int], isClosed=False, color=255,
+                                  thickness=int(thickness), lineType=cv2.LINE_AA, shift=4)
+                    # Apply variable intensity to this segment
+                    segment_mask = np.zeros((self.h, self.w), dtype=np.float32)
+                    cv2.polylines(segment_mask, [pts_int], isClosed=False, color=1.0,
+                                  thickness=int(thickness), lineType=cv2.LINE_AA, shift=4)
+                    img[:] = np.maximum(img, segment_mask * intensity_avg)
+                
+                return  # Early return for variable intensity case
+        else:
+            # Variable width: draw segment by segment (with optional variable intensity)
+            if width_variation == "wide_to_narrow":
+                start_w = start_width if start_width is not None else thickness * 2.0
+                end_w = end_width if end_width is not None else thickness
+            elif width_variation == "narrow_to_wide":
+                start_w = start_width if start_width is not None else thickness
+                end_w = end_width if end_width is not None else thickness * 2.0
+            elif width_variation == "custom":
+                start_w = start_width if start_width is not None else thickness
+                end_w = end_width if end_width is not None else thickness
+            else:
+                start_w = end_w = thickness
+            
+            # Draw curve in segments with interpolated thickness and intensity
+            n_pts = len(pts)
+            canvas = np.zeros((self.h, self.w), dtype=np.uint8)
+            segment_length = max(1, n_pts // 50)  # ~50 segments for smooth variation
+            
+            for i in range(0, n_pts - 1, segment_length):
+                end_idx = min(i + segment_length, n_pts - 1)
+                
+                # Interpolate thickness and intensity
+                t_start = i / (n_pts - 1) if n_pts > 1 else 0.0
+                t_end = end_idx / (n_pts - 1) if n_pts > 1 else 1.0
+                thickness_start = start_w + (end_w - start_w) * t_start
+                thickness_end = start_w + (end_w - start_w) * t_end
+                thickness_avg = (thickness_start + thickness_end) / 2.0
+                intensity_start = start_i + (end_i - start_i) * t_start
+                intensity_end = start_i + (end_i - start_i) * t_end
+                intensity_avg = (intensity_start + intensity_end) / 2.0
+                
+                # Draw segment
+                segment_pts = pts[i:end_idx+1]
+                pts_xy = segment_pts[:, ::-1] * 16
+                pts_int = pts_xy.astype(np.int32).reshape((-1, 1, 2))
+                cv2.polylines(canvas, [pts_int], isClosed=False, color=255,
+                              thickness=max(1, int(thickness_avg)), lineType=cv2.LINE_AA, shift=4)
+                # Apply variable intensity to this segment
+                segment_mask = np.zeros((self.h, self.w), dtype=np.float32)
+                cv2.polylines(segment_mask, [pts_int], isClosed=False, color=1.0,
+                              thickness=max(1, int(thickness_avg)), lineType=cv2.LINE_AA, shift=4)
+                img[:] = np.maximum(img, segment_mask * intensity_avg)
 
     def sample_curve(self, 
                      width_range=(2, 2),    
@@ -98,7 +200,14 @@ class CurveMakerFlexible:
                      min_intensity=0.6,
                      max_intensity=None,
                      branches=False,
-                     curvature_factor=1.0):       
+                     curvature_factor=1.0,
+                     width_variation="none",
+                     start_width=None,
+                     end_width=None,
+                     intensity_variation="none",
+                     start_intensity=None,
+                     end_intensity=None,
+                     background_intensity=None):       
         """Generate a curve with specified parameters.
         
         Args:
@@ -109,18 +218,68 @@ class CurveMakerFlexible:
             max_intensity: Maximum intensity value (if None, uses 1.0)
             branches: Whether to add branch curves
             curvature_factor: Controls curve complexity (1.0 = normal, <1.0 = straighter, >1.0 = more curved)
+            width_variation: "none", "wide_to_narrow", "narrow_to_wide", or "custom"
+            start_width: Starting width (for variable width curves)
+            end_width: Ending width (for variable width curves)
+            intensity_variation: "none", "bright_to_dim", "dim_to_bright", or "custom"
+            start_intensity: Starting intensity (for variable intensity curves)
+            end_intensity: Ending intensity (for variable intensity curves)
+            background_intensity: Background intensity (0.0-1.0). If None, uses 0.0 (black)
         """
-        img = np.zeros((self.h, self.w), dtype=np.float32)
+        # Set background intensity
+        bg_intensity = background_intensity if background_intensity is not None else 0.0
+        img = np.full((self.h, self.w), bg_intensity, dtype=np.float32)
         mask = np.zeros_like(img) 
         
-        thickness = self.rng.integers(width_range[0], width_range[1] + 1)
-        thickness = max(1, int(thickness))
+        # Determine base thickness
+        if width_variation == "none":
+            thickness = self.rng.integers(width_range[0], width_range[1] + 1)
+            thickness = max(1, int(thickness))
+            start_w = end_w = thickness
+        elif width_variation == "wide_to_narrow":
+            start_w = self.rng.integers(width_range[1], width_range[1] * 2 + 1) if width_range[1] > width_range[0] else width_range[0] * 2
+            end_w = self.rng.integers(width_range[0], max(width_range[0] + 1, width_range[1]))
+            if start_width is not None:
+                start_w = start_width
+            if end_width is not None:
+                end_w = end_width
+            thickness = end_w  # Use end width as base
+        elif width_variation == "narrow_to_wide":
+            start_w = self.rng.integers(width_range[0], max(width_range[0] + 1, width_range[1]))
+            end_w = self.rng.integers(width_range[1], width_range[1] * 2 + 1) if width_range[1] > width_range[0] else width_range[0] * 2
+            if start_width is not None:
+                start_w = start_width
+            if end_width is not None:
+                end_w = end_width
+            thickness = start_w  # Use start width as base
+        elif width_variation == "custom":
+            start_w = start_width if start_width is not None else width_range[0]
+            end_w = end_width if end_width is not None else width_range[1]
+            thickness = (start_w + end_w) / 2  # Average for base
+        else:
+            thickness = self.rng.integers(width_range[0], width_range[1] + 1)
+            start_w = end_w = thickness
+        
         max_int = max_intensity if max_intensity is not None else 1.0
         intensity = self.rng.uniform(min_intensity, max_int)
 
+        # Determine intensity variation parameters
+        if intensity_variation == "bright_to_dim":
+            start_i = start_intensity if start_intensity is not None else max_int
+            end_i = end_intensity if end_intensity is not None else min_intensity
+        elif intensity_variation == "dim_to_bright":
+            start_i = start_intensity if start_intensity is not None else min_intensity
+            end_i = end_intensity if end_intensity is not None else max_int
+        elif intensity_variation == "custom":
+            start_i = start_intensity if start_intensity is not None else intensity
+            end_i = end_intensity if end_intensity is not None else intensity
+        else:
+            start_i = end_i = intensity
+
         pts_main = self._generate_bezier_points(curvature_factor=curvature_factor)
-        self._draw_aa_curve(img, pts_main, thickness, intensity)
-        self._draw_aa_curve(mask, pts_main, thickness, 1.0)
+        self._draw_aa_curve(img, pts_main, thickness, intensity, width_variation, start_w, end_w,
+                           intensity_variation, start_i, end_i)
+        self._draw_aa_curve(mask, pts_main, thickness, 1.0, width_variation, start_w, end_w)
         pts_all = [pts_main]
 
         if branches:
@@ -132,8 +291,12 @@ class CurveMakerFlexible:
                 p0 = pts_main[idx]
                 pts_branch = self._generate_bezier_points(p0=p0, curvature_factor=curvature_factor)
                 b_thick = max(1, int(thickness * self.branch_thickness_factor))
-                self._draw_aa_curve(img, pts_branch, b_thick, intensity)
-                self._draw_aa_curve(mask, pts_branch, b_thick, 1.0)
+                b_start_w = max(1, int(start_w * self.branch_thickness_factor)) if width_variation != "none" else b_thick
+                b_end_w = max(1, int(end_w * self.branch_thickness_factor)) if width_variation != "none" else b_thick
+                # Branches use same intensity variation pattern
+                self._draw_aa_curve(img, pts_branch, b_thick, intensity, width_variation, b_start_w, b_end_w,
+                                   intensity_variation, start_i, end_i)
+                self._draw_aa_curve(mask, pts_branch, b_thick, 1.0, width_variation, b_start_w, b_end_w)
                 pts_all.append(pts_branch)
 
         if self.rng.random() < noise_prob:

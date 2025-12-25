@@ -135,15 +135,82 @@ class CurveMakerFlexible:
         
         return pts
 
-    def _draw_aa_curve(self, img, pts, thickness, intensity):
-        # OpenCV draw
-        pts_xy = pts[:, ::-1] * 16 
-        pts_int = pts_xy.astype(np.int32).reshape((-1, 1, 2))
-        canvas = np.zeros((self.h, self.w), dtype=np.uint8)
-        cv2.polylines(canvas, [pts_int], isClosed=False, color=255, 
-                      thickness=int(thickness), lineType=cv2.LINE_AA, shift=4)
-        canvas_float = canvas.astype(np.float32) / 255.0
-        img[:] = np.maximum(img, canvas_float * intensity)
+    def _draw_aa_curve(self, img, pts, thickness, intensity, width_variation="none", start_width=None, end_width=None,
+                       intensity_variation="none", start_intensity=None, end_intensity=None):
+        """Draw a curve with optional variable width and intensity."""
+        # Determine intensity values
+        if intensity_variation == "none":
+            start_i = end_i = intensity
+        elif intensity_variation == "bright_to_dim":
+            start_i = start_intensity if start_intensity is not None else intensity * 1.5
+            end_i = end_intensity if end_intensity is not None else intensity * 0.5
+        elif intensity_variation == "dim_to_bright":
+            start_i = start_intensity if start_intensity is not None else intensity * 0.5
+            end_i = end_intensity if end_intensity is not None else intensity * 1.5
+        elif intensity_variation == "custom":
+            start_i = start_intensity if start_intensity is not None else intensity
+            end_i = end_intensity if end_intensity is not None else intensity
+        else:
+            start_i = end_i = intensity
+        
+        if width_variation == "none":
+            if intensity_variation == "none":
+                pts_xy = pts[:, ::-1] * 16 
+                pts_int = pts_xy.astype(np.int32).reshape((-1, 1, 2))
+                canvas = np.zeros((self.h, self.w), dtype=np.uint8)
+                cv2.polylines(canvas, [pts_int], isClosed=False, color=255, 
+                              thickness=int(thickness), lineType=cv2.LINE_AA, shift=4)
+                canvas_float = canvas.astype(np.float32) / 255.0
+                img[:] = np.maximum(img, canvas_float * intensity)
+            else:
+                n_pts = len(pts)
+                segment_length = max(1, n_pts // 50)
+                for i in range(0, n_pts - 1, segment_length):
+                    end_idx = min(i + segment_length, n_pts - 1)
+                    t_start = i / (n_pts - 1) if n_pts > 1 else 0.0
+                    t_end = end_idx / (n_pts - 1) if n_pts > 1 else 1.0
+                    intensity_start = start_i + (end_i - start_i) * t_start
+                    intensity_end = start_i + (end_i - start_i) * t_end
+                    intensity_avg = (intensity_start + intensity_end) / 2.0
+                    segment_pts = pts[i:end_idx+1]
+                    pts_xy = segment_pts[:, ::-1] * 16
+                    pts_int = pts_xy.astype(np.int32).reshape((-1, 1, 2))
+                    segment_mask = np.zeros((self.h, self.w), dtype=np.float32)
+                    cv2.polylines(segment_mask, [pts_int], isClosed=False, color=1.0,
+                                  thickness=int(thickness), lineType=cv2.LINE_AA, shift=4)
+                    img[:] = np.maximum(img, segment_mask * intensity_avg)
+        else:
+            if width_variation == "wide_to_narrow":
+                start_w = start_width if start_width is not None else thickness * 2.0
+                end_w = end_width if end_width is not None else thickness
+            elif width_variation == "narrow_to_wide":
+                start_w = start_width if start_width is not None else thickness
+                end_w = end_width if end_width is not None else thickness * 2.0
+            elif width_variation == "custom":
+                start_w = start_width if start_width is not None else thickness
+                end_w = end_width if end_width is not None else thickness
+            else:
+                start_w = end_w = thickness
+            
+            n_pts = len(pts)
+            segment_length = max(1, n_pts // 50)
+            for i in range(0, n_pts - 1, segment_length):
+                end_idx = min(i + segment_length, n_pts - 1)
+                t_start = i / (n_pts - 1) if n_pts > 1 else 0.0
+                t_end = end_idx / (n_pts - 1) if n_pts > 1 else 1.0
+                thickness_start = start_w + (end_w - start_w) * t_start
+                thickness_end = start_w + (end_w - start_w) * t_end
+                thickness_avg = (thickness_start + thickness_end) / 2.0
+                intensity_start = start_i + (end_i - start_i) * t_start
+                intensity_end = start_i + (end_i - start_i) * t_end
+                intensity_avg = (intensity_start + intensity_end) / 2.0
+                segment_pts = pts[i:end_idx+1]
+                pts_xy = segment_pts[:, ::-1] * 16
+                pts_int = pts_xy.astype(np.int32).reshape((-1, 1, 2))
+                segment_mask = np.zeros((self.h, self.w), dtype=np.float32)
+                cv2.polylines(segment_mask, [pts_int], isClosed=False, color=1.0,
+                              thickness=max(1, int(thickness_avg)), lineType=cv2.LINE_AA, shift=4)
+                img[:] = np.maximum(img, segment_mask * intensity_avg)
 
     def sample_curve(self, 
                      width_range=(2, 2),    
@@ -152,19 +219,68 @@ class CurveMakerFlexible:
                      min_intensity=0.6,
                      max_intensity=None,
                      branches=False,
-                     curvature_factor=1.0):       
+                     curvature_factor=1.0,
+                     width_variation="none",
+                     start_width=None,
+                     end_width=None,
+                     intensity_variation="none",
+                     start_intensity=None,
+                     end_intensity=None,
+                     background_intensity=None):       
         """Generate a curve with specified parameters."""
-        img = np.zeros((self.h, self.w), dtype=np.float32)
+        bg_intensity = background_intensity if background_intensity is not None else 0.0
+        img = np.full((self.h, self.w), bg_intensity, dtype=np.float32)
         mask = np.zeros_like(img) 
         
-        thickness = self.rng.integers(width_range[0], width_range[1] + 1)
-        thickness = max(1, int(thickness))
+        # Determine base thickness
+        if width_variation == "none":
+            thickness = self.rng.integers(width_range[0], width_range[1] + 1)
+            thickness = max(1, int(thickness))
+            start_w = end_w = thickness
+        elif width_variation == "wide_to_narrow":
+            start_w = self.rng.integers(width_range[1], width_range[1] * 2 + 1) if width_range[1] > width_range[0] else width_range[0] * 2
+            end_w = self.rng.integers(width_range[0], max(width_range[0] + 1, width_range[1]))
+            if start_width is not None:
+                start_w = start_width
+            if end_width is not None:
+                end_w = end_width
+            thickness = end_w
+        elif width_variation == "narrow_to_wide":
+            start_w = self.rng.integers(width_range[0], max(width_range[0] + 1, width_range[1]))
+            end_w = self.rng.integers(width_range[1], width_range[1] * 2 + 1) if width_range[1] > width_range[0] else width_range[0] * 2
+            if start_width is not None:
+                start_w = start_width
+            if end_width is not None:
+                end_w = end_width
+            thickness = start_w
+        elif width_variation == "custom":
+            start_w = start_width if start_width is not None else width_range[0]
+            end_w = end_width if end_width is not None else width_range[1]
+            thickness = (start_w + end_w) / 2
+        else:
+            thickness = self.rng.integers(width_range[0], width_range[1] + 1)
+            start_w = end_w = thickness
+        
         max_int = max_intensity if max_intensity is not None else 1.0
         intensity = self.rng.uniform(min_intensity, max_int)
 
+        # Determine intensity variation parameters
+        if intensity_variation == "bright_to_dim":
+            start_i = start_intensity if start_intensity is not None else max_int
+            end_i = end_intensity if end_intensity is not None else min_intensity
+        elif intensity_variation == "dim_to_bright":
+            start_i = start_intensity if start_intensity is not None else min_intensity
+            end_i = end_intensity if end_intensity is not None else max_int
+        elif intensity_variation == "custom":
+            start_i = start_intensity if start_intensity is not None else intensity
+            end_i = end_intensity if end_intensity is not None else intensity
+        else:
+            start_i = end_i = intensity
+
         pts_main = self._generate_bezier_points(curvature_factor=curvature_factor)
-        self._draw_aa_curve(img, pts_main, thickness, intensity)
-        self._draw_aa_curve(mask, pts_main, thickness, 1.0)
+        self._draw_aa_curve(img, pts_main, thickness, intensity, width_variation, start_w, end_w,
+                           intensity_variation, start_i, end_i)
+        self._draw_aa_curve(mask, pts_main, thickness, 1.0, width_variation, start_w, end_w)
         pts_all = [pts_main]
 
         if branches:
@@ -176,8 +292,11 @@ class CurveMakerFlexible:
                 p0 = pts_main[idx]
                 pts_branch = self._generate_bezier_points(p0=p0, curvature_factor=curvature_factor)
                 b_thick = max(1, int(thickness * self.branch_thickness_factor))
-                self._draw_aa_curve(img, pts_branch, b_thick, intensity)
-                self._draw_aa_curve(mask, pts_branch, b_thick, 1.0)
+                b_start_w = max(1, int(start_w * self.branch_thickness_factor)) if width_variation != "none" else b_thick
+                b_end_w = max(1, int(end_w * self.branch_thickness_factor)) if width_variation != "none" else b_thick
+                self._draw_aa_curve(img, pts_branch, b_thick, intensity, width_variation, b_start_w, b_end_w,
+                                   intensity_variation, start_i, end_i)
+                self._draw_aa_curve(mask, pts_branch, b_thick, 1.0, width_variation, b_start_w, b_end_w)
                 pts_all.append(pts_branch)
 
         if self.rng.random() < noise_prob:
@@ -280,7 +399,14 @@ class CurveEnvUnified:
             'curvature_factor': 0.5,
             'min_intensity': 0.6,
             'max_intensity': None,
-            'branches': False
+            'branches': False,
+            'width_variation': 'none',
+            'start_width': None,
+            'end_width': None,
+            'intensity_variation': 'none',
+            'start_intensity': None,
+            'end_intensity': None,
+            'background_intensity': None
         }
         
         print(f"[ENV] On-the-fly curve generation enabled (base_seed={base_seed})")
@@ -306,6 +432,12 @@ class CurveEnvUnified:
                 self.stage_config['max_intensity'] = stage_curve_cfg['max_intensity']
             if 'branches' in stage_curve_cfg:
                 self.stage_config['branches'] = stage_curve_cfg['branches']
+            if 'width_variation' in stage_curve_cfg:
+                self.stage_config['width_variation'] = stage_curve_cfg['width_variation']
+            if 'start_width' in stage_curve_cfg:
+                self.stage_config['start_width'] = stage_curve_cfg['start_width']
+            if 'end_width' in stage_curve_cfg:
+                self.stage_config['end_width'] = stage_curve_cfg['end_width']
         else:
             # Fallback to defaults based on stage_id
             if self.stage_config['stage_id'] == 1:
@@ -361,7 +493,14 @@ class CurveEnvUnified:
             min_intensity=self.stage_config['min_intensity'],
             max_intensity=self.stage_config.get('max_intensity', None),
             branches=self.stage_config['branches'],
-            curvature_factor=self.stage_config['curvature_factor']
+            curvature_factor=self.stage_config['curvature_factor'],
+            width_variation=self.stage_config.get('width_variation', 'none'),
+            start_width=self.stage_config.get('start_width', None),
+            end_width=self.stage_config.get('end_width', None),
+            intensity_variation=self.stage_config.get('intensity_variation', 'none'),
+            start_intensity=self.stage_config.get('start_intensity', None),
+            end_intensity=self.stage_config.get('end_intensity', None),
+            background_intensity=self.stage_config.get('background_intensity', None)
         )
         
         # Extract main curve points
@@ -705,7 +844,76 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         "stages": []
     }
     
-    print("=== STARTING UNIFIED RL TRAINING (3 STAGES) ===")
+    # Load training stages from config
+    training_stages_cfg = curve_config.get('training_stages', None)
+    
+    if training_stages_cfg:
+        # Load stages from config
+        stages = []
+        for stage_cfg in training_stages_cfg:
+            stage_id = stage_cfg.get('stage_id')
+            curve_gen = stage_cfg.get('curve_generation', {})
+            training = stage_cfg.get('training', {})
+            
+            # Build stage config
+            stage = {
+                'name': stage_cfg.get('name', f'Stage{stage_id}'),
+                'episodes': stage_cfg.get('episodes', 8000),
+                'lr': stage_cfg.get('learning_rate', 1e-4),
+                'config': {
+                    'stage_id': stage_id,
+                    'width': tuple(curve_gen.get('width_range', [2, 4])),
+                    'noise': training.get('noise', 0.0),
+                    'tissue': training.get('tissue', False),
+                    'strict_stop': training.get('strict_stop', False),
+                    'mixed_start': training.get('mixed_start', False),
+                    'invert': curve_gen.get('invert_prob', 0.5),
+                    'min_intensity': curve_gen.get('min_intensity', 0.6),
+                    'max_intensity': curve_gen.get('max_intensity', None),
+                    'branches': curve_gen.get('branches', False),
+                    'curvature_factor': curve_gen.get('curvature_factor', 1.0)
+                }
+            }
+            stages.append(stage)
+        
+        num_stages = len(stages)
+        print(f"✓ Loaded {num_stages} training stages from config")
+    else:
+        # Fallback to hardcoded defaults
+        stages = [
+            {
+                'name': 'Stage1_Bootstrap',
+                'episodes': 8000,
+                'lr': 1e-4,
+                'config': {
+                    'stage_id': 1, 'width': (2, 4), 'noise': 0.0, 
+                    'tissue': False, 'strict_stop': False, 'mixed_start': False
+                }
+            },
+            {
+                'name': 'Stage2_Robustness',
+                'episodes': 12000,
+                'lr': 5e-5,
+                'config': {
+                    'stage_id': 2, 'width': (2, 8), 'noise': 0.5, 
+                    'tissue': False, 'strict_stop': True, 'mixed_start': True
+                }
+            },
+            {
+                'name': 'Stage3_Realism',
+                'episodes': 15000,
+                'lr': 1e-5,
+                'config': {
+                    'stage_id': 3, 'width': (1, 10), 'noise': 0.8, 
+                    'tissue': True, 'strict_stop': True, 'mixed_start': True
+                }
+            }
+        ]
+        num_stages = len(stages)
+        print(f"⚠️  No training_stages in config, using default {num_stages} stages")
+    
+    print("=== STARTING UNIFIED RL TRAINING ===")
+    print(f"Number of Stages: {num_stages}")
     print(f"Device: {DEVICE} | Actions: {N_ACTIONS} (Inc. STOP)")
     print(f"Base Seed: {base_seed} (for reproducibility)")
     print(f"Curve Generation: On-The-Fly")
@@ -732,36 +940,6 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     log_fp = open(log_file, 'w')
     original_stdout = sys.stdout
     sys.stdout = TeeOutput(original_stdout, log_fp)
-
-    stages = [
-        {
-            'name': 'Stage1_Bootstrap',
-            'episodes': 8000,
-            'lr': 1e-4,
-            'config': {
-                'stage_id': 1, 'width': (2, 4), 'noise': 0.0, 
-                'tissue': False, 'strict_stop': False, 'mixed_start': False
-            }
-        },
-        {
-            'name': 'Stage2_Robustness',
-            'episodes': 12000,
-            'lr': 5e-5,
-            'config': {
-                'stage_id': 2, 'width': (2, 8), 'noise': 0.5, 
-                'tissue': False, 'strict_stop': True, 'mixed_start': True
-            }
-        },
-        {
-            'name': 'Stage3_Realism',
-            'episodes': 15000,
-            'lr': 1e-5,
-            'config': {
-                'stage_id': 3, 'width': (1, 10), 'noise': 0.8, 
-                'tissue': True, 'strict_stop': True, 'mixed_start': True
-            }
-        }
-    ]
 
     model = AsymmetricActorCritic(n_actions=N_ACTIONS).to(DEVICE)
     K = 8

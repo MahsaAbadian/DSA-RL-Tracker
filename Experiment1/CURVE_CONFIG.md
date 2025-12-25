@@ -54,20 +54,72 @@ The `curve_config.json` file contains the following sections:
 }
 ```
 
-### 6. Stage-Specific Parameters
-Each stage (1, 2, 3) has its own configuration:
+### 6. Training Stages Configuration
+**NEW**: Training stages are now fully configurable! You can specify:
+- Number of stages (not limited to 3)
+- Episodes per stage
+- Learning rate per stage
+- Curve generation parameters per stage
+- Training difficulty parameters per stage
+
+```json
+"training_stages": [
+  {
+    "stage_id": 1,
+    "name": "Stage1_Bootstrap",
+    "episodes": 8000,                    // Number of episodes for this stage
+    "learning_rate": 0.0001,            // Learning rate for this stage
+    "curve_generation": {
+      "width_range": [1, 2],            // Curve width in pixels (min, max)
+      "noise_prob": 0.0,                // Probability of adding DSA noise during generation
+      "invert_prob": 0.5,               // Probability of inverting image
+      "min_intensity": 0.08,            // Minimum curve intensity (lower = more transparent)
+      "max_intensity": 0.20,            // Maximum curve intensity
+      "branches": false,                // Whether to add branches
+      "curvature_factor": 0.5           // Curve complexity (0.5 = straighter, 1.5 = more curved)
+    },
+    "training": {
+      "noise": 0.0,                     // Noise probability during training (0.0-1.0)
+      "tissue": false,                  // Whether to add tissue noise
+      "strict_stop": false,             // Whether to require precise stopping
+      "mixed_start": false              // Whether to use mixed starting positions
+    }
+  },
+  {
+    "stage_id": 2,
+    "name": "Stage2_Robustness",
+    "episodes": 12000,
+    "learning_rate": 0.00005,
+    "curve_generation": { ... },
+    "training": { ... }
+  },
+  {
+    "stage_id": 3,
+    "name": "Stage3_Realism",
+    "episodes": 15000,
+    "learning_rate": 0.00001,
+    "curve_generation": { ... },
+    "training": { ... }
+  }
+]
+```
+
+**Note**: The old `"stages"` format is still supported for backward compatibility (used only for curve generation parameters), but `"training_stages"` is the recommended format as it includes both curve generation and training parameters.
+
+### 7. Legacy Stage-Specific Parameters (Backward Compatibility)
+The old format is still supported:
 
 ```json
 "stages": {
   "1": {
     "name": "Stage1_Bootstrap",
-    "width_range": [1, 2],         // Curve width in pixels (min, max)
-    "noise_prob": 0.0,             // Probability of adding DSA noise
-    "invert_prob": 0.5,            // Probability of inverting image
-    "min_intensity": 0.08,         // Minimum curve intensity (lower = more transparent)
-    "max_intensity": 0.20,         // Maximum curve intensity
-    "branches": false,              // Whether to add branches
-    "curvature_factor": 0.5         // Curve complexity (0.5 = straighter, 1.5 = more curved)
+    "width_range": [1, 2],
+    "noise_prob": 0.0,
+    "invert_prob": 0.5,
+    "min_intensity": 0.08,
+    "max_intensity": 0.20,
+    "branches": false,
+    "curvature_factor": 0.5
   },
   "2": { ... },
   "3": { ... }
@@ -114,7 +166,31 @@ python3 curve_generator.py --config my_config.json --num_curves 1000
   - Narrow: `[1, 2]` or `[1, 3]`
   - Wide: `[2, 8]` or `[1, 10]`
 
-- **min_intensity / max_intensity**: Curve transparency/opacity
+- **width_variation**: `"none"`, `"wide_to_narrow"`, `"narrow_to_wide"`, or `"custom"` - How width changes along the curve
+  - `"none"`: Constant width (default)
+  - `"wide_to_narrow"`: Starts wide, tapers to narrow
+  - `"narrow_to_wide"`: Starts narrow, widens along curve
+  - `"custom"`: Use `start_width` and `end_width` explicitly
+
+- **start_width**: Starting width in pixels (for `"custom"` or overrides for `"wide_to_narrow"`/`"narrow_to_wide"`)
+
+- **end_width**: Ending width in pixels (for `"custom"` or overrides for `"wide_to_narrow"`/`"narrow_to_wide"`)
+
+- **intensity_variation**: `"none"`, `"bright_to_dim"`, `"dim_to_bright"`, or `"custom"` - How intensity changes along the curve
+  - `"none"`: Constant intensity (default)
+  - `"bright_to_dim"`: Starts bright, fades to dim
+  - `"dim_to_bright"`: Starts dim, brightens along curve
+  - `"custom"`: Use `start_intensity` and `end_intensity` explicitly
+
+- **start_intensity**: Starting intensity (for variable intensity curves)
+
+- **end_intensity**: Ending intensity (for variable intensity curves)
+
+- **background_intensity**: Background intensity `0.0-1.0` (default: `0.0` for black background)
+  - Use higher values (e.g., `0.3-0.5`) for low contrast with light backgrounds
+  - Use lower values (e.g., `0.0-0.1`) for dark backgrounds
+
+- **min_intensity / max_intensity**: Curve transparency/opacity range
   - Low (transparent): `0.05-0.20`
   - Medium: `0.2-0.5`
   - High (opaque): `0.6-1.0`
@@ -151,6 +227,35 @@ python3 curve_generator.py --config my_config.json --num_curves 1000
 - **gaussian_blur_prob**: Chance of applying blur
 - **gaussian_blur_sigma_range**: Blur amount
 
+## Training Stage Parameters
+
+### Stage Configuration Fields
+
+- **stage_id**: Unique identifier for the stage (1, 2, 3, ...)
+- **name**: Human-readable name for the stage
+- **episodes**: Number of training episodes for this stage
+- **learning_rate**: Learning rate for PPO optimizer (typically decreases: 1e-4 → 5e-5 → 1e-5)
+
+### Training Parameters
+
+- **noise**: `0.0-1.0` - Probability of adding noise during training (increases difficulty)
+- **tissue**: `true/false` - Whether to add tissue noise (simulates background texture)
+- **strict_stop**: `true/false` - If true, requires precise stopping at end (harder)
+- **mixed_start**: `true/false` - If true, agent starts at random positions (harder)
+
+### Adding More Stages
+
+You can add as many stages as you want! Just add more entries to the `training_stages` array:
+
+```json
+"training_stages": [
+  { "stage_id": 1, ... },
+  { "stage_id": 2, ... },
+  { "stage_id": 3, ... },
+  { "stage_id": 4, "name": "Stage4_Expert", "episodes": 20000, ... }
+]
+```
+
 ## Examples
 
 ### Very Narrow, Very Transparent Curves
@@ -182,6 +287,73 @@ python3 curve_generator.py --config my_config.json --num_curves 1000
 "branches": {
   "num_branches_range": [2, 5],
   "start_range": [0.1, 0.9]
+}
+```
+
+### Wide-to-Narrow Tapering Curves
+```json
+"curve_generation": {
+  "width_range": [1, 4],
+  "width_variation": "wide_to_narrow",
+  "start_width": 6,
+  "end_width": 1
+}
+```
+
+### Narrow-to-Wide Expanding Curves
+```json
+"curve_generation": {
+  "width_range": [1, 4],
+  "width_variation": "narrow_to_wide",
+  "start_width": 1,
+  "end_width": 8
+}
+```
+
+### Custom Width Profile
+```json
+"curve_generation": {
+  "width_range": [1, 10],
+  "width_variation": "custom",
+  "start_width": 5,
+  "end_width": 2
+}
+```
+
+### Low Contrast with Variable Lightness
+```json
+"curve_generation": {
+  "width_range": [1, 2],
+  "min_intensity": 0.15,
+  "max_intensity": 0.25,
+  "intensity_variation": "bright_to_dim",
+  "start_intensity": 0.25,
+  "end_intensity": 0.10,
+  "background_intensity": 0.20
+}
+```
+
+### Very Low Contrast (Subtle Curves)
+```json
+"curve_generation": {
+  "width_range": [1, 2],
+  "min_intensity": 0.08,
+  "max_intensity": 0.15,
+  "intensity_variation": "dim_to_bright",
+  "background_intensity": 0.10
+}
+```
+
+### Variable Lightness Along Curve
+```json
+"curve_generation": {
+  "width_range": [1, 3],
+  "min_intensity": 0.10,
+  "max_intensity": 0.30,
+  "intensity_variation": "custom",
+  "start_intensity": 0.12,
+  "end_intensity": 0.28,
+  "background_intensity": 0.15
 }
 ```
 
