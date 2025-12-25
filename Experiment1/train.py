@@ -438,6 +438,14 @@ class CurveEnvUnified:
                 self.stage_config['start_width'] = stage_curve_cfg['start_width']
             if 'end_width' in stage_curve_cfg:
                 self.stage_config['end_width'] = stage_curve_cfg['end_width']
+            if 'intensity_variation' in stage_curve_cfg:
+                self.stage_config['intensity_variation'] = stage_curve_cfg['intensity_variation']
+            if 'start_intensity' in stage_curve_cfg:
+                self.stage_config['start_intensity'] = stage_curve_cfg['start_intensity']
+            if 'end_intensity' in stage_curve_cfg:
+                self.stage_config['end_intensity'] = stage_curve_cfg['end_intensity']
+            if 'background_intensity' in stage_curve_cfg:
+                self.stage_config['background_intensity'] = stage_curve_cfg['background_intensity']
         else:
             # Fallback to defaults based on stage_id
             if self.stage_config['stage_id'] == 1:
@@ -871,7 +879,14 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                     'min_intensity': curve_gen.get('min_intensity', 0.6),
                     'max_intensity': curve_gen.get('max_intensity', None),
                     'branches': curve_gen.get('branches', False),
-                    'curvature_factor': curve_gen.get('curvature_factor', 1.0)
+                    'curvature_factor': curve_gen.get('curvature_factor', 1.0),
+                    'width_variation': curve_gen.get('width_variation', 'none'),
+                    'start_width': curve_gen.get('start_width', None),
+                    'end_width': curve_gen.get('end_width', None),
+                    'intensity_variation': curve_gen.get('intensity_variation', 'none'),
+                    'start_intensity': curve_gen.get('start_intensity', None),
+                    'end_intensity': curve_gen.get('end_intensity', None),
+                    'background_intensity': curve_gen.get('background_intensity', None)
                 }
             }
             stages.append(stage)
@@ -912,6 +927,9 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         num_stages = len(stages)
         print(f"⚠️  No training_stages in config, using default {num_stages} stages")
     
+    # Record training start time
+    training_start_time = datetime.now()
+    
     print("=== STARTING UNIFIED RL TRAINING ===")
     print(f"Number of Stages: {num_stages}")
     print(f"Device: {DEVICE} | Actions: {N_ACTIONS} (Inc. STOP)")
@@ -921,6 +939,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     print(f"Checkpoints: {checkpoint_dir}")
     print(f"Weights: {weights_dir}")
     print(f"Logs: {log_file}")
+    print(f"Training Start Time: {training_start_time.strftime('%Y-%m-%d %H:%M:%S')}")
     
     # Redirect stdout to both console and log file
     class TeeOutput:
@@ -1177,6 +1196,20 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         # Update global episode offset for next stage
         global_episode_offset += stage['episodes']
     
+    # Calculate total training time
+    training_end_time = datetime.now()
+    training_duration = training_end_time - training_start_time
+    total_seconds = training_duration.total_seconds()
+    
+    # Add training time to config and metrics
+    training_config["training_start_time"] = training_start_time.isoformat()
+    training_config["training_end_time"] = training_end_time.isoformat()
+    training_config["training_duration_seconds"] = total_seconds
+    
+    all_metrics["training_start_time"] = training_start_time.isoformat()
+    all_metrics["training_end_time"] = training_end_time.isoformat()
+    all_metrics["training_duration_seconds"] = total_seconds
+    
     # Save configuration and metrics
     with open(config_file, 'w') as f:
         json.dump(training_config, f, indent=2)
@@ -1185,11 +1218,35 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     with open(metrics_file, 'w') as f:
         json.dump(all_metrics, f, indent=2)
     
+    # Calculate total training time
+    training_end_time = datetime.now()
+    training_duration = training_end_time - training_start_time
+    total_seconds = training_duration.total_seconds()
+    hours = int(total_seconds // 3600)
+    minutes = int((total_seconds % 3600) // 60)
+    seconds = int(total_seconds % 60)
+    
+    # Log training time to file before restoring stdout
+    print(f"\n=== TRAINING COMPLETE ===")
+    print(f"Training Start Time: {training_start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Training End Time: {training_end_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Total Training Time: {hours}h {minutes}m {seconds}s ({total_seconds:.1f} seconds)")
+    print(f"All results saved to: {run_dir}")
+    print(f"  - Checkpoints: {checkpoint_dir}")
+    print(f"  - Final weights: {weights_dir}")
+    print(f"  - Training log: {log_file}")
+    print(f"  - Configuration: {config_file}")
+    print(f"  - Metrics: {metrics_file}")
+    
     # Restore stdout and close log file
     sys.stdout = original_stdout
     log_fp.close()
     
+    # Also print to console
     print("\n=== TRAINING COMPLETE ===")
+    print(f"Training Start Time: {training_start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Training End Time: {training_end_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Total Training Time: {hours}h {minutes}m {seconds}s ({total_seconds:.1f} seconds)")
     print(f"All results saved to: {run_dir}")
     print(f"  - Checkpoints: {checkpoint_dir}")
     print(f"  - Final weights: {weights_dir}")
