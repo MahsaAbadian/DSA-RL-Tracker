@@ -2,6 +2,7 @@
 """
 Training script for DSA RL Experiment
 Trains an agent to follow curves using PPO with curriculum learning.
+Curves are generated on-the-fly with reproducible seeds.
 """
 import argparse
 import numpy as np
@@ -11,10 +12,10 @@ import torch.nn.functional as F
 from torch.distributions import Categorical
 from dataclasses import dataclass
 from scipy.ndimage import gaussian_filter
+import scipy.ndimage
 import os
 import sys
 import cv2
-import glob
 import shutil
 import json
 from datetime import datetime
@@ -30,6 +31,186 @@ N_ACTIONS = 9
 STEP_ALPHA = 2.0
 CROP = 33
 EPSILON = 1e-6
+
+# Base seed for reproducibility (can be overridden)
+BASE_SEED = 42
+
+# ---------- CONFIG LOADING ----------
+def load_curve_config(config_path=None):
+    """Load curve generation configuration from JSON file.
+    
+    Returns:
+        tuple: (config_dict, actual_config_path)
+        - config_dict: The loaded configuration dictionary (or empty dict if not found)
+        - actual_config_path: The path that was actually used (or None if not found)
+    """
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    if config_path is None:
+        config_path = os.path.join(script_dir, "curve_config.json")
+    
+    # Convert to absolute path
+    if not os.path.isabs(config_path):
+        config_path = os.path.join(script_dir, config_path)
+    
+    if os.path.exists(config_path):
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        print(f"✓ Loaded curve configuration from: {config_path}")
+        return config, config_path
+    else:
+        print(f"⚠️  Config file not found: {config_path}")
+        print("   Using default configuration")
+        return {}, None
+
+# ---------- CURVE GENERATION (On-The-Fly) ----------
+def _rng(seed=None):
+    return np.random.default_rng(seed)
+
+def _cubic_bezier(p0, p1, p2, p3, t):
+    """Standard Cubic Bezier formula."""
+    omt = 1.0 - t
+    return (omt**3)*p0 + 3*omt*omt*t*p1 + 3*omt*t*t*p2 + (t**3)*p3
+
+class CurveMakerFlexible:
+    def __init__(self, h=128, w=128, seed=None, config=None):
+        self.h = h
+        self.w = w
+        self.rng = _rng(seed)
+        self.config = config or {}
+        
+        # Extract bezier config with defaults
+        bezier_cfg = self.config.get('bezier', {})
+        self.bezier_n_samples = bezier_cfg.get('n_samples', 1000)
+        self.bezier_margin = bezier_cfg.get('margin', 10)
+        self.bezier_min_distance = bezier_cfg.get('min_distance', 40.0)
+        self.bezier_spread = bezier_cfg.get('control_point_spread', 0.3)
+        self.bezier_factor = bezier_cfg.get('control_point_factor', 0.6)
+        
+        # Extract branch config with defaults
+        branch_cfg = self.config.get('branches', {})
+        self.branch_num_range = tuple(branch_cfg.get('num_branches_range', [1, 3]))
+        self.branch_start_range = tuple(branch_cfg.get('start_range', [0.2, 0.8]))
+        self.branch_thickness_factor = branch_cfg.get('thickness_factor', 0.7)
+        
+        # Extract noise config with defaults
+        noise_cfg = self.config.get('noise', {})
+        self.noise_num_blobs_range = tuple(noise_cfg.get('num_blobs_range', [1, 4]))
+        self.noise_blob_sigma_range = tuple(noise_cfg.get('blob_sigma_range', [2.0, 8.0]))
+        self.noise_blob_intensity_range = tuple(noise_cfg.get('blob_intensity_range', [0.05, 0.2]))
+        self.noise_level_range = tuple(noise_cfg.get('noise_level_range', [0.05, 0.15]))
+        self.noise_gaussian_blur_prob = noise_cfg.get('gaussian_blur_prob', 0.5)
+        self.noise_gaussian_blur_sigma_range = tuple(noise_cfg.get('gaussian_blur_sigma_range', [0.5, 1.0]))
+
+    def _random_point(self, margin=None):
+        margin = margin if margin is not None else self.bezier_margin
+        y = self.rng.integers(margin, self.h - margin)
+        x = self.rng.integers(margin, self.w - margin)
+        return np.array([y, x], dtype=np.float32)
+
+    def _generate_bezier_points(self, p0=None, n_samples=None, curvature_factor=1.0):
+        """Generates a list of (y,x) points forming a smooth bezier curve."""
+        n_samples = n_samples if n_samples is not None else self.bezier_n_samples
+        
+        if p0 is None:
+            p0 = self._random_point()
+        
+        # Ensure p3 is far enough from p0 (prevents blobs)
+        for _ in range(20): 
+            p3 = self._random_point()
+            dist = np.linalg.norm(p0 - p3)
+            if dist > self.bezier_min_distance: 
+                break
+        else:
+            p3 = np.array([self.h - p0[0], self.w - p0[1]], dtype=np.float32)
+
+        # Control points - curvature_factor affects how much control points deviate
+        center = (p0 + p3) / 2.0
+        spread = np.array([self.h, self.w], dtype=np.float32) * self.bezier_spread * curvature_factor
+        p1 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
+        p2 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
+        
+        ts = np.linspace(0, 1, n_samples, dtype=np.float32)
+        pts = np.stack([_cubic_bezier(p0, p1, p2, p3, t) for t in ts], axis=0)
+        
+        return pts
+
+    def _draw_aa_curve(self, img, pts, thickness, intensity):
+        # OpenCV draw
+        pts_xy = pts[:, ::-1] * 16 
+        pts_int = pts_xy.astype(np.int32).reshape((-1, 1, 2))
+        canvas = np.zeros((self.h, self.w), dtype=np.uint8)
+        cv2.polylines(canvas, [pts_int], isClosed=False, color=255, 
+                      thickness=int(thickness), lineType=cv2.LINE_AA, shift=4)
+        canvas_float = canvas.astype(np.float32) / 255.0
+        img[:] = np.maximum(img, canvas_float * intensity)
+
+    def sample_curve(self, 
+                     width_range=(2, 2),    
+                     noise_prob=0.0,        
+                     invert_prob=0.0,
+                     min_intensity=0.6,
+                     max_intensity=None,
+                     branches=False,
+                     curvature_factor=1.0):       
+        """Generate a curve with specified parameters."""
+        img = np.zeros((self.h, self.w), dtype=np.float32)
+        mask = np.zeros_like(img) 
+        
+        thickness = self.rng.integers(width_range[0], width_range[1] + 1)
+        thickness = max(1, int(thickness))
+        max_int = max_intensity if max_intensity is not None else 1.0
+        intensity = self.rng.uniform(min_intensity, max_int)
+
+        pts_main = self._generate_bezier_points(curvature_factor=curvature_factor)
+        self._draw_aa_curve(img, pts_main, thickness, intensity)
+        self._draw_aa_curve(mask, pts_main, thickness, 1.0)
+        pts_all = [pts_main]
+
+        if branches:
+            num_branches = self.rng.integers(self.branch_num_range[0], self.branch_num_range[1])
+            for _ in range(num_branches):
+                start_min = int(len(pts_main) * self.branch_start_range[0])
+                start_max = int(len(pts_main) * self.branch_start_range[1])
+                idx = self.rng.integers(start_min, start_max)
+                p0 = pts_main[idx]
+                pts_branch = self._generate_bezier_points(p0=p0, curvature_factor=curvature_factor)
+                b_thick = max(1, int(thickness * self.branch_thickness_factor))
+                self._draw_aa_curve(img, pts_branch, b_thick, intensity)
+                self._draw_aa_curve(mask, pts_branch, b_thick, 1.0)
+                pts_all.append(pts_branch)
+
+        if self.rng.random() < noise_prob:
+            self._apply_dsa_noise(img)
+
+        if self.rng.random() < invert_prob:
+            img = 1.0 - img
+
+        img = np.clip(img, 0.0, 1.0)
+        mask = (mask > 0.1).astype(np.uint8)
+
+        return img, mask, pts_all
+
+    def _apply_dsa_noise(self, img):
+        num_blobs = self.rng.integers(self.noise_num_blobs_range[0], self.noise_num_blobs_range[1])
+        for _ in range(num_blobs):
+            y, x = self._random_point(margin=0)
+            sigma = self.rng.uniform(self.noise_blob_sigma_range[0], self.noise_blob_sigma_range[1])
+            yy, xx = np.ogrid[:self.h, :self.w]
+            dist_sq = (yy - y)**2 + (xx - x)**2
+            blob = np.exp(-dist_sq / (2 * sigma**2))
+            blob_int = self.rng.uniform(self.noise_blob_intensity_range[0], self.noise_blob_intensity_range[1])
+            img[:] = np.maximum(img, blob * blob_int)
+
+        # Gaussian Static
+        noise_level = self.rng.uniform(self.noise_level_range[0], self.noise_level_range[1])
+        noise = self.rng.normal(0, noise_level, img.shape)
+        img[:] += noise
+
+        # Gaussian Blur
+        if self.rng.random() < self.noise_gaussian_blur_prob:
+            sigma = self.rng.uniform(self.noise_gaussian_blur_sigma_range[0], self.noise_gaussian_blur_sigma_range[1])
+            img[:] = scipy.ndimage.gaussian_filter(img, sigma=sigma)
 
 # ---------- HELPERS ----------
 def clamp(v, lo, hi): return max(lo, min(v, hi))
@@ -78,92 +259,127 @@ class CurveEpisode:
     mask: np.ndarray
     gt_poly: np.ndarray
 
-# ---------- UNIFIED ENVIRONMENT ----------
+# ---------- UNIFIED ENVIRONMENT (On-The-Fly Generation) ----------
 class CurveEnvUnified:
-    def __init__(self, h=128, w=128, max_steps=200, curves_dir=None):
+    def __init__(self, h=128, w=128, max_steps=200, base_seed=BASE_SEED, stage_id=1, curve_config=None):
         self.h, self.w = h, w
         self.max_steps = max_steps
-        self.curves_dir = curves_dir
+        self.base_seed = base_seed
+        self.current_episode = 0
+        self.curve_config = curve_config or {}
         
-        # Load pre-generated curves if directory provided
-        if curves_dir is not None:
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            self.curves_dir = os.path.join(script_dir, curves_dir)
-            if not os.path.exists(self.curves_dir):
-                raise FileNotFoundError(f"Curves directory not found: {self.curves_dir}")
-            
-            # Find all curve files
-            curve_files = sorted(glob.glob(os.path.join(self.curves_dir, "curve_*.png")))
-            if len(curve_files) == 0:
-                raise ValueError(f"No curve files found in {self.curves_dir}. Please generate curves first using curve_generator.py")
-            
-            self.curve_files = curve_files
-            self.num_curves = len(self.curve_files)
-            self.curve_idx = 0
-            print(f"[ENV] Loaded {self.num_curves} pre-generated curves from {self.curves_dir}")
-        else:
-            raise ValueError("curves_dir must be provided. Training requires pre-generated curves.")
-        
+        # Stage-specific curve generation parameters
         self.stage_config = {
-            'stage_id': 1,
+            'stage_id': stage_id,
             'width': (2, 4),
             'noise': 0.0,
             'invert': 0.5,
             'tissue': False,
             'strict_stop': False,
-            'mixed_start': False
+            'mixed_start': False,
+            'curvature_factor': 0.5,
+            'min_intensity': 0.6,
+            'max_intensity': None,
+            'branches': False
         }
+        
+        print(f"[ENV] On-the-fly curve generation enabled (base_seed={base_seed})")
         self.reset()
 
     def set_stage(self, config):
         self.stage_config.update(config)
+        
+        # Load stage-specific parameters from curve_config if available
+        stages_cfg = self.curve_config.get('stages', {})
+        stage_key = str(self.stage_config['stage_id'])
+        
+        if stage_key in stages_cfg:
+            stage_curve_cfg = stages_cfg[stage_key]
+            # Update from config file
+            if 'width_range' in stage_curve_cfg:
+                self.stage_config['width'] = tuple(stage_curve_cfg['width_range'])
+            if 'curvature_factor' in stage_curve_cfg:
+                self.stage_config['curvature_factor'] = stage_curve_cfg['curvature_factor']
+            if 'min_intensity' in stage_curve_cfg:
+                self.stage_config['min_intensity'] = stage_curve_cfg['min_intensity']
+            if 'max_intensity' in stage_curve_cfg:
+                self.stage_config['max_intensity'] = stage_curve_cfg['max_intensity']
+            if 'branches' in stage_curve_cfg:
+                self.stage_config['branches'] = stage_curve_cfg['branches']
+        else:
+            # Fallback to defaults based on stage_id
+            if self.stage_config['stage_id'] == 1:
+                self.stage_config['curvature_factor'] = 0.5
+                self.stage_config['min_intensity'] = 0.6
+                self.stage_config['branches'] = False
+            elif self.stage_config['stage_id'] == 2:
+                self.stage_config['curvature_factor'] = 1.0
+                self.stage_config['min_intensity'] = 0.4
+                self.stage_config['branches'] = False
+            elif self.stage_config['stage_id'] == 3:
+                self.stage_config['curvature_factor'] = 1.5
+                self.stage_config['min_intensity'] = 0.2
+                self.stage_config['branches'] = True
+        
         print(f"\n[ENV] Config Updated for Stage {self.stage_config.get('stage_id')}:")
         print(f"      Width: {self.stage_config['width']}, Noise: {self.stage_config['noise']}")
         print(f"      Tissue: {self.stage_config['tissue']}, Strict Stop: {self.stage_config['strict_stop']}")
+        print(f"      Curvature: {self.stage_config['curvature_factor']}, Branches: {self.stage_config['branches']}")
+        print(f"      Intensity: {self.stage_config['min_intensity']:.2f}-{self.stage_config.get('max_intensity', 1.0):.2f}")
 
     def generate_tissue_noise(self):
+        tissue_cfg = self.curve_config.get('tissue_noise', {})
+        sigma_range = tuple(tissue_cfg.get('sigma_range', [2.0, 5.0]))
+        intensity_range = tuple(tissue_cfg.get('intensity_range', [0.2, 0.4]))
+        
         noise = np.random.randn(self.h, self.w)
-        tissue = gaussian_filter(noise, sigma=np.random.uniform(2.0, 5.0))
+        tissue = gaussian_filter(noise, sigma=np.random.uniform(sigma_range[0], sigma_range[1]))
         tissue = (tissue - tissue.min()) / (tissue.max() - tissue.min())
-        return tissue * np.random.uniform(0.2, 0.4)
+        return tissue * np.random.uniform(intensity_range[0], intensity_range[1])
 
-    def reset(self):
-        # Load a random pre-generated curve
-        curve_idx = np.random.randint(0, self.num_curves)
-        curve_file = self.curve_files[curve_idx]
+    def reset(self, episode_number=None):
+        """Reset environment and generate a new curve on-the-fly.
         
-        # Extract index from filename (e.g., "curve_00042.png" -> 42)
-        base_name = os.path.basename(curve_file)
-        idx_str = base_name.replace("curve_", "").replace(".png", "")
+        Args:
+            episode_number: Episode number for seed calculation. If None, uses self.current_episode.
+        """
+        if episode_number is not None:
+            self.current_episode = episode_number
         
-        # Load image
-        img = cv2.imread(curve_file, cv2.IMREAD_GRAYSCALE)
-        img = img.astype(np.float32) / 255.0
+        # Calculate seed for this episode: base_seed + episode_number
+        # This ensures reproducibility: same episode number = same curve
+        episode_seed = self.base_seed + self.current_episode
         
-        # Load mask
-        mask_file = os.path.join(self.curves_dir, f"mask_{idx_str}.png")
-        if os.path.exists(mask_file):
-            mask = cv2.imread(mask_file, cv2.IMREAD_GRAYSCALE)
-            mask = (mask > 127).astype(np.uint8)
-        else:
-            # Fallback: create mask from image if not found
-            mask = (img > 0.5).astype(np.uint8)
+        # Create curve generator with episode-specific seed and config
+        curve_maker = CurveMakerFlexible(h=self.h, w=self.w, seed=episode_seed, config=self.curve_config)
         
-        # Load points
-        pts_file = os.path.join(self.curves_dir, f"points_{idx_str}.npy")
-        if os.path.exists(pts_file):
-            gt_poly = np.load(pts_file).astype(np.float32)
-        else:
-            raise FileNotFoundError(f"Points file not found: {pts_file}. Please regenerate curves.")
-
+        # Generate curve with stage-specific parameters
+        img, mask, pts_all = curve_maker.sample_curve(
+            width_range=self.stage_config['width'],
+            noise_prob=0.0,  # Noise applied during training, not generation
+            invert_prob=self.stage_config['invert'],
+            min_intensity=self.stage_config['min_intensity'],
+            max_intensity=self.stage_config.get('max_intensity', None),
+            branches=self.stage_config['branches'],
+            curvature_factor=self.stage_config['curvature_factor']
+        )
+        
+        # Extract main curve points
+        gt_poly = pts_all[0].astype(np.float32)
+        
+        # Apply tissue noise if enabled
         if self.stage_config['tissue']:
+            # Use a deterministic seed for tissue noise based on episode
+            np.random.seed(episode_seed + 10000)  # Offset to avoid conflicts
             tissue = self.generate_tissue_noise()
             is_white_bg = np.mean([img[0,0], img[0,-1]]) > 0.5
             if is_white_bg:
                 img = np.clip(img - tissue, 0.0, 1.0)
             else:
                 img = np.clip(img + tissue, 0.0, 1.0)
+            np.random.seed()  # Reset to random state
 
+        # Create ground truth map
         self.gt_map = np.zeros_like(img)
         for pt in gt_poly:
             r, c = int(pt[0]), int(pt[1])
@@ -172,9 +388,12 @@ class CurveEnvUnified:
         
         self.ep = CurveEpisode(img=img, mask=mask, gt_poly=gt_poly)
 
+        # Determine start position (with deterministic randomness)
+        np.random.seed(episode_seed + 20000)  # Offset for start position
         use_cold_start = False
         if self.stage_config['mixed_start']:
             use_cold_start = (np.random.rand() < 0.5)
+        np.random.seed()  # Reset to random state
 
         if use_cold_start:
             curr = gt_poly[0]
@@ -197,6 +416,10 @@ class CurveEnvUnified:
         self.path_mask[int(self.agent[0]), int(self.agent[1])] = 1.0
         
         self.L_prev = get_distance_to_poly(self.agent, self.ep.gt_poly)
+        
+        # Increment episode counter for next reset
+        self.current_episode += 1
+        
         return self.obs()
 
     def obs(self):
@@ -341,23 +564,31 @@ def update_ppo(ppo_opt, model, buf_list, clip=0.2, epochs=4, minibatch=32):
             ppo_opt.step()
 
 # ---------- MAIN CURRICULUM MANAGER ----------
-def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experiment_name=None, resume_from=None):
+def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, experiment_name=None, resume_from=None, curve_config_path=None):
     script_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Load curve configuration
+    curve_config, actual_config_path = load_curve_config(curve_config_path)
+    
+    # Get image dimensions from config if available
+    img_cfg = curve_config.get('image', {})
+    img_h = img_cfg.get('height', 128)
+    img_w = img_cfg.get('width', 128)
     
     # Handle resume from checkpoint
     resume_stage_idx = None
     resume_episode = None
+    saved_config = None
     if resume_from is not None:
         resume_path = os.path.abspath(resume_from)
         if not os.path.exists(resume_path):
             raise FileNotFoundError(f"Checkpoint not found: {resume_path}")
         
         # Extract run directory from checkpoint path
-        # Checkpoint path: runs/.../checkpoints/ckpt_StageX_epY.pth
         checkpoint_dir = os.path.dirname(resume_path)
-        run_dir = os.path.dirname(checkpoint_dir)  # Go up from checkpoints/ to run_dir
+        run_dir = os.path.dirname(checkpoint_dir)
         
-        # Load config to determine stage
+        # Load config to determine stage and seed
         config_file = os.path.join(run_dir, "config.json")
         if not os.path.exists(config_file):
             raise FileNotFoundError(f"Config file not found in run directory: {config_file}")
@@ -365,15 +596,29 @@ def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experim
         with open(config_file, 'r') as f:
             saved_config = json.load(f)
         
+        # Get base_seed from config
+        base_seed = saved_config.get('base_seed', BASE_SEED)
+        
+        # Load curve config path from saved config if available
+        saved_curve_config_path = saved_config.get('curve_config_path', None)
+        if saved_curve_config_path:
+            # Try to load from saved path, or from run directory
+            saved_config_abs = os.path.join(run_dir, "curve_config.json")
+            if os.path.exists(saved_config_abs):
+                curve_config, actual_config_path = load_curve_config(saved_config_abs)
+            else:
+                curve_config, actual_config_path = load_curve_config(saved_curve_config_path)
+            img_cfg = curve_config.get('image', {})
+            img_h = img_cfg.get('height', 128)
+            img_w = img_cfg.get('width', 128)
+        
         # Extract stage name and episode from checkpoint filename
         checkpoint_name = os.path.basename(resume_path)
-        # Format: ckpt_Stage1_Bootstrap_ep2000.pth
         if "_ep" in checkpoint_name:
             parts = checkpoint_name.replace("ckpt_", "").replace(".pth", "").split("_ep")
             stage_name = parts[0]
             resume_episode = int(parts[1])
             
-            # Find which stage index this corresponds to
             stage_names = ['Stage1_Bootstrap', 'Stage2_Robustness', 'Stage3_Realism']
             if stage_name in stage_names:
                 resume_stage_idx = stage_names.index(stage_name)
@@ -381,6 +626,7 @@ def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experim
         print(f"\n🔄 RESUMING TRAINING FROM CHECKPOINT")
         print(f"   Checkpoint: {resume_path}")
         print(f"   Run Directory: {run_dir}")
+        print(f"   Base Seed: {base_seed}")
         if resume_stage_idx is not None:
             print(f"   Resuming from: {stage_names[resume_stage_idx]}, Episode {resume_episode}")
         print()
@@ -389,7 +635,6 @@ def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experim
         if run_dir is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             if experiment_name:
-                # Format: runs/experiment_name_TIMESTAMP/
                 run_dir = os.path.join(script_dir, "runs", f"{experiment_name}_{timestamp}")
             else:
                 run_dir = os.path.join(script_dir, "runs", timestamp)
@@ -418,23 +663,56 @@ def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experim
     # Create log file
     log_file = os.path.join(logs_dir, "training.log")
     
+    # Copy curve configuration file to run directory for reproducibility
+    run_curve_config_path = os.path.join(run_dir, "curve_config.json")
+    if resume_from is None:
+        # New run - copy config file
+        if actual_config_path and os.path.exists(actual_config_path):
+            shutil.copy2(actual_config_path, run_curve_config_path)
+            print(f"✓ Copied curve configuration to: {run_curve_config_path}")
+            stored_config_path = "curve_config.json"
+        else:
+            stored_config_path = curve_config_path if curve_config_path else None
+    else:
+        # Resuming - config should already be in run directory
+        if os.path.exists(run_curve_config_path):
+            print(f"✓ Using curve configuration from run directory: {run_curve_config_path}")
+            stored_config_path = "curve_config.json"
+        else:
+            # Fallback: try to copy from original location
+            if actual_config_path and os.path.exists(actual_config_path):
+                shutil.copy2(actual_config_path, run_curve_config_path)
+                print(f"✓ Copied curve configuration to: {run_curve_config_path}")
+                stored_config_path = "curve_config.json"
+            else:
+                # Use saved config path if available
+                if saved_config:
+                    stored_config_path = saved_config.get('curve_config_path', None)
+                else:
+                    stored_config_path = None
+    
     # Save training configuration
     config_file = os.path.join(run_dir, "config.json")
     training_config = {
         "timestamp": datetime.now().isoformat(),
         "device": DEVICE,
         "n_actions": N_ACTIONS,
-        "curves_base_dir": curves_base_dir,
+        "base_seed": base_seed,
+        "curve_generation": "on_the_fly",
+        "curve_config_path": stored_config_path,
+        "image_height": img_h,
+        "image_width": img_w,
         "stages": []
     }
     
     print("=== STARTING UNIFIED RL TRAINING (3 STAGES) ===")
     print(f"Device: {DEVICE} | Actions: {N_ACTIONS} (Inc. STOP)")
+    print(f"Base Seed: {base_seed} (for reproducibility)")
+    print(f"Curve Generation: On-The-Fly")
     print(f"Run Directory: {run_dir}")
     print(f"Checkpoints: {checkpoint_dir}")
     print(f"Weights: {weights_dir}")
     print(f"Logs: {log_file}")
-    print(f"Curves Base Directory: {curves_base_dir}")
     
     # Redirect stdout to both console and log file
     class TeeOutput:
@@ -460,7 +738,6 @@ def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experim
             'name': 'Stage1_Bootstrap',
             'episodes': 8000,
             'lr': 1e-4,
-            'curves_dir': os.path.join(curves_base_dir, 'stage1'),
             'config': {
                 'stage_id': 1, 'width': (2, 4), 'noise': 0.0, 
                 'tissue': False, 'strict_stop': False, 'mixed_start': False
@@ -470,7 +747,6 @@ def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experim
             'name': 'Stage2_Robustness',
             'episodes': 12000,
             'lr': 5e-5,
-            'curves_dir': os.path.join(curves_base_dir, 'stage2'),
             'config': {
                 'stage_id': 2, 'width': (2, 8), 'noise': 0.5, 
                 'tissue': False, 'strict_stop': True, 'mixed_start': True
@@ -480,7 +756,6 @@ def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experim
             'name': 'Stage3_Realism',
             'episodes': 15000,
             'lr': 1e-5,
-            'curves_dir': os.path.join(curves_base_dir, 'stage3'),
             'config': {
                 'stage_id': 3, 'width': (1, 10), 'noise': 0.8, 
                 'tissue': True, 'strict_stop': True, 'mixed_start': True
@@ -506,15 +781,17 @@ def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experim
         else:
             all_metrics = {"stages": []}
     else:
-        # Initialize metrics storage
-        all_metrics = {
-            "stages": []
-        }
+        all_metrics = {"stages": []}
+
+    # Track global episode counter across stages for seed calculation
+    global_episode_offset = 0
 
     for stage_idx, stage in enumerate(stages):
         # Skip completed stages if resuming
         if resume_stage_idx is not None and stage_idx < resume_stage_idx:
             print(f"\n⏭️  Skipping {stage['name']} (already completed)")
+            # Update global episode offset
+            global_episode_offset += stage['episodes']
             continue
         
         # Check if we need to resume mid-stage
@@ -522,13 +799,13 @@ def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experim
         if resume_stage_idx is not None and stage_idx == resume_stage_idx and resume_episode is not None:
             start_episode = resume_episode + 1
             print(f"\n🔄 Resuming {stage['name']} from episode {start_episode}")
-            resume_stage_idx = None  # Clear resume flag after using it
+            resume_stage_idx = None
+        
         # Add stage config to training config
         stage_config_entry = {
             "name": stage['name'],
             "episodes": stage['episodes'],
             "lr": stage['lr'],
-            "curves_dir": stage['curves_dir'],
             "config": stage['config']
         }
         training_config["stages"].append(stage_config_entry)
@@ -544,11 +821,11 @@ def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experim
         print(f"\n=============================================")
         print(f"STARTING {stage['name']}")
         print(f"Episodes: {stage['episodes']} | LR: {stage['lr']}")
-        print(f"Curves Directory: {stage['curves_dir']}")
+        print(f"Global Episode Offset: {global_episode_offset}")
         print(f"=============================================")
         
-        # Create environment with stage-specific curves
-        env = CurveEnvUnified(h=128, w=128, curves_dir=stage['curves_dir'])
+        # Create environment with on-the-fly generation
+        env = CurveEnvUnified(h=img_h, w=img_w, base_seed=base_seed, stage_id=stage['config']['stage_id'], curve_config=curve_config)
         env.set_stage(stage['config'])
         opt = torch.optim.Adam(model.parameters(), lr=stage['lr'])
         
@@ -588,7 +865,9 @@ def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experim
             }
         
         for ep in range(start_episode, stage['episodes'] + 1):
-            obs_dict = env.reset()
+            # Calculate global episode number for seed
+            global_episode = global_episode_offset + ep
+            obs_dict = env.reset(episode_number=global_episode)
             done = False
             
             ahist = []
@@ -716,6 +995,9 @@ def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experim
             all_metrics["stages"][stage_idx] = stage_metrics
         else:
             all_metrics["stages"].append(stage_metrics)
+        
+        # Update global episode offset for next stage
+        global_episode_offset += stage['episodes']
     
     # Save configuration and metrics
     with open(config_file, 'w') as f:
@@ -738,13 +1020,15 @@ def run_unified_training(run_dir, curves_base_dir, clean_previous=False, experim
     print(f"  - Metrics: {metrics_file}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Train DSA RL agent")
+    parser = argparse.ArgumentParser(description="Train DSA RL agent with on-the-fly curve generation")
     parser.add_argument("--run_dir", type=str, default=None,
                         help="Run directory (default: runs/TIMESTAMP or runs/EXPERIMENT_NAME_TIMESTAMP). All results (checkpoints, weights, logs) will be saved here.")
     parser.add_argument("--experiment_name", type=str, default=None,
                         help="Experiment name. Creates runs/EXPERIMENT_NAME_TIMESTAMP/ directory. Ignored if --run_dir is specified.")
-    parser.add_argument("--curves_base_dir", type=str, default="generated_curves",
-                        help="Base directory containing stage-specific curve folders (stage1/, stage2/, stage3/)")
+    parser.add_argument("--base_seed", type=int, default=BASE_SEED,
+                        help=f"Base seed for reproducibility (default: {BASE_SEED})")
+    parser.add_argument("--curve_config", type=str, default=None,
+                        help="Path to curve configuration JSON file (default: curve_config.json)")
     parser.add_argument("--clean_previous", action="store_true",
                         help="Delete all previous runs before starting new training")
     parser.add_argument("--resume_from", type=str, default=None,
@@ -759,5 +1043,5 @@ if __name__ == "__main__":
     if args.resume_from and args.run_dir:
         print("⚠️  Warning: --run_dir is ignored when using --resume_from (using run directory from checkpoint)")
     
-    run_unified_training(args.run_dir, args.curves_base_dir, args.clean_previous, 
-                        args.experiment_name, args.resume_from)
+    run_unified_training(args.run_dir, args.base_seed, args.clean_previous, 
+                        args.experiment_name, args.resume_from, args.curve_config)

@@ -8,6 +8,7 @@ import cv2
 import scipy.ndimage
 import os
 import argparse
+import json
 
 def _rng(seed=None):
     return np.random.default_rng(seed)
@@ -18,41 +19,62 @@ def _cubic_bezier(p0, p1, p2, p3, t):
     return (omt**3)*p0 + 3*omt*omt*t*p1 + 3*omt*t*t*p2 + (t**3)*p3
 
 class CurveMakerFlexible:
-    def __init__(self, h=128, w=128, seed=None):
+    def __init__(self, h=128, w=128, seed=None, config=None):
         self.h = h
         self.w = w
         self.rng = _rng(seed)
+        self.config = config or {}
+        
+        # Extract bezier config with defaults
+        bezier_cfg = self.config.get('bezier', {})
+        self.bezier_n_samples = bezier_cfg.get('n_samples', 1000)
+        self.bezier_margin = bezier_cfg.get('margin', 10)
+        self.bezier_min_distance = bezier_cfg.get('min_distance', 40.0)
+        self.bezier_spread = bezier_cfg.get('control_point_spread', 0.3)
+        self.bezier_factor = bezier_cfg.get('control_point_factor', 0.6)
+        
+        # Extract branch config with defaults
+        branch_cfg = self.config.get('branches', {})
+        self.branch_num_range = tuple(branch_cfg.get('num_branches_range', [1, 3]))
+        self.branch_start_range = tuple(branch_cfg.get('start_range', [0.2, 0.8]))
+        self.branch_thickness_factor = branch_cfg.get('thickness_factor', 0.7)
+        
+        # Extract noise config with defaults
+        noise_cfg = self.config.get('noise', {})
+        self.noise_num_blobs_range = tuple(noise_cfg.get('num_blobs_range', [1, 4]))
+        self.noise_blob_sigma_range = tuple(noise_cfg.get('blob_sigma_range', [2.0, 8.0]))
+        self.noise_blob_intensity_range = tuple(noise_cfg.get('blob_intensity_range', [0.05, 0.2]))
+        self.noise_level_range = tuple(noise_cfg.get('noise_level_range', [0.05, 0.15]))
+        self.noise_gaussian_blur_prob = noise_cfg.get('gaussian_blur_prob', 0.5)
+        self.noise_gaussian_blur_sigma_range = tuple(noise_cfg.get('gaussian_blur_sigma_range', [0.5, 1.0]))
 
-    def _random_point(self, margin=10):
+    def _random_point(self, margin=None):
+        margin = margin if margin is not None else self.bezier_margin
         y = self.rng.integers(margin, self.h - margin)
         x = self.rng.integers(margin, self.w - margin)
         return np.array([y, x], dtype=np.float32)
 
-    def _generate_bezier_points(self, p0=None, n_samples=1000, curvature_factor=1.0):
-        """Generates a list of (y,x) points forming a smooth bezier curve.
+    def _generate_bezier_points(self, p0=None, n_samples=None, curvature_factor=1.0):
+        """Generates a list of (y,x) points forming a smooth bezier curve."""
+        n_samples = n_samples if n_samples is not None else self.bezier_n_samples
         
-        Args:
-            p0: Starting point (if None, random)
-            n_samples: Number of points to sample
-            curvature_factor: Controls curve complexity (1.0 = normal, <1.0 = straighter, >1.0 = more curved)
-        """
         if p0 is None:
-            p0 = self._random_point(margin=10)
+            p0 = self._random_point()
         
         # Ensure p3 is far enough from p0 (prevents blobs)
         for _ in range(20): 
-            p3 = self._random_point(margin=10)
+            p3 = self._random_point()
             dist = np.linalg.norm(p0 - p3)
-            if dist > 40.0: 
+            if dist > self.bezier_min_distance: 
                 break
         else:
             p3 = np.array([self.h - p0[0], self.w - p0[1]], dtype=np.float32)
 
         # Control points - curvature_factor affects how much control points deviate
         center = (p0 + p3) / 2.0
-        spread = np.array([self.h, self.w], dtype=np.float32) * 0.3 * curvature_factor
-        p1 = center + self.rng.normal(0, 1, 2) * spread * 0.6
-        p2 = center + self.rng.normal(0, 1, 2) * spread * 0.6
+        spread = np.array([self.h, self.w], dtype=np.float32) * self.bezier_spread * curvature_factor
+        p1 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
+        p2 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
         
         ts = np.linspace(0, 1, n_samples, dtype=np.float32)
         pts = np.stack([_cubic_bezier(p0, p1, p2, p3, t) for t in ts], axis=0)
@@ -74,6 +96,7 @@ class CurveMakerFlexible:
                      noise_prob=0.0,        
                      invert_prob=0.0,
                      min_intensity=0.6,
+                     max_intensity=None,
                      branches=False,
                      curvature_factor=1.0):       
         """Generate a curve with specified parameters.
@@ -82,7 +105,8 @@ class CurveMakerFlexible:
             width_range: (min, max) thickness of the curve
             noise_prob: Probability of adding DSA noise
             invert_prob: Probability of inverting the image
-            min_intensity: Minimum intensity value (higher = more contrast)
+            min_intensity: Minimum intensity value (lower = more transparent/faint)
+            max_intensity: Maximum intensity value (if None, uses 1.0)
             branches: Whether to add branch curves
             curvature_factor: Controls curve complexity (1.0 = normal, <1.0 = straighter, >1.0 = more curved)
         """
@@ -91,7 +115,8 @@ class CurveMakerFlexible:
         
         thickness = self.rng.integers(width_range[0], width_range[1] + 1)
         thickness = max(1, int(thickness))
-        intensity = self.rng.uniform(min_intensity, 1.0)
+        max_int = max_intensity if max_intensity is not None else 1.0
+        intensity = self.rng.uniform(min_intensity, max_int)
 
         pts_main = self._generate_bezier_points(curvature_factor=curvature_factor)
         self._draw_aa_curve(img, pts_main, thickness, intensity)
@@ -99,12 +124,14 @@ class CurveMakerFlexible:
         pts_all = [pts_main]
 
         if branches:
-            num_branches = self.rng.integers(1, 3)
+            num_branches = self.rng.integers(self.branch_num_range[0], self.branch_num_range[1])
             for _ in range(num_branches):
-                idx = self.rng.integers(int(len(pts_main)*0.2), int(len(pts_main)*0.8))
+                start_min = int(len(pts_main) * self.branch_start_range[0])
+                start_max = int(len(pts_main) * self.branch_start_range[1])
+                idx = self.rng.integers(start_min, start_max)
                 p0 = pts_main[idx]
                 pts_branch = self._generate_bezier_points(p0=p0, curvature_factor=curvature_factor)
-                b_thick = max(1, int(thickness * 0.7))
+                b_thick = max(1, int(thickness * self.branch_thickness_factor))
                 self._draw_aa_curve(img, pts_branch, b_thick, intensity)
                 self._draw_aa_curve(mask, pts_branch, b_thick, 1.0)
                 pts_all.append(pts_branch)
@@ -121,26 +148,53 @@ class CurveMakerFlexible:
         return img, mask, pts_all
 
     def _apply_dsa_noise(self, img):
-        num_blobs = self.rng.integers(1, 4)
+        num_blobs = self.rng.integers(self.noise_num_blobs_range[0], self.noise_num_blobs_range[1])
         for _ in range(num_blobs):
             y, x = self._random_point(margin=0)
-            sigma = self.rng.uniform(2, 8) 
+            sigma = self.rng.uniform(self.noise_blob_sigma_range[0], self.noise_blob_sigma_range[1])
             yy, xx = np.ogrid[:self.h, :self.w]
             dist_sq = (yy - y)**2 + (xx - x)**2
             blob = np.exp(-dist_sq / (2 * sigma**2))
-            blob_int = self.rng.uniform(0.05, 0.2)
+            blob_int = self.rng.uniform(self.noise_blob_intensity_range[0], self.noise_blob_intensity_range[1])
             img[:] = np.maximum(img, blob * blob_int)
 
         # Gaussian Static
-        noise_level = self.rng.uniform(0.05, 0.15)
+        noise_level = self.rng.uniform(self.noise_level_range[0], self.noise_level_range[1])
         noise = self.rng.normal(0, noise_level, img.shape)
         img[:] += noise
 
         # Gaussian Blur
-        if self.rng.random() < 0.5:
-            sigma = self.rng.uniform(0.5, 1.0)
+        if self.rng.random() < self.noise_gaussian_blur_prob:
+            sigma = self.rng.uniform(self.noise_gaussian_blur_sigma_range[0], self.noise_gaussian_blur_sigma_range[1])
             img[:] = scipy.ndimage.gaussian_filter(img, sigma=sigma)
 
+
+def load_curve_config(config_path=None):
+    """Load curve generation configuration from JSON file.
+    
+    Returns:
+        tuple: (config_dict, actual_config_path)
+        - config_dict: The loaded configuration dictionary (or empty dict if not found)
+        - actual_config_path: The path that was actually used (or None if not found)
+    """
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    if config_path is None:
+        config_path = os.path.join(script_dir, "curve_config.json")
+    
+    # Convert to absolute path
+    if not os.path.isabs(config_path):
+        config_path = os.path.join(script_dir, config_path)
+    
+    if os.path.exists(config_path):
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        print(f"✓ Loaded curve configuration from: {config_path}")
+        return config, config_path
+    else:
+        print(f"⚠️  Config file not found: {config_path}")
+        print("   Using default configuration")
+        return {}, None
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate synthetic curves")
@@ -148,53 +202,66 @@ if __name__ == "__main__":
                         help="Output directory for generated curves")
     parser.add_argument("--num_curves", type=int, default=100, 
                         help="Number of curves to generate")
-    parser.add_argument("--h", type=int, default=128, help="Image height")
-    parser.add_argument("--w", type=int, default=128, help="Image width")
+    parser.add_argument("--h", type=int, default=None, help="Image height (overrides config)")
+    parser.add_argument("--w", type=int, default=None, help="Image width (overrides config)")
     parser.add_argument("--seed", type=int, default=None, help="Random seed")
     parser.add_argument("--stage", type=int, choices=[1, 2, 3], default=None,
                         help="Stage number (1=simple, 2=medium, 3=complex). If None, generates for all stages.")
     parser.add_argument("--all_stages", action="store_true",
                         help="Generate curves for all 3 stages")
+    parser.add_argument("--config", type=str, default=None,
+                        help="Path to curve configuration JSON file (default: curve_config.json)")
     
     args = parser.parse_args()
+    
+    # Load configuration
+    config, _ = load_curve_config(args.config)
+    
+    # Get image dimensions (from args, config, or defaults)
+    img_cfg = config.get('image', {})
+    h = args.h if args.h is not None else img_cfg.get('height', 128)
+    w = args.w if args.w is not None else img_cfg.get('width', 128)
     
     # Get absolute path relative to script location
     script_dir = os.path.dirname(os.path.abspath(__file__))
     base_output_dir = os.path.join(script_dir, args.output_dir)
     
-    # Stage-specific configurations
+    # Load stage-specific configurations from config file
+    stages_config = config.get('stages', {})
+    
+    def get_stage_config(stage_num):
+        """Get stage config from JSON, with fallback defaults."""
+        stage_key = str(stage_num)
+        if stage_key in stages_config:
+            stage_cfg = stages_config[stage_key].copy()
+            # Convert lists to tuples for width_range
+            if 'width_range' in stage_cfg:
+                stage_cfg['width_range'] = tuple(stage_cfg['width_range'])
+            return stage_cfg
+        else:
+            # Fallback defaults
+            defaults = {
+                1: {'name': 'Stage1_Bootstrap', 'width_range': (1, 2), 'noise_prob': 0.0, 
+                    'invert_prob': 0.5, 'min_intensity': 0.08, 'max_intensity': 0.20, 
+                    'branches': False, 'curvature_factor': 0.5},
+                2: {'name': 'Stage2_Robustness', 'width_range': (1, 3), 'noise_prob': 0.0, 
+                    'invert_prob': 0.5, 'min_intensity': 0.06, 'max_intensity': 0.18, 
+                    'branches': False, 'curvature_factor': 1.0},
+                3: {'name': 'Stage3_Realism', 'width_range': (1, 2), 'noise_prob': 0.0, 
+                    'invert_prob': 0.5, 'min_intensity': 0.05, 'max_intensity': 0.15, 
+                    'branches': True, 'curvature_factor': 1.5}
+            }
+            return defaults.get(stage_num, {})
+    
     stage_configs = {
-        1: {
-            'name': 'Stage1_Bootstrap',
-            'width_range': (2, 4),
-            'noise_prob': 0.0,
-            'invert_prob': 0.5,
-            'min_intensity': 0.6,
-            'branches': False,
-            'curvature_factor': 0.5,  # Straighter curves
-            'num_curves': args.num_curves
-        },
-        2: {
-            'name': 'Stage2_Robustness',
-            'width_range': (2, 8),
-            'noise_prob': 0.0,  # Noise applied during training, not generation
-            'invert_prob': 0.5,
-            'min_intensity': 0.4,
-            'branches': False,
-            'curvature_factor': 1.0,  # Normal curvature
-            'num_curves': args.num_curves
-        },
-        3: {
-            'name': 'Stage3_Realism',
-            'width_range': (1, 10),
-            'noise_prob': 0.0,  # Noise applied during training, not generation
-            'invert_prob': 0.5,
-            'min_intensity': 0.2,
-            'branches': True,  # Add branches for complexity
-            'curvature_factor': 1.5,  # More curved
-            'num_curves': args.num_curves
-        }
+        1: get_stage_config(1),
+        2: get_stage_config(2),
+        3: get_stage_config(3)
     }
+    
+    # Add num_curves to each stage config
+    for stage_num in [1, 2, 3]:
+        stage_configs[stage_num]['num_curves'] = args.num_curves
     
     # Determine which stages to generate
     if args.all_stages:
@@ -210,10 +277,10 @@ if __name__ == "__main__":
         output_dir = os.path.join(base_output_dir, f"stage{stage_num}")
         os.makedirs(output_dir, exist_ok=True)
         
-        cm = CurveMakerFlexible(h=args.h, w=args.w, seed=args.seed)
+        cm = CurveMakerFlexible(h=h, w=w, seed=args.seed, config=config)
         print(f"\n=== Generating {config['num_curves']} curves for {config['name']} ===")
         print(f"  Width: {config['width_range']}, Curvature: {config['curvature_factor']:.1f}")
-        print(f"  Branches: {config['branches']}, Intensity: {config['min_intensity']:.1f}")
+        print(f"  Branches: {config['branches']}, Intensity: {config['min_intensity']:.2f}-{config.get('max_intensity', 1.0):.2f}")
         print(f"  Output: {output_dir}")
         
         for i in range(config['num_curves']):
@@ -222,6 +289,7 @@ if __name__ == "__main__":
                 noise_prob=config['noise_prob'],
                 invert_prob=config['invert_prob'],
                 min_intensity=config['min_intensity'],
+                max_intensity=config.get('max_intensity', None),
                 branches=config['branches'],
                 curvature_factor=config['curvature_factor']
             )
