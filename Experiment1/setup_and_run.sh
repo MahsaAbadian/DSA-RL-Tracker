@@ -18,12 +18,16 @@ if [ $? -ne 0 ]; then
     echo ""
     echo "Please install dependencies first:"
     echo ""
-    echo "Option 1 - conda (recommended):"
-    echo "  conda install pytorch numpy scipy opencv matplotlib -c pytorch -c conda-forge"
+    echo "Step 1: Install PyTorch via conda (with your preferred CUDA config):"
+    echo "  conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia"
+    echo "  # Adjust pytorch-cuda version (11.8, 12.1, etc.) based on your cluster's CUDA"
     echo ""
-    echo "Option 2 - pip:"
-    echo "  pip3 install -r requirements.txt"
+    echo "Step 2: Install other dependencies:"
+    echo "  pip install -r requirements.txt"
+    echo "  # or"
+    echo "  conda install numpy scipy opencv matplotlib -c conda-forge"
     echo ""
+    echo "Note: PyTorch is commented out in requirements.txt to allow custom conda installation"
     exit 1
 fi
 
