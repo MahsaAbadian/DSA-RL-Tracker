@@ -6,29 +6,44 @@ A structured reinforcement learning project for training an agent to follow curv
 
 ### 1. Install Dependencies
 
-**Recommended - Using conda environment file (stable GPU setup):**
+**Step 1: Check CUDA Version**
 ```bash
-# Check your CUDA version first
 nvidia-smi
-
-# Edit environment.yml to match your CUDA version, then:
-conda env create -f environment.yml
-conda activate dsa_rl
-
-# Verify GPU setup
-python3 check_gpu_setup.py
 ```
 
-**Alternative - Manual conda installation:**
+**Step 2: Create Conda Environment**
+
+**Option A - Using environment.yml (Recommended):**
 ```bash
-# Install PyTorch with CUDA (adjust version based on nvidia-smi output)
+# Edit environment.yml to match your CUDA version (pytorch-cuda=11.8 or 12.1)
+# Then create environment:
+conda env create -f environment.yml
+conda activate dsa_rl
+```
+
+**Option B - Manual Installation:**
+```bash
+# Create environment
+conda create -n dsa_rl python=3.9
+conda activate dsa_rl
+
+# Install PyTorch with CUDA (match your CUDA version from nvidia-smi)
 conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
 
 # Install other dependencies
 pip install -r requirements.txt
 ```
 
-**See `INSTALL.md` for detailed stable setup instructions.**
+**Step 3: Verify GPU Setup**
+```bash
+# Quick check
+./check_cuda_compatibility.sh
+
+# Comprehensive test
+python3 check_gpu_setup.py
+```
+
+**See `QUICK_INSTALL.md` for step-by-step instructions or `INSTALL.md` for detailed guide.**
 
 ### 2. Setup and Run (All-in-One)
 

@@ -133,18 +133,21 @@ conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=
 
 ### 3. Create a Dedicated Conda Environment
 ```bash
-# Create environment
+# Create environment (created in conda's central location: ~/miniconda3/envs/dsa_rl)
 conda create -n dsa_rl python=3.9
 
-# Activate environment
+# Activate environment (can be done from any directory)
 conda activate dsa_rl
 
 # Install PyTorch with CUDA
 conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
 
-# Install other dependencies
+# Navigate to project directory and install other dependencies
+cd Experiment1  # or path to your project
 pip install -r requirements.txt
 ```
+
+**Note:** Conda environments are stored centrally (e.g., `~/miniconda3/envs/dsa_rl`), not inside your project directory. The `environment.yml` file is just a configuration file that lives in your project.
 
 ### 4. Verify Before Training
 Always run the verification script before training:
