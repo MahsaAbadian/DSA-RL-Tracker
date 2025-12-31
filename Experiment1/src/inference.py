@@ -10,7 +10,15 @@ import cv2
 import matplotlib.pyplot as plt
 from scipy.interpolate import splprep, splev
 
-from models import ActorOnly
+# Add parent directory to path so 'src' package can be imported
+# This allows imports to work both when running as script and when imported as module
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_parent_dir = os.path.dirname(_script_dir)
+if _parent_dir not in sys.path:
+    sys.path.insert(0, _parent_dir)
+
+# Use absolute import - works both as module and script
+from src.models import ActorOnly
 
 # Import constants and utilities
 # (These are also defined in train.py, but we define them here for standalone use)

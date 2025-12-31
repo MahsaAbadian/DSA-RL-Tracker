@@ -20,6 +20,13 @@ import shutil
 import json
 from datetime import datetime
 
+# Add parent directory to path so 'src' package can be imported
+# This allows imports to work both when running as script and when imported as module
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_parent_dir = os.path.dirname(_script_dir)
+if _parent_dir not in sys.path:
+    sys.path.insert(0, _parent_dir)
+
 # ---------- GLOBALS ----------
 # Auto-detect device: use GPU if available, otherwise CPU
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -675,7 +682,8 @@ class CurveEnvUnified:
 
 # ---------- NETWORK ARCHITECTURE ----------
 # Import from shared models file
-from models import AsymmetricActorCritic
+# Use absolute import - works both as module and script
+from src.models import AsymmetricActorCritic
 
 # ---------- PPO UPDATE ----------
 def update_ppo(ppo_opt, model, buf_list, clip=0.2, epochs=4, minibatch=32):

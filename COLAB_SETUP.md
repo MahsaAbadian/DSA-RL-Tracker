@@ -10,7 +10,8 @@ Copy and paste these code blocks into separate cells in a Google Colab notebook.
 
 ```python
 # Check CUDA version before installing PyTorch
-!nvidia-smi --query-gpu=driver_version,cuda_version --format=csv,noheader
+# This will show CUDA version in the nvidia-smi output
+!nvidia-smi | grep -i "cuda version" || echo "nvidia-smi not available - will check after PyTorch installation"
 ```
 
 ## Step 1: Install Dependencies
