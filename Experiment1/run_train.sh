@@ -61,7 +61,7 @@ echo ""
 # Run training script
 # Results will be saved to runs/TIMESTAMP/ or runs/EXPERIMENT_NAME_TIMESTAMP/ directory
 # Using unbuffered python output for real-time logging
-TRAIN_CMD="python3 -u train.py"
+TRAIN_CMD="python -u src/train.py"
 
 if [ "$CLEAN_PREVIOUS" = true ]; then
     TRAIN_CMD="$TRAIN_CMD --clean_previous"

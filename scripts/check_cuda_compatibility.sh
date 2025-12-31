@@ -97,6 +97,7 @@ echo ""
 echo "Step 3: Run Comprehensive GPU Test"
 echo "-----------------------------------"
 echo "For detailed GPU testing, run:"
-echo "  python3 check_gpu_setup.py"
+echo "  python3 scripts/check_gpu_setup.py"
 echo ""
+
 

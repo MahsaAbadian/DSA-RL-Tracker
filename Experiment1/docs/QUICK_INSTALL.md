@@ -52,7 +52,7 @@ pip install -r requirements.txt
 ./check_cuda_compatibility.sh
 
 # Comprehensive GPU test
-python3 check_gpu_setup.py
+python3 src/check_gpu_setup.py
 ```
 
 You should see:
@@ -105,6 +105,6 @@ pip install -r requirements.txt
 1. ✅ Check CUDA: `nvidia-smi`
 2. ✅ Create env: `conda env create -f environment.yml`
 3. ✅ Activate: `conda activate dsa_rl`
-4. ✅ Verify: `python3 check_gpu_setup.py`
+4. ✅ Verify: `python3 src/check_gpu_setup.py`
 5. ✅ Train: `./run_train.sh`
 

@@ -37,13 +37,13 @@ pip install -r requirements.txt
 **Step 3: Verify GPU Setup**
 ```bash
 # Quick check
-./check_cuda_compatibility.sh
+../scripts/check_cuda_compatibility.sh
 
 # Comprehensive test
-python3 check_gpu_setup.py
+python3 ../scripts/check_gpu_setup.py
 ```
 
-**See `QUICK_INSTALL.md` for step-by-step instructions or `INSTALL.md` for detailed guide.**
+**See `docs/QUICK_INSTALL.md` for step-by-step instructions or `docs/INSTALL.md` for detailed guide.**
 
 ### 2. Setup and Run (All-in-One)
 
@@ -78,12 +78,12 @@ The curve generator now creates **stage-specific curves** organized by difficult
 **Option B: Direct Python execution**
 ```bash
 # Generate for all stages (recommended)
-python3 curve_generator.py --output_dir generated_curves --num_curves 1000 --all_stages
+python3 src/curve_generator.py --output_dir generated_curves --num_curves 1000 --all_stages
 
 # Or generate for a specific stage
-python3 curve_generator.py --output_dir generated_curves --num_curves 1000 --stage 1
-python3 curve_generator.py --output_dir generated_curves --num_curves 1000 --stage 2
-python3 curve_generator.py --output_dir generated_curves --num_curves 1000 --stage 3
+python3 src/curve_generator.py --output_dir generated_curves --num_curves 1000 --stage 1
+python3 src/curve_generator.py --output_dir generated_curves --num_curves 1000 --stage 2
+python3 src/curve_generator.py --output_dir generated_curves --num_curves 1000 --stage 3
 ```
 
 **Important:** You must generate curves BEFORE training. The training script loads pre-generated curves from stage-specific directories:
@@ -116,20 +116,20 @@ python3 curve_generator.py --output_dir generated_curves --num_curves 1000 --sta
 **Option B: Direct Python execution**
 ```bash
 # Normal run (auto-creates runs/TIMESTAMP/)
-python3 train.py --curves_base_dir generated_curves
+python3 src/train.py --curves_base_dir generated_curves
 
 # With experiment name (creates runs/EXPERIMENT_NAME_TIMESTAMP/)
-python3 train.py --curves_base_dir generated_curves --experiment_name baseline_v1
+python3 src/train.py --curves_base_dir generated_curves --experiment_name baseline_v1
 
 # Clean run (deletes previous runs first)
-python3 train.py --curves_base_dir generated_curves --clean_previous
+python3 src/train.py --curves_base_dir generated_curves --clean_previous
 
 # Resume from checkpoint
-python3 train.py --curves_base_dir generated_curves \
+python3 src/train.py --curves_base_dir generated_curves \
     --resume_from runs/20251222_143022/checkpoints/ckpt_Stage1_Bootstrap_ep2000.pth
 
 # Custom run directory
-python3 train.py --run_dir runs/my_experiment --curves_base_dir generated_curves
+python3 src/train.py --run_dir runs/my_experiment --curves_base_dir generated_curves
 ```
 
 **Results Organization:**
@@ -265,9 +265,12 @@ ls -lht runs/
 
 ```
 Experiment1/
-├── curve_generator.py         # Generate synthetic curves for all stages
-├── train.py                   # Training script with curriculum learning
-├── test.py                    # Testing/inference script (to be created)
+├── src/
+│   ├── curve_generator.py     # Generate synthetic curves for all stages
+│   ├── train.py               # Training script with curriculum learning
+│   ├── inference.py           # Testing/inference script
+│   ├── models.py              # Neural network models
+│   └── check_gpu_setup.py     # GPU setup verification
 ├── run_curve_generator.sh     # Bash script to generate curves separately
 ├── run_train.sh               # Bash script to run training
 ├── setup_and_run.sh           # Check dependencies and run training

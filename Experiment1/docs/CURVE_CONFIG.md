@@ -141,7 +141,7 @@ Specify a custom config file:
 
 ```bash
 # Using Python directly
-python3 train.py --curve_config my_custom_config.json
+python3 src/train.py --curve_config my_custom_config.json
 
 # Using bash script
 ./run_train.sh --curve_config my_custom_config.json
@@ -152,10 +152,10 @@ The curve generator also uses the config:
 
 ```bash
 # Uses default curve_config.json
-python3 curve_generator.py --num_curves 1000 --all_stages
+python3 src/curve_generator.py --num_curves 1000 --all_stages
 
 # Custom config
-python3 curve_generator.py --config my_config.json --num_curves 1000
+python3 src/curve_generator.py --config my_config.json --num_curves 1000
 ```
 
 ## Parameter Descriptions

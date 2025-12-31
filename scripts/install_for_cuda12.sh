@@ -38,14 +38,19 @@ conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvi
 
 echo ""
 echo "Step 3: Installing other dependencies..."
-pip install -r requirements.txt
+if [ -f "Experiment1/requirements.txt" ]; then
+    pip install -r Experiment1/requirements.txt
+else
+    pip install numpy scipy opencv-python matplotlib scikit-image
+fi
 
 echo ""
 echo "✅ Installation complete!"
 echo ""
 echo "Next steps:"
 echo "  1. Activate environment: conda activate ${ENV_NAME}"
-echo "  2. Verify GPU setup: python3 check_gpu_setup.py"
-echo "  3. Start training: ./run_train.sh"
+echo "  2. Verify GPU setup: python3 scripts/check_gpu_setup.py"
+echo "  3. Start training: cd Experiment1 && ./run_train.sh"
 echo ""
+
 

@@ -23,7 +23,7 @@ conda env create -f environment.yml
 conda activate dsa_rl
 
 # Verify setup:
-python3 check_gpu_setup.py
+python3 src/check_gpu_setup.py
 ```
 
 **If you get "DirectoryNotACondaEnvironmentError":**
@@ -97,7 +97,7 @@ This script will:
 
 **Comprehensive GPU test (recommended):**
 ```bash
-python3 check_gpu_setup.py
+python3 src/check_gpu_setup.py
 ```
 
 This script will:
@@ -152,7 +152,7 @@ pip install -r requirements.txt
 ### 4. Verify Before Training
 Always run the verification script before training:
 ```bash
-python3 check_gpu_setup.py
+python3 src/check_gpu_setup.py
 ```
 
 ## Why PyTorch is Separate?

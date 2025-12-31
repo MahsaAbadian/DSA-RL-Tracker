@@ -34,7 +34,7 @@ if conda env list | grep -q "^${ENV_NAME} "; then
             echo "✅ Environment activated"
             echo ""
             echo "To verify GPU setup, run:"
-            echo "  python3 check_gpu_setup.py"
+            echo "  python3 ../scripts/check_gpu_setup.py"
             exit 0
             ;;
         3)
@@ -49,10 +49,17 @@ if conda env list | grep -q "^${ENV_NAME} "; then
 fi
 
 # Check if environment.yml exists
+# Check for environment.yml in parent directory (moved to root)
 if [ ! -f "$ENV_FILE" ]; then
-    echo "❌ Error: $ENV_FILE not found!"
-    echo "Make sure you're in the Experiment1 directory"
-    exit 1
+    PARENT_ENV="../environment.yml"
+    if [ -f "$PARENT_ENV" ]; then
+        ENV_FILE="$PARENT_ENV"
+        echo "✓ Using environment.yml from parent directory"
+    else
+        echo "❌ Error: environment.yml not found!"
+        echo "Make sure environment.yml exists in Experiment1 or parent directory"
+        exit 1
+    fi
 fi
 
 echo ""
@@ -84,7 +91,7 @@ if [ $? -eq 0 ]; then
     echo "  conda activate ${ENV_NAME}"
     echo ""
     echo "Step 4: Verify GPU setup:"
-    echo "  python3 check_gpu_setup.py"
+    echo "  python3 ../scripts/check_gpu_setup.py"
     echo ""
     echo "Step 5: Start training:"
     echo "  ./run_train.sh"
@@ -104,4 +111,5 @@ else
     echo "  pip install -r requirements.txt"
     exit 1
 fi
+
 

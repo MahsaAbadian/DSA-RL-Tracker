@@ -21,7 +21,7 @@ echo "Output base directory: $OUTPUT_DIR"
 echo ""
 
 # Run curve generator for all stages
-python3 curve_generator.py \
+python3 src/curve_generator.py \
     --output_dir "$OUTPUT_DIR" \
     --num_curves "$NUM_CURVES" \
     --h 128 \

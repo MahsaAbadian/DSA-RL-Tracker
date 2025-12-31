@@ -31,7 +31,7 @@ else
     ls -lh "$WEIGHTS_DIR" 2>/dev/null || echo "  (weights directory is empty)"
     echo ""
     echo "You can also use checkpoints:"
-    echo "  python3 inference.py --image_path <image> --actor_weights $LATEST_RUN/checkpoints/actor_Stage*_ep*.pth"
+    echo "  python3 src/inference.py --image_path <image> --actor_weights $LATEST_RUN/checkpoints/actor_Stage*_ep*.pth"
     exit 1
 fi
 
@@ -66,7 +66,7 @@ echo "  1. Click START point (where tracking begins)"
 echo "  2. Click DIRECTION point (which direction to go)"
 echo ""
 
-python3 inference.py \
+python3 src/inference.py \
     --image_path "$IMAGE_PATH" \
     --actor_weights "$ACTOR_WEIGHTS" \
     --max_steps "$MAX_STEPS"
