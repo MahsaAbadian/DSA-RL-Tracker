@@ -478,7 +478,9 @@ class CurveEnvUnified:
         print(f"      Width: {self.stage_config['width']}, Noise: {self.stage_config['noise']}")
         print(f"      Tissue: {self.stage_config['tissue']}, Strict Stop: {self.stage_config['strict_stop']}")
         print(f"      Curvature: {self.stage_config['curvature_factor']}, Branches: {self.stage_config['branches']}")
-        print(f"      Intensity: {self.stage_config['min_intensity']:.2f}-{self.stage_config.get('max_intensity', 1.0):.2f}")
+        max_intensity = self.stage_config.get('max_intensity', 1.0)
+        max_intensity_str = f"{max_intensity:.2f}" if max_intensity is not None else "None"
+        print(f"      Intensity: {self.stage_config['min_intensity']:.2f}-{max_intensity_str}")
 
     def generate_tissue_noise(self):
         tissue_cfg = self.curve_config.get('tissue_noise', {})
