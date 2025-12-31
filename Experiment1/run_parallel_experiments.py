@@ -28,7 +28,10 @@ def create_config_file(config_dict, output_path):
 def load_base_config(config_path=None):
     """Load base configuration file."""
     if config_path is None:
-        config_path = os.path.join(SCRIPT_DIR, "curve_config.json")
+        # Look in config/ directory first, then Experiment1 root for backward compatibility
+        config_path = os.path.join(SCRIPT_DIR, "config", "curve_config.json")
+        if not os.path.exists(config_path):
+            config_path = os.path.join(SCRIPT_DIR, "curve_config.json")
     
     if os.path.exists(config_path):
         with open(config_path, 'r') as f:

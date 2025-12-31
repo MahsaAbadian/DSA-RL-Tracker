@@ -76,7 +76,7 @@ import os
 required_files = [
     'src/train.py',
     'src/models.py',
-    'curve_config.json'
+    'config/curve_config.json'  # Config is now in config/ directory
 ]
 
 for file in required_files:
@@ -105,7 +105,7 @@ run_unified_training(
     clean_previous=False,
     experiment_name="colab_training",
     resume_from=None,
-    curve_config_path="curve_config.json"
+    curve_config_path="config/curve_config.json"  # Config is now in config/ directory
 )
 ```
 

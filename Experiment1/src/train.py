@@ -52,19 +52,52 @@ BASE_SEED = 42
 def load_curve_config(config_path=None):
     """Load curve generation configuration from JSON file.
     
+    Looks for config in the following order:
+    1. Explicit path provided (if config_path is given)
+    2. config/curve_config.json (relative to Experiment1 directory)
+    3. curve_config.json (relative to Experiment1 directory, for backward compatibility)
+    
     Returns:
         tuple: (config_dict, actual_config_path)
         - config_dict: The loaded configuration dictionary (or empty dict if not found)
         - actual_config_path: The path that was actually used (or None if not found)
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(script_dir)  # Experiment1 directory
+    config_dir = os.path.join(parent_dir, "config")  # Experiment1/config/
     
     if config_path is None:
-        config_path = os.path.join(script_dir, "curve_config.json")
+        # Default: look in config/ directory first, then parent directory for backward compatibility
+        default_paths = [
+            os.path.join(config_dir, "curve_config.json"),
+            os.path.join(parent_dir, "curve_config.json")
+        ]
+        for path in default_paths:
+            if os.path.exists(path):
+                config_path = path
+                break
+        else:
+            config_path = default_paths[0]  # Use config/ path even if doesn't exist (for error message)
     
-    # Convert to absolute path
+    # Convert to absolute path if relative
     if not os.path.isabs(config_path):
-        config_path = os.path.join(script_dir, config_path)
+        # Try relative to config directory first
+        test_path = os.path.join(config_dir, config_path)
+        if os.path.exists(test_path):
+            config_path = test_path
+        else:
+            # Try relative to parent directory
+            test_path = os.path.join(parent_dir, config_path)
+            if os.path.exists(test_path):
+                config_path = test_path
+            else:
+                # Try relative to script directory (for backward compatibility)
+                test_path = os.path.join(script_dir, config_path)
+                if os.path.exists(test_path):
+                    config_path = test_path
+                else:
+                    # Use the original path (will show error if not found)
+                    config_path = os.path.join(config_dir, config_path) if not os.path.isabs(config_path) else config_path
     
     if os.path.exists(config_path):
         with open(config_path, 'r') as f:
@@ -73,6 +106,9 @@ def load_curve_config(config_path=None):
         return config, config_path
     else:
         print(f"⚠️  Config file not found: {config_path}")
+        print(f"   Expected locations:")
+        print(f"     - {os.path.join(config_dir, 'curve_config.json')}")
+        print(f"     - {os.path.join(parent_dir, 'curve_config.json')}")
         print("   Using default configuration")
         return {}, None
 
@@ -459,20 +495,6 @@ class CurveEnvUnified:
                 self.stage_config['end_intensity'] = stage_curve_cfg['end_intensity']
             if 'background_intensity' in stage_curve_cfg:
                 self.stage_config['background_intensity'] = stage_curve_cfg['background_intensity']
-        else:
-            # Fallback to defaults based on stage_id
-            if self.stage_config['stage_id'] == 1:
-                self.stage_config['curvature_factor'] = 0.5
-                self.stage_config['min_intensity'] = 0.6
-                self.stage_config['branches'] = False
-            elif self.stage_config['stage_id'] == 2:
-                self.stage_config['curvature_factor'] = 1.0
-                self.stage_config['min_intensity'] = 0.4
-                self.stage_config['branches'] = False
-            elif self.stage_config['stage_id'] == 3:
-                self.stage_config['curvature_factor'] = 1.5
-                self.stage_config['min_intensity'] = 0.2
-                self.stage_config['branches'] = True
         
         print(f"\n[ENV] Config Updated for Stage {self.stage_config.get('stage_id')}:")
         print(f"      Width: {self.stage_config['width']}, Noise: {self.stage_config['noise']}")
@@ -609,7 +631,9 @@ class CurveEnvUnified:
 
         if a_idx == ACTION_STOP_IDX:
             if dist_to_end < 5.0:
-                return self.obs(), 50.0, True, {"reached_end": True, "stopped_correctly": True}
+                # Reward correct stop more heavily for strict_stop stages to align reward/success
+                stop_bonus = 30.0 if self.stage_config['strict_stop'] else 20.0
+                return self.obs(), stop_bonus, True, {"reached_end": True, "stopped_correctly": True}
             else:
                 return self.obs(), -2.0, False, {"reached_end": False, "stopped_correctly": False}
 
@@ -678,7 +702,8 @@ class CurveEnvUnified:
                 done = True
         else:
             if reached_end:
-                r += 0.5 
+                # Small shaping reward for getting to the end; must stop to finish
+                r += 5.0
 
         return self.obs(), r, done, {"reached_end": reached_end, "stopped_correctly": False}
 
@@ -729,6 +754,8 @@ def update_ppo(ppo_opt, model, buf_list, clip=0.2, epochs=4, minibatch=32):
 # ---------- MAIN CURRICULUM MANAGER ----------
 def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, experiment_name=None, resume_from=None, curve_config_path=None):
     script_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(script_dir)  # Experiment1 directory
+    runs_base = os.path.join(parent_dir, "runs")
     
     # Load curve configuration
     curve_config, actual_config_path = load_curve_config(curve_config_path)
@@ -798,14 +825,17 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         if run_dir is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             if experiment_name:
-                run_dir = os.path.join(script_dir, "runs", f"{experiment_name}_{timestamp}")
+                run_dir = os.path.join(runs_base, f"{experiment_name}_{timestamp}")
             else:
-                run_dir = os.path.join(script_dir, "runs", timestamp)
+                run_dir = os.path.join(runs_base, timestamp)
         else:
-            run_dir = os.path.join(script_dir, run_dir)
+            if os.path.isabs(run_dir):
+                run_dir = run_dir
+            else:
+                # Place relative run_dir under Experiment1/runs for cleanliness
+                run_dir = os.path.join(runs_base, run_dir)
     
     # Clean previous runs if requested
-    runs_base = os.path.join(script_dir, "runs")
     if clean_previous and os.path.exists(runs_base):
         print(f"\n⚠️  Cleaning previous runs from {runs_base}...")
         try:

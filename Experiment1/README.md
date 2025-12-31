@@ -235,6 +235,9 @@ ls -lht runs/
 
 ```
 Experiment1/
+├── config/                     # Configuration files
+│   ├── curve_config.json      # Main curve generation and training config
+│   └── example_config_variations.json  # Example config variations
 ├── src/
 │   ├── curve_generator.py     # Generate synthetic curves for all stages
 │   ├── train.py               # Training script with curriculum learning

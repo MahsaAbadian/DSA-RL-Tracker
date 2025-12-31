@@ -341,13 +341,41 @@ def load_curve_config(config_path=None):
         - actual_config_path: The path that was actually used (or None if not found)
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(script_dir)  # Experiment1 directory
+    config_dir = os.path.join(parent_dir, "config")  # Experiment1/config/
     
     if config_path is None:
-        config_path = os.path.join(script_dir, "curve_config.json")
+        # Default: look in config/ directory first, then parent directory for backward compatibility
+        default_paths = [
+            os.path.join(config_dir, "curve_config.json"),
+            os.path.join(parent_dir, "curve_config.json")
+        ]
+        for path in default_paths:
+            if os.path.exists(path):
+                config_path = path
+                break
+        else:
+            config_path = default_paths[0]  # Use config/ path even if doesn't exist
     
-    # Convert to absolute path
+    # Convert to absolute path if relative
     if not os.path.isabs(config_path):
-        config_path = os.path.join(script_dir, config_path)
+        # Try relative to config directory first
+        test_path = os.path.join(config_dir, config_path)
+        if os.path.exists(test_path):
+            config_path = test_path
+        else:
+            # Try relative to parent directory
+            test_path = os.path.join(parent_dir, config_path)
+            if os.path.exists(test_path):
+                config_path = test_path
+            else:
+                # Try relative to script directory (for backward compatibility)
+                test_path = os.path.join(script_dir, config_path)
+                if os.path.exists(test_path):
+                    config_path = test_path
+                else:
+                    # Use config directory as default
+                    config_path = os.path.join(config_dir, config_path)
     
     if os.path.exists(config_path):
         with open(config_path, 'r') as f:
