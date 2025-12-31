@@ -16,12 +16,13 @@ Look for "CUDA Version" in the output (e.g., 11.8, 12.1, etc.)
 
 **Option A: Using environment.yml (Recommended)**
 ```bash
-# Navigate to Experiment1 directory (where environment.yml is located)
-cd Experiment1
-
+# environment.yml is in the repository root
 # Edit environment.yml to match your CUDA version (change pytorch-cuda=11.8 if needed)
 # Then create environment (environment is created in conda's central location):
-conda env create -f environment.yml
+conda env create -f ../environment.yml
+
+# Or use the setup script from repository root:
+../scripts/setup_conda_env.sh
 
 # Activate environment (can be done from anywhere)
 conda activate dsa_rl
@@ -48,11 +49,11 @@ pip install -r requirements.txt
 ### Step 3: Verify GPU Setup
 
 ```bash
-# Quick compatibility check
-./check_cuda_compatibility.sh
+# Quick compatibility check (from repository root)
+../scripts/check_cuda_compatibility.sh
 
 # Comprehensive GPU test
-python3 src/check_gpu_setup.py
+python3 ../scripts/check_gpu_setup.py
 ```
 
 You should see:
@@ -83,8 +84,8 @@ conda activate dsa_rl
 # Remove broken environment
 conda env remove -n RL-mahsa  # or whatever name you used
 
-# Create fresh environment
-conda env create -f environment.yml
+# Create fresh environment (from repository root)
+conda env create -f ../environment.yml
 ```
 
 **If CUDA is not available:**
@@ -103,8 +104,8 @@ pip install -r requirements.txt
 ## Summary
 
 1. ✅ Check CUDA: `nvidia-smi`
-2. ✅ Create env: `conda env create -f environment.yml`
+2. ✅ Create env: `conda env create -f ../environment.yml` (or use `../scripts/setup_conda_env.sh`)
 3. ✅ Activate: `conda activate dsa_rl`
-4. ✅ Verify: `python3 src/check_gpu_setup.py`
+4. ✅ Verify: `python3 ../scripts/check_gpu_setup.py`
 5. ✅ Train: `./run_train.sh`
 

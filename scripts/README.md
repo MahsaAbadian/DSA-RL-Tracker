@@ -8,6 +8,7 @@ This directory contains experiment-agnostic scripts for GPU setup, CUDA compatib
 - **`check_gpu_setup.py`** - Comprehensive GPU setup verification
 - **`diagnose_cuda.py`** - Quick PyTorch CUDA diagnostic
 - **`install_for_cuda12.sh`** - Installation script for CUDA 12.x systems
+- **`setup_conda_env.sh`** - Interactive conda environment setup script
 
 ## Usage
 
@@ -16,9 +17,11 @@ These scripts can be used from anywhere in the repository:
 ```bash
 # From repository root
 python3 scripts/check_gpu_setup.py
+./scripts/setup_conda_env.sh
 
 # From Experiment1 directory
 python3 ../scripts/check_gpu_setup.py
+../scripts/setup_conda_env.sh
 ```
 
 ## Why These Are Here

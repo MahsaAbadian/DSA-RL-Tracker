@@ -9,7 +9,8 @@ This guide helps you set up a **stable** PyTorch + CUDA configuration for reliab
 **Option 1: Using automated setup script (easiest)**
 ```bash
 # This script handles existing environments and guides you through setup
-./setup_conda_env.sh
+# Run from Experiment1 directory:
+../scripts/setup_conda_env.sh
 ```
 
 **Option 2: Using conda environment file manually**
@@ -18,12 +19,13 @@ This guide helps you set up a **stable** PyTorch + CUDA configuration for reliab
 nvidia-smi
 
 # Edit environment.yml to match your CUDA version (pytorch-cuda=11.8 or 12.1)
+# environment.yml is in the repository root
 # Then create environment:
-conda env create -f environment.yml
+conda env create -f ../environment.yml
 conda activate dsa_rl
 
 # Verify setup:
-python3 src/check_gpu_setup.py
+python3 ../scripts/check_gpu_setup.py
 ```
 
 **If you get "DirectoryNotACondaEnvironmentError":**
@@ -32,9 +34,9 @@ python3 src/check_gpu_setup.py
 conda env remove -n RL-mahsa
 
 # Then create new environment
-conda env create -f environment.yml
+conda env create -f ../environment.yml
 # or use the setup script:
-./setup_conda_env.sh
+../scripts/setup_conda_env.sh
 ```
 
 **Option 2: Manual installation (more control)**
@@ -86,7 +88,8 @@ conda install numpy scipy opencv matplotlib -c conda-forge
 
 **Quick CUDA version check:**
 ```bash
-./check_cuda_compatibility.sh
+# From repository root
+../scripts/check_cuda_compatibility.sh
 ```
 
 This script will:
@@ -97,7 +100,7 @@ This script will:
 
 **Comprehensive GPU test (recommended):**
 ```bash
-python3 src/check_gpu_setup.py
+python3 ../scripts/check_gpu_setup.py
 ```
 
 This script will:
@@ -147,12 +150,12 @@ cd Experiment1  # or path to your project
 pip install -r requirements.txt
 ```
 
-**Note:** Conda environments are stored centrally (e.g., `~/miniconda3/envs/dsa_rl`), not inside your project directory. The `environment.yml` file is just a configuration file that lives in your project.
+**Note:** Conda environments are stored centrally (e.g., `~/miniconda3/envs/dsa_rl`), not inside your project directory. The `environment.yml` file is in the repository root and is just a configuration file.
 
 ### 4. Verify Before Training
 Always run the verification script before training:
 ```bash
-python3 src/check_gpu_setup.py
+python3 ../scripts/check_gpu_setup.py
 ```
 
 ## Why PyTorch is Separate?

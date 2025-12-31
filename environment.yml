@@ -8,7 +8,7 @@ dependencies:
   - python=3.9
   # PyTorch with CUDA - adjust pytorch-cuda version based on your cluster
   # Check CUDA version first: nvidia-smi
-  # For CUDA 12.6 (your system), use pytorch-cuda=12.1 (backward compatible)
+  # For CUDA 12.4/12.6, use pytorch-cuda=12.1 (backward compatible with CUDA 12.x)
   - pytorch>=2.0.0
   - torchvision>=0.15.0
   - torchaudio>=2.0.0

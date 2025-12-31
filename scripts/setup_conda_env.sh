@@ -1,14 +1,28 @@
 #!/bin/bash
 # Setup script for creating conda environment for DSA RL project
 # Handles existing directories and provides clear instructions
+# This script is experiment-agnostic and works from the repository root
 
 ENV_NAME="dsa_rl"
-ENV_FILE="environment.yml"
+ENV_FILE="../environment.yml"
 
 echo "=========================================="
 echo "Conda Environment Setup for DSA RL"
 echo "=========================================="
 echo ""
+
+# Get script directory and navigate to repo root
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
+cd "$REPO_ROOT"
+
+# Check if environment.yml exists
+if [ ! -f "environment.yml" ]; then
+    echo "❌ Error: environment.yml not found in repository root!"
+    echo "   Expected location: $REPO_ROOT/environment.yml"
+    exit 1
+fi
+ENV_FILE="environment.yml"
 
 # Check if environment already exists
 if conda env list | grep -q "^${ENV_NAME} "; then
@@ -34,7 +48,7 @@ if conda env list | grep -q "^${ENV_NAME} "; then
             echo "✅ Environment activated"
             echo ""
             echo "To verify GPU setup, run:"
-            echo "  python3 ../scripts/check_gpu_setup.py"
+            echo "  python3 scripts/check_gpu_setup.py"
             exit 0
             ;;
         3)
@@ -46,20 +60,6 @@ if conda env list | grep -q "^${ENV_NAME} "; then
             exit 1
             ;;
     esac
-fi
-
-# Check if environment.yml exists
-# Check for environment.yml in parent directory (moved to root)
-if [ ! -f "$ENV_FILE" ]; then
-    PARENT_ENV="../environment.yml"
-    if [ -f "$PARENT_ENV" ]; then
-        ENV_FILE="$PARENT_ENV"
-        echo "✓ Using environment.yml from parent directory"
-    else
-        echo "❌ Error: environment.yml not found!"
-        echo "Make sure environment.yml exists in Experiment1 or parent directory"
-        exit 1
-    fi
 fi
 
 echo ""
@@ -91,9 +91,10 @@ if [ $? -eq 0 ]; then
     echo "  conda activate ${ENV_NAME}"
     echo ""
     echo "Step 4: Verify GPU setup:"
-    echo "  python3 ../scripts/check_gpu_setup.py"
+    echo "  python3 scripts/check_gpu_setup.py"
     echo ""
-    echo "Step 5: Start training:"
+    echo "Step 5: Start training (from Experiment1 directory):"
+    echo "  cd Experiment1"
     echo "  ./run_train.sh"
 else
     echo ""
@@ -108,8 +109,8 @@ else
     echo "  conda create -n ${ENV_NAME} python=3.9"
     echo "  conda activate ${ENV_NAME}"
     echo "  conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia"
+    echo "  cd Experiment1"
     echo "  pip install -r requirements.txt"
     exit 1
 fi
-
 

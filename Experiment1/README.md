@@ -45,22 +45,11 @@ python3 ../scripts/check_gpu_setup.py
 
 **See `docs/QUICK_INSTALL.md` for step-by-step instructions or `docs/INSTALL.md` for detailed guide.**
 
-### 2. Setup and Run (All-in-One)
+### 2. Run Training
 
-**Automated setup: Generate curves and run training:**
-```bash
-./setup_and_run.sh [num_curves]
-# Example: ./setup_and_run.sh 1000
-```
+**Note:** Training generates curves on-the-fly, so no pre-generation is needed. However, if you want to generate curves separately for testing or visualization, see the curve generator section below.
 
-This script:
-1. ✅ Checks if dependencies are installed
-2. ✅ Generates curves (or uses existing ones if found)
-3. ✅ Runs training automatically
-
-**Note:** If curves already exist, it will ask if you want to regenerate them. Default is 1000 curves if not specified.
-
-### 3. Generate Curves (REQUIRED - Must be done before training)
+### 3. Generate Curves (Optional - Training generates curves on-the-fly)
 
 **Step 1: Generate curves first**
 
@@ -86,14 +75,12 @@ python3 src/curve_generator.py --output_dir generated_curves --num_curves 1000 -
 python3 src/curve_generator.py --output_dir generated_curves --num_curves 1000 --stage 3
 ```
 
-**Important:** You must generate curves BEFORE training. The training script loads pre-generated curves from stage-specific directories:
-- `generated_curves/stage1/` - Simple curves for Stage 1
-- `generated_curves/stage2/` - Medium curves for Stage 2
-- `generated_curves/stage3/` - Complex curves for Stage 3
+**Note:** These curves are optional. Training generates curves on-the-fly during training, so pre-generation is not required. However, you can generate curves separately for:
+- Testing the curve generator
+- Visualizing curve types
+- Custom analysis
 
-**Recommended:** Generate at least 1000 curves per stage for good training diversity.
-
-### 4. Run Training
+### 4. Run Training (Curves Generated On-The-Fly)
 
 **Option A: Using the bash script (recommended for clusters)**
 ```bash
@@ -179,56 +166,39 @@ The training will:
 
 ### 5. Workflow Summary
 
-**Option A: Automated (Recommended for first-time setup)**
+**Option A: Quick Start (Recommended)**
 ```bash
 # 1. Install dependencies (recommended: conda)
-conda install pytorch numpy scipy opencv matplotlib -c pytorch -c conda-forge
+# Use the setup script from repository root:
+../scripts/setup_conda_env.sh
 
-# 2. Run everything (generates curves + trains)
-./setup_and_run.sh 1000
+# Or manually:
+conda env create -f ../environment.yml
+conda activate dsa_rl
+
+# 2. Run training (curves generated on-the-fly)
+./run_train.sh
 
 # 3. Monitor progress (find latest run)
 LATEST_RUN=$(ls -td runs/*/ | head -1)
 tail -f $LATEST_RUN/logs/training.log
 ```
 
-**Option B: Manual (More control)**
+**Option B: With Experiment Name**
 ```bash
-# 1. Install dependencies (recommended: conda)
-conda install pytorch numpy scipy opencv matplotlib -c pytorch -c conda-forge
+# Create a named experiment (easier to identify later)
+./run_train.sh --experiment_name baseline_v1
 
-# 2. Generate curves for all stages separately
-./run_curve_generator.sh 1000 generated_curves
-# This creates: generated_curves/stage1/, stage2/, stage3/
-
-# 3. Run training separately
-./run_train.sh                    # Normal run
-# OR
-./run_train.sh --clean            # Delete previous runs first
-
-# 4. Monitor progress (find latest run)
-LATEST_RUN=$(ls -td runs/*/ | head -1)
-tail -f $LATEST_RUN/logs/training.log
+# Results will be in: runs/baseline_v1_20251222_143022/
 ```
 
 **Option C: Clean Start (Delete all previous results)**
 ```bash
 # Delete all previous runs and start fresh
 ./run_train.sh --clean
-
-# Or with setup script
-./setup_and_run.sh 1000 --clean
 ```
 
-**Option D: Named Experiments**
-```bash
-# Create a named experiment (easier to identify later)
-./run_train.sh --experiment_name ablation_study_1
-
-# Results will be in: runs/ablation_study_1_20251222_143022/
-```
-
-**Option E: Resume Training**
+**Option D: Resume Training**
 ```bash
 # Resume from a checkpoint (useful if training was interrupted)
 ./run_train.sh --resume_from runs/20251222_143022/checkpoints/ckpt_Stage2_Robustness_ep5000.pth
@@ -269,11 +239,9 @@ Experiment1/
 │   ├── curve_generator.py     # Generate synthetic curves for all stages
 │   ├── train.py               # Training script with curriculum learning
 │   ├── inference.py           # Testing/inference script
-│   ├── models.py              # Neural network models
-│   └── check_gpu_setup.py     # GPU setup verification
-├── run_curve_generator.sh     # Bash script to generate curves separately
+│   └── models.py              # Neural network models
+├── run_curve_generator.sh     # Bash script to generate curves separately (optional)
 ├── run_train.sh               # Bash script to run training
-├── setup_and_run.sh           # Check dependencies and run training
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # This file
 ├── generated_curves/          # Pre-generated curves (organized by stage)
@@ -329,11 +297,9 @@ The `run_train.sh` script is designed for cluster environments:
 
 ## Notes
 
-- **Curve generation and training are completely separate processes**
-- You MUST generate curves before training (use `./run_curve_generator.sh`)
-- Training loads curves randomly from the `generated_curves/` directory
+- **Curves are generated on-the-fly during training** - no pre-generation needed
 - Training uses GPU if available, otherwise falls back to CPU
 - Checkpoints are saved every 2000 episodes to allow resuming
 - All paths are relative to the script directory for portability
 - Total training time: ~35,000 episodes (can take several hours to days depending on hardware)
-- Recommended: Generate 1000+ curves for good training diversity
+- The curve generator (`run_curve_generator.sh`) is optional and mainly for testing/visualization
