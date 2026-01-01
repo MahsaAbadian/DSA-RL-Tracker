@@ -226,6 +226,7 @@ Experiment1/
 │   └── models.py              # Neural network models
 ├── run_curve_generator.sh     # Bash script to generate curves separately (optional)
 ├── run_train.sh               # Bash script to run training
+├── run_rollout.sh             # Bash script to run inference/rollout on an image
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # This file
 ├── generated_curves/          # Pre-generated curves (organized by stage)

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Helper script to run inference/test with weights from the latest training run
+# Helper script to run inference/rollout with weights from the latest training run
 
 # Find the latest run directory
 LATEST_RUN=$(ls -td runs/*/ 2>/dev/null | head -1)
@@ -61,12 +61,7 @@ fi
 echo "Running inference on: $IMAGE_PATH"
 echo "Max steps: $MAX_STEPS"
 echo ""
-echo "Instructions:"
-echo "  1. Click START point (where tracking begins)"
-echo "  2. Click DIRECTION point (which direction to go)"
-echo ""
-
-python3 src/inference.py \
+python3 src/rollout.py \
     --image_path "$IMAGE_PATH" \
     --actor_weights "$ACTOR_WEIGHTS" \
     --max_steps "$MAX_STEPS"
