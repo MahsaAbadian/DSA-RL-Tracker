@@ -45,42 +45,9 @@ python3 ../scripts/check_gpu_setup.py
 
 **See `docs/QUICK_INSTALL.md` for step-by-step instructions or `docs/INSTALL.md` for detailed guide.**
 
-### 2. Run Training
+### 2. Run Training (on-the-fly curve generation)
 
-**Note:** Training generates curves on-the-fly, so no pre-generation is needed. However, if you want to generate curves separately for testing or visualization, see the curve generator section below.
-
-### 3. Generate Curves (Optional - Training generates curves on-the-fly)
-
-**Step 1: Generate curves first**
-
-The curve generator now creates **stage-specific curves** organized by difficulty:
-- **Stage 1 (Simple)**: Wider curves (2-4px), straighter paths, no branches, high contrast
-- **Stage 2 (Medium)**: Medium width (2-8px), normal curvature, moderate contrast
-- **Stage 3 (Complex)**: Narrow curves (1-10px), high curvature, branches, low contrast
-
-**Option A: Using the bash script (generates for all stages)**
-```bash
-./run_curve_generator.sh [num_curves] [output_dir]
-# Example: ./run_curve_generator.sh 1000 generated_curves
-```
-
-**Option B: Direct Python execution**
-```bash
-# Generate for all stages (recommended)
-python3 src/curve_generator.py --output_dir generated_curves --num_curves 1000 --all_stages
-
-# Or generate for a specific stage
-python3 src/curve_generator.py --output_dir generated_curves --num_curves 1000 --stage 1
-python3 src/curve_generator.py --output_dir generated_curves --num_curves 1000 --stage 2
-python3 src/curve_generator.py --output_dir generated_curves --num_curves 1000 --stage 3
-```
-
-**Note:** These curves are optional. Training generates curves on-the-fly during training, so pre-generation is not required. However, you can generate curves separately for:
-- Testing the curve generator
-- Visualizing curve types
-- Custom analysis
-
-### 4. Run Training (Curves Generated On-The-Fly)
+Training generates curves on-the-fly; no pre-generated curves or `curves_base_dir` needed.
 
 **Option A: Using the bash script (recommended for clusters)**
 ```bash
@@ -103,24 +70,22 @@ python3 src/curve_generator.py --output_dir generated_curves --num_curves 1000 -
 **Option B: Direct Python execution**
 ```bash
 # Normal run (auto-creates runs/TIMESTAMP/)
-python3 src/train.py --curves_base_dir generated_curves
+python3 src/train.py
 
 # With experiment name (creates runs/EXPERIMENT_NAME_TIMESTAMP/)
-python3 src/train.py --curves_base_dir generated_curves --experiment_name baseline_v1
+python3 src/train.py --experiment_name baseline_v1
 
 # Clean run (deletes previous runs first)
-python3 src/train.py --curves_base_dir generated_curves --clean_previous
+python3 src/train.py --clean_previous
 
 # Resume from checkpoint
-python3 src/train.py --curves_base_dir generated_curves \
-    --resume_from runs/20251222_143022/checkpoints/ckpt_Stage1_Bootstrap_ep2000.pth
+python3 src/train.py --resume_from runs/20251222_143022/checkpoints/ckpt_Stage1_Bootstrap_ep2000.pth
 
 # Custom run directory
-python3 src/train.py --run_dir runs/my_experiment --curves_base_dir generated_curves
+python3 src/train.py --run_dir runs/my_experiment
 ```
 
-**Results Organization:**
-All training results are organized in timestamped folders under `runs/`:
+**Results Organization (under Experiment1/runs):**
 ```
 runs/
   ├── 20251222_143022/          # Timestamp only: YYYYMMDD_HHMMSS
@@ -153,8 +118,7 @@ You can resume training from any checkpoint:
 ```
 
 The training will:
-- Load stage-specific curves from `generated_curves/stage1/`, `stage2/`, and `stage3/` directories
-- Run 3 curriculum stages:
+- Run 3 curriculum stages (from `config/curve_config.json`):
   - **Stage 1 (Bootstrap)**: 8k episodes, simple curves, no noise, auto-complete
   - **Stage 2 (Robustness)**: 12k episodes, medium curves, noise enabled, strict stop
   - **Stage 3 (Realism)**: 15k episodes, complex curves, tissue artifacts, full difficulty
@@ -230,6 +194,23 @@ ls -lh $LATEST_RUN/weights/
 ```bash
 ls -lht runs/
 ```
+
+### Curve Generator (Optional)
+
+- Generate example grids per stage (no individual PNGs):
+  ```bash
+  # Prompts for number of examples per stage, saves grids to runs/stage_examples/<stage>/grid.png
+  ./run_examples.sh
+  ```
+
+- Generate datasets (optional; not needed for training):
+  ```bash
+  # Generate for all stages
+  python3 src/curve_generator.py --output_dir generated_curves --num_curves 1000 --all_stages
+
+  # Generate for one stage
+  python3 src/curve_generator.py --output_dir generated_curves --num_curves 1000 --stage 1
+  ```
 
 ## Project Structure
 
