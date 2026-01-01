@@ -10,6 +10,8 @@ import os
 import argparse
 import json
 
+
+
 def _rng(seed=None):
     return np.random.default_rng(seed)
 
@@ -35,6 +37,8 @@ class CurveMakerFlexible:
         
         # Extract branch config with defaults
         branch_cfg = self.config.get('branches', {})
+        if not isinstance(branch_cfg, dict):
+            branch_cfg = {}
         self.branch_num_range = tuple(branch_cfg.get('num_branches_range', [1, 3]))
         self.branch_start_range = tuple(branch_cfg.get('start_range', [0.2, 0.8]))
         self.branch_thickness_factor = branch_cfg.get('thickness_factor', 0.7)
@@ -54,7 +58,8 @@ class CurveMakerFlexible:
         x = self.rng.integers(margin, self.w - margin)
         return np.array([y, x], dtype=np.float32)
 
-    def _generate_bezier_points(self, p0=None, n_samples=None, curvature_factor=1.0):
+    def _generate_bezier_points(self, p0=None, n_samples=None, curvature_factor=1.0,
+                                allow_self_cross=False, self_cross_prob=0.0):
         """Generates a list of (y,x) points forming a smooth bezier curve."""
         n_samples = n_samples if n_samples is not None else self.bezier_n_samples
         
@@ -73,8 +78,17 @@ class CurveMakerFlexible:
         # Control points - curvature_factor affects how much control points deviate
         center = (p0 + p3) / 2.0
         spread = np.array([self.h, self.w], dtype=np.float32) * self.bezier_spread * curvature_factor
-        p1 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
-        p2 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
+
+        if allow_self_cross and self.rng.random() < self_cross_prob:
+            # Force control points to opposite sides of the center to encourage a self-cross
+            dir_vec = self.rng.normal(0, 1, 2)
+            norm = np.linalg.norm(dir_vec) + 1e-8
+            dir_unit = dir_vec / norm
+            p1 = center + dir_unit * spread * self.bezier_factor
+            p2 = center - dir_unit * spread * self.bezier_factor
+        else:
+            p1 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
+            p2 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
         
         ts = np.linspace(0, 1, n_samples, dtype=np.float32)
         pts = np.stack([_cubic_bezier(p0, p1, p2, p3, t) for t in ts], axis=0)
@@ -207,7 +221,9 @@ class CurveMakerFlexible:
                      intensity_variation="none",
                      start_intensity=None,
                      end_intensity=None,
-                     background_intensity=None):       
+                    background_intensity=None,
+                    allow_self_cross=False,
+                    self_cross_prob=0.0):       
         """Generate a curve with specified parameters.
         
         Args:
@@ -276,7 +292,11 @@ class CurveMakerFlexible:
         else:
             start_i = end_i = intensity
 
-        pts_main = self._generate_bezier_points(curvature_factor=curvature_factor)
+        pts_main = self._generate_bezier_points(
+            curvature_factor=curvature_factor,
+            allow_self_cross=allow_self_cross,
+            self_cross_prob=self_cross_prob
+        )
         self._draw_aa_curve(img, pts_main, thickness, intensity, width_variation, start_w, end_w,
                            intensity_variation, start_i, end_i)
         self._draw_aa_curve(mask, pts_main, thickness, 1.0, width_variation, start_w, end_w)
@@ -387,6 +407,176 @@ def load_curve_config(config_path=None):
         print("   Using default configuration")
         return {}, None
 
+
+def _save_grid(images, grid_path, cols=5):
+    """Save a list of images into a tiled grid (PNG)."""
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("matplotlib not installed; cannot save grid.")
+        return
+    if not images:
+        return
+    rows = (len(images) + cols - 1) // cols
+    plt.figure(figsize=(3*cols, 3*rows))
+    for i, img in enumerate(images):
+        plt.subplot(rows, cols, i + 1)
+        if img.ndim == 2:
+            plt.imshow(img, cmap="gray")
+        else:
+            plt.imshow(img)
+        plt.axis("off")
+    plt.tight_layout()
+    os.makedirs(os.path.dirname(grid_path), exist_ok=True)
+    plt.savefig(grid_path, dpi=150)
+    plt.close()
+
+
+def save_stage_examples(config_path="config/curve_config.json", samples_per_stage=5, output_dir="runs/stage_examples", seed=1234):
+    """Generate and save example curves for each training stage."""
+    config, _ = load_curve_config(config_path)
+    img_cfg = config.get('image', {})
+    h = img_cfg.get('height', 128)
+    w = img_cfg.get('width', 128)
+    training_stages = config.get('training_stages', [])
+    if not training_stages:
+        print("No training_stages found in config.")
+        return
+
+    for stage in training_stages:
+        stage_id = stage.get('stage_id', 'X')
+        stage_name = stage.get('name', f"Stage{stage_id}")
+        cg = stage.get('curve_generation', {})
+
+        stage_dir = os.path.join(output_dir, f"stage{stage_id}_{stage_name.replace(' ', '_')}")
+        # Clean old pngs (including prior sample_*.png and grid.png)
+        if os.path.exists(stage_dir):
+            for f in os.listdir(stage_dir):
+                if f.lower().endswith(".png"):
+                    try:
+                        os.remove(os.path.join(stage_dir, f))
+                    except OSError:
+                        pass
+        os.makedirs(stage_dir, exist_ok=True)
+
+        images = []
+        for i in range(samples_per_stage):
+            maker = CurveMakerFlexible(h=h, w=w, seed=seed + int(stage_id) * 100 + i, config=config)
+            img, mask, pts_all = maker.sample_curve(
+                width_range=tuple(cg.get("width_range", [2, 4])),
+                noise_prob=cg.get("noise_prob", 0.0),
+                invert_prob=cg.get("invert_prob", 0.5),
+                min_intensity=cg.get("min_intensity", 0.6),
+                max_intensity=cg.get("max_intensity", 0.8),
+                branches=cg.get("branches", False),
+                curvature_factor=cg.get("curvature_factor", 1.0),
+                allow_self_cross=cg.get("allow_self_cross", False),
+                self_cross_prob=cg.get("self_cross_prob", 0.0),
+                width_variation=cg.get("width_variation", "none"),
+                start_width=cg.get("start_width", None),
+                end_width=cg.get("end_width", None),
+                intensity_variation=cg.get("intensity_variation", "none"),
+                start_intensity=cg.get("start_intensity", None),
+                end_intensity=cg.get("end_intensity", None),
+                background_intensity=cg.get("background_intensity", None),
+            )
+            images.append(img)
+
+        grid_path = os.path.join(stage_dir, "grid.png")
+        _save_grid(images, grid_path, cols=5)
+
+    print(f"Saved grids to {output_dir} (grid.png per stage)")
+
+
+def render_stage_examples(root_dir="runs/stage_examples", cols=5):
+    """Render tiled previews of per-stage samples (saved by save_stage_examples)."""
+    try:
+        import matplotlib
+        matplotlib.use("Agg")  # Safe for headless
+        import matplotlib.pyplot as plt
+        import matplotlib.image as mpimg
+    except ImportError:
+        print("matplotlib not installed; cannot render stage examples.")
+        return
+
+    stage_dirs = sorted([d for d in os.listdir(root_dir) if os.path.isdir(os.path.join(root_dir, d))])
+    if not stage_dirs:
+        print(f"No stage directories found under {root_dir}")
+        return
+
+    for stage_dir in stage_dirs:
+        full_dir = os.path.join(root_dir, stage_dir)
+        imgs = sorted([f for f in os.listdir(full_dir)
+                       if f.lower().endswith(".png") and f.lower() != "grid.png"])
+        if not imgs:
+            continue
+        rows = (len(imgs) + cols - 1) // cols
+        plt.figure(figsize=(3*cols, 3*rows))
+        for i, fname in enumerate(imgs):
+            path = os.path.join(full_dir, fname)
+            img = mpimg.imread(path)
+            plt.subplot(rows, cols, i+1)
+            if img.ndim == 2:
+                plt.imshow(img, cmap="gray")
+            else:
+                plt.imshow(img)
+            plt.axis("off")
+            plt.title(fname, fontsize=8)
+        plt.tight_layout()
+        grid_path = os.path.join(full_dir, "grid.png")
+        plt.savefig(grid_path, dpi=150)
+        plt.close()
+        print(f"Saved grid to {grid_path}")
+
+
+def save_stage_examples(config_path="config/curve_config.json", samples_per_stage=5, output_dir="runs/stage_examples", seed=1234):
+    """Generate and save example curves for each training stage."""
+    config, _ = load_curve_config(config_path)
+    img_cfg = config.get('image', {})
+    h = img_cfg.get('height', 128)
+    w = img_cfg.get('width', 128)
+    training_stages = config.get('training_stages', [])
+    if not training_stages:
+        print("No training_stages found in config.")
+        return
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    for stage in training_stages:
+        stage_id = stage.get('stage_id', 'X')
+        stage_name = stage.get('name', f"Stage{stage_id}")
+        cg = stage.get('curve_generation', {})
+
+        stage_dir = os.path.join(output_dir, f"stage{stage_id}_{stage_name.replace(' ', '_')}")
+        os.makedirs(stage_dir, exist_ok=True)
+
+        for i in range(samples_per_stage):
+            maker = CurveMakerFlexible(h=h, w=w, seed=seed + int(stage_id) * 100 + i, config=config)
+            img, mask, pts_all = maker.sample_curve(
+                width_range=tuple(cg.get("width_range", [2, 4])),
+                noise_prob=cg.get("noise_prob", 0.0),
+                invert_prob=cg.get("invert_prob", 0.5),
+                min_intensity=cg.get("min_intensity", 0.6),
+                max_intensity=cg.get("max_intensity", 0.8),
+                branches=cg.get("branches", False),
+                curvature_factor=cg.get("curvature_factor", 1.0),
+                allow_self_cross=cg.get("allow_self_cross", False),
+                self_cross_prob=cg.get("self_cross_prob", 0.0),
+                width_variation=cg.get("width_variation", "none"),
+                start_width=cg.get("start_width", None),
+                end_width=cg.get("end_width", None),
+                intensity_variation=cg.get("intensity_variation", "none"),
+                start_intensity=cg.get("start_intensity", None),
+                end_intensity=cg.get("end_intensity", None),
+                background_intensity=cg.get("background_intensity", None),
+            )
+            out_path = os.path.join(stage_dir, f"sample_{i}.png")
+            cv2.imwrite(out_path, (img * 255).astype(np.uint8))
+
+    print(f"Saved {samples_per_stage} samples per stage to {output_dir}")
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate synthetic curves")
     parser.add_argument("--output_dir", type=str, default="generated_curves", 
@@ -402,6 +592,14 @@ if __name__ == "__main__":
                         help="Generate curves for all 3 stages")
     parser.add_argument("--config", type=str, default=None,
                         help="Path to curve configuration JSON file (default: curve_config.json)")
+    parser.add_argument("--stage_examples", type=int, default=0,
+                        help="If >0, generate this many example curves per stage to runs/stage_examples and exit")
+    parser.add_argument("--render_stage_examples", action="store_true",
+                        help="Render tiled previews from runs/stage_examples (saves grid.png in each stage dir)")
+    parser.add_argument("--render_cols", type=int, default=5,
+                        help="Columns when rendering grids")
+    parser.add_argument("--render_dir", type=str, default="runs/stage_examples",
+                        help="Directory containing stage example images")
     
     args = parser.parse_args()
     
@@ -417,33 +615,69 @@ if __name__ == "__main__":
     script_dir = os.path.dirname(os.path.abspath(__file__))
     base_output_dir = os.path.join(script_dir, args.output_dir)
     
-    # Load stage-specific configurations from config file
-    stages_config = config.get('stages', {})
+    # Handle stage examples (generate previews and optionally render grids)
+    if args.stage_examples and args.stage_examples > 0:
+        save_stage_examples(config_path=args.config or None,
+                            samples_per_stage=args.stage_examples,
+                            output_dir="runs/stage_examples",
+                            seed=args.seed or 1234)
+        if args.render_stage_examples:
+            render_stage_examples(root_dir=args.render_dir, cols=args.render_cols)
+        exit(0)
+
+    # Load stage-specific configurations from training_stages
+    training_stages = config.get('training_stages', [])
     
     def get_stage_config(stage_num):
-        """Get stage config from JSON, with fallback defaults."""
-        stage_key = str(stage_num)
-        if stage_key in stages_config:
-            stage_cfg = stages_config[stage_key].copy()
-            # Convert lists to tuples for width_range
-            if 'width_range' in stage_cfg:
-                stage_cfg['width_range'] = tuple(stage_cfg['width_range'])
-            return stage_cfg
-        else:
-            # Fallback defaults
-            defaults = {
-                1: {'name': 'Stage1_Bootstrap', 'width_range': (1, 2), 'noise_prob': 0.0, 
-                    'invert_prob': 0.5, 'min_intensity': 0.08, 'max_intensity': 0.20, 
-                    'branches': False, 'curvature_factor': 0.5},
-                2: {'name': 'Stage2_Robustness', 'width_range': (1, 3), 'noise_prob': 0.0, 
-                    'invert_prob': 0.5, 'min_intensity': 0.06, 'max_intensity': 0.18, 
-                    'branches': False, 'curvature_factor': 1.0},
-                3: {'name': 'Stage3_Realism', 'width_range': (1, 2), 'noise_prob': 0.0, 
-                    'invert_prob': 0.5, 'min_intensity': 0.05, 'max_intensity': 0.15, 
-                    'branches': True, 'curvature_factor': 1.5}
-            }
-            return defaults.get(stage_num, {})
-    
+        """Get stage config from training_stages, with fallback defaults."""
+        for stage_cfg in training_stages:
+            if int(stage_cfg.get('stage_id', -1)) == stage_num:
+                cg = stage_cfg.get('curve_generation', {}).copy()
+                # Convert lists to tuples for width_range
+                if 'width_range' in cg:
+                    cg['width_range'] = tuple(cg['width_range'])
+                return {
+                    'name': stage_cfg.get('name', f'Stage{stage_num}'),
+                    'width_range': cg.get('width_range', (2, 4)),
+                    'noise_prob': cg.get('noise_prob', 0.0),
+                    'invert_prob': cg.get('invert_prob', 0.5),
+                    'min_intensity': cg.get('min_intensity', 0.6),
+                    'max_intensity': cg.get('max_intensity', 0.8),
+                    'branches': cg.get('branches', False),
+                    'curvature_factor': cg.get('curvature_factor', 1.0),
+                    'allow_self_cross': cg.get('allow_self_cross', False),
+                    'self_cross_prob': cg.get('self_cross_prob', 0.0),
+                    'width_variation': cg.get('width_variation', 'none'),
+                    'start_width': cg.get('start_width', None),
+                    'end_width': cg.get('end_width', None),
+                    'intensity_variation': cg.get('intensity_variation', 'none'),
+                    'start_intensity': cg.get('start_intensity', None),
+                    'end_intensity': cg.get('end_intensity', None),
+                    'background_intensity': cg.get('background_intensity', None)
+                }
+        # Fallback defaults (aligned with current main config defaults)
+        defaults = {
+            1: {'name': 'Stage1_Bootstrap', 'width_range': (2, 4), 'noise_prob': 0.0, 
+                'invert_prob': 0.5, 'min_intensity': 0.6, 'max_intensity': 0.8, 'branches': False, 
+            'curvature_factor': 0.5, 'allow_self_cross': False, 'self_cross_prob': 0.0,
+            'width_variation': 'none', 'start_width': None, 'end_width': None,
+            'intensity_variation': 'none', 'start_intensity': None, 'end_intensity': None,
+            'background_intensity': None},
+            2: {'name': 'Stage2_Robustness', 'width_range': (2, 8), 'noise_prob': 0.3, 
+                'invert_prob': 0.5, 'min_intensity': 0.4, 'max_intensity': 0.7, 'branches': False, 
+            'curvature_factor': 1.0, 'allow_self_cross': False, 'self_cross_prob': 0.0,
+            'width_variation': 'none', 'start_width': None, 'end_width': None,
+            'intensity_variation': 'none', 'start_intensity': None, 'end_intensity': None,
+            'background_intensity': None},
+            3: {'name': 'Stage3_Realism', 'width_range': (1, 10), 'noise_prob': 0.5, 
+                'invert_prob': 0.5, 'min_intensity': 0.2, 'max_intensity': 0.6, 'branches': True, 
+            'curvature_factor': 1.5, 'allow_self_cross': False, 'self_cross_prob': 0.0,
+            'width_variation': 'none', 'start_width': None, 'end_width': None,
+            'intensity_variation': 'none', 'start_intensity': None, 'end_intensity': None,
+            'background_intensity': None}
+        }
+        return defaults.get(stage_num, {})
+
     stage_configs = {
         1: get_stage_config(1),
         2: get_stage_config(2),

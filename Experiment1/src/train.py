@@ -539,6 +539,8 @@ class CurveEnvUnified:
             max_intensity=self.stage_config.get('max_intensity', None),
             branches=self.stage_config['branches'],
             curvature_factor=self.stage_config['curvature_factor'],
+            allow_self_cross=self.stage_config.get('allow_self_cross', False),
+            self_cross_prob=self.stage_config.get('self_cross_prob', 0.0),
             width_variation=self.stage_config.get('width_variation', 'none'),
             start_width=self.stage_config.get('start_width', None),
             end_width=self.stage_config.get('end_width', None),
@@ -761,7 +763,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     curve_config, actual_config_path = load_curve_config(curve_config_path)
     
     # Get image dimensions from config if available
-    img_cfg = curve_config.get('image', {})
+    cfg = curve_config.get('image', {})
     img_h = img_cfg.get('height', 128)
     img_w = img_cfg.get('width', 128)
     
@@ -926,6 +928,8 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                     'max_intensity': curve_gen.get('max_intensity', None),
                     'branches': curve_gen.get('branches', False),
                     'curvature_factor': curve_gen.get('curvature_factor', 1.0),
+                    'allow_self_cross': curve_gen.get('allow_self_cross', False),
+                    'self_cross_prob': curve_gen.get('self_cross_prob', 0.0),
                     'width_variation': curve_gen.get('width_variation', 'none'),
                     'start_width': curve_gen.get('start_width', None),
                     'end_width': curve_gen.get('end_width', None),

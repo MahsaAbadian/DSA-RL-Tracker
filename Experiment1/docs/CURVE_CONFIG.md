@@ -104,28 +104,6 @@ The `curve_config.json` file contains the following sections:
 ]
 ```
 
-**Note**: The old `"stages"` format is still supported for backward compatibility (used only for curve generation parameters), but `"training_stages"` is the recommended format as it includes both curve generation and training parameters.
-
-### 7. Legacy Stage-Specific Parameters (Backward Compatibility)
-The old format is still supported:
-
-```json
-"stages": {
-  "1": {
-    "name": "Stage1_Bootstrap",
-    "width_range": [1, 2],
-    "noise_prob": 0.0,
-    "invert_prob": 0.5,
-    "min_intensity": 0.08,
-    "max_intensity": 0.20,
-    "branches": false,
-    "curvature_factor": 0.5
-  },
-  "2": { ... },
-  "3": { ... }
-}
-```
-
 ## Usage
 
 ### Default Configuration
@@ -257,48 +235,6 @@ You can add as many stages as you want! Just add more entries to the `training_s
 ```
 
 ## Examples
-
-### Very Narrow, Very Transparent Curves
-```json
-"stages": {
-  "1": {
-    "width_range": [1, 1],
-    "min_intensity": 0.03,
-    "max_intensity": 0.10,
-    "curvature_factor": 0.3
-  }
-}
-```
-
-### Wide, High Contrast Curves
-```json
-"stages": {
-  "1": {
-    "width_range": [3, 6],
-    "min_intensity": 0.7,
-    "max_intensity": 1.0,
-    "curvature_factor": 1.2
-  }
-}
-```
-
-### More Complex Curves with Many Branches
-```json
-"branches": {
-  "num_branches_range": [2, 5],
-  "start_range": [0.1, 0.9]
-}
-```
-
-### Wide-to-Narrow Tapering Curves
-```json
-"curve_generation": {
-  "width_range": [1, 4],
-  "width_variation": "wide_to_narrow",
-  "start_width": 6,
-  "end_width": 1
-}
-```
 
 ### Narrow-to-Wide Expanding Curves
 ```json
