@@ -1196,6 +1196,20 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                 else:
                     success_val = 1 if info.get('reached_end') else 0
                 ep_successes.append(success_val)
+
+                # Save image, mask, and path for the last 5 episodes of this stage
+                if ep >= stage['episodes'] - 4:
+                    sample_dir = os.path.join(run_dir, "episode_samples", stage['name'])
+                    os.makedirs(sample_dir, exist_ok=True)
+                    ep_tag = f"ep_{ep:05d}"
+                    img_u8 = np.clip(env.ep.img * 255.0, 0, 255).astype(np.uint8)
+                    mask_u8 = np.clip(env.ep.mask * 255.0, 0, 255).astype(np.uint8)
+                    path_u8 = np.clip(env.path_mask * 255.0, 0, 255).astype(np.uint8)
+                    cv2.imwrite(os.path.join(sample_dir, f"{ep_tag}_img.png"), img_u8)
+                    cv2.imwrite(os.path.join(sample_dir, f"{ep_tag}_mask.png"), mask_u8)
+                    cv2.imwrite(os.path.join(sample_dir, f"{ep_tag}_path.png"), path_u8)
+                    np.save(os.path.join(sample_dir, f"{ep_tag}_path_points.npy"),
+                            np.array(env.path_points, dtype=np.float32))
                 
                 # Update metrics
                 stage_metrics["rewards"].append(float(ep_return))
