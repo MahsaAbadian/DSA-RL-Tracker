@@ -1,0 +1,484 @@
+
+=============================================
+STARTING Stage1_Bootstrap
+Episodes: 12000 | LR: 0.0001
+Global Episode Offset: 0
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+
+[ENV] Config Updated for Stage 1:
+      Width: (2, 4), Noise: 0.0
+      Tissue: False, Strict Stop: False
+      Curvature: 0.5, Branches: False
+      Intensity: 0.60-0.80
+[Stage1_Bootstrap] Ep 100 | Avg Rew: -14.91 | Success: 0.00
+[Stage1_Bootstrap] Ep 200 | Avg Rew: -10.76 | Success: 0.00
+[Stage1_Bootstrap] Ep 300 | Avg Rew: -10.12 | Success: 0.01
+[Stage1_Bootstrap] Ep 400 | Avg Rew: -10.16 | Success: 0.00
+[Stage1_Bootstrap] Ep 500 | Avg Rew: -10.48 | Success: 0.01
+[Stage1_Bootstrap] Ep 600 | Avg Rew: -8.83 | Success: 0.01
+[Stage1_Bootstrap] Ep 700 | Avg Rew: -10.66 | Success: 0.00
+[Stage1_Bootstrap] Ep 800 | Avg Rew: -10.88 | Success: 0.00
+[Stage1_Bootstrap] Ep 900 | Avg Rew: -8.88 | Success: 0.00
+[Stage1_Bootstrap] Ep 1000 | Avg Rew: -11.40 | Success: 0.00
+[Stage1_Bootstrap] Ep 1100 | Avg Rew: -5.23 | Success: 0.09
+[Stage1_Bootstrap] Ep 1200 | Avg Rew: -2.98 | Success: 0.12
+[Stage1_Bootstrap] Ep 1300 | Avg Rew: -4.72 | Success: 0.09
+[Stage1_Bootstrap] Ep 1400 | Avg Rew: 1.13 | Success: 0.18
+[Stage1_Bootstrap] Ep 1500 | Avg Rew: -2.24 | Success: 0.14
+[Stage1_Bootstrap] Ep 1600 | Avg Rew: 2.30 | Success: 0.15
+[Stage1_Bootstrap] Ep 1700 | Avg Rew: -3.63 | Success: 0.12
+[Stage1_Bootstrap] Ep 1800 | Avg Rew: 0.37 | Success: 0.13
+[Stage1_Bootstrap] Ep 1900 | Avg Rew: 2.82 | Success: 0.20
+[Stage1_Bootstrap] Ep 2000 | Avg Rew: 2.85 | Success: 0.21
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage1_Bootstrap_ep2000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage1_Bootstrap_ep2000.pth
+[Stage1_Bootstrap] Ep 2100 | Avg Rew: 1.55 | Success: 0.16
+[Stage1_Bootstrap] Ep 2200 | Avg Rew: 2.17 | Success: 0.19
+[Stage1_Bootstrap] Ep 2300 | Avg Rew: 3.66 | Success: 0.21
+[Stage1_Bootstrap] Ep 2400 | Avg Rew: 1.65 | Success: 0.16
+[Stage1_Bootstrap] Ep 2500 | Avg Rew: 5.46 | Success: 0.25
+[Stage1_Bootstrap] Ep 2600 | Avg Rew: 1.68 | Success: 0.22
+[Stage1_Bootstrap] Ep 2700 | Avg Rew: 7.18 | Success: 0.23
+[Stage1_Bootstrap] Ep 2800 | Avg Rew: 3.03 | Success: 0.22
+[Stage1_Bootstrap] Ep 2900 | Avg Rew: 8.05 | Success: 0.26
+[Stage1_Bootstrap] Ep 3000 | Avg Rew: 6.42 | Success: 0.20
+[Stage1_Bootstrap] Ep 3100 | Avg Rew: 7.67 | Success: 0.25
+[Stage1_Bootstrap] Ep 3200 | Avg Rew: 4.39 | Success: 0.23
+[Stage1_Bootstrap] Ep 3300 | Avg Rew: 11.66 | Success: 0.28
+[Stage1_Bootstrap] Ep 3400 | Avg Rew: 17.09 | Success: 0.34
+[Stage1_Bootstrap] Ep 3500 | Avg Rew: 15.62 | Success: 0.27
+[Stage1_Bootstrap] Ep 3600 | Avg Rew: 4.55 | Success: 0.22
+[Stage1_Bootstrap] Ep 3700 | Avg Rew: 8.11 | Success: 0.23
+[Stage1_Bootstrap] Ep 3800 | Avg Rew: 13.03 | Success: 0.30
+[Stage1_Bootstrap] Ep 3900 | Avg Rew: 15.97 | Success: 0.31
+[Stage1_Bootstrap] Ep 4000 | Avg Rew: 4.36 | Success: 0.23
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage1_Bootstrap_ep4000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage1_Bootstrap_ep4000.pth
+[Stage1_Bootstrap] Ep 4100 | Avg Rew: 16.39 | Success: 0.34
+[Stage1_Bootstrap] Ep 4200 | Avg Rew: 20.32 | Success: 0.37
+[Stage1_Bootstrap] Ep 4300 | Avg Rew: 21.97 | Success: 0.43
+[Stage1_Bootstrap] Ep 4400 | Avg Rew: 19.55 | Success: 0.37
+[Stage1_Bootstrap] Ep 4500 | Avg Rew: 24.57 | Success: 0.40
+[Stage1_Bootstrap] Ep 4600 | Avg Rew: 15.88 | Success: 0.31
+[Stage1_Bootstrap] Ep 4700 | Avg Rew: 25.92 | Success: 0.43
+[Stage1_Bootstrap] Ep 4800 | Avg Rew: 18.92 | Success: 0.36
+[Stage1_Bootstrap] Ep 4900 | Avg Rew: 36.05 | Success: 0.57
+[Stage1_Bootstrap] Ep 5000 | Avg Rew: 22.07 | Success: 0.43
+[Stage1_Bootstrap] Ep 5100 | Avg Rew: 28.57 | Success: 0.47
+[Stage1_Bootstrap] Ep 5200 | Avg Rew: 32.68 | Success: 0.52
+[Stage1_Bootstrap] Ep 5300 | Avg Rew: 43.93 | Success: 0.60
+[Stage1_Bootstrap] Ep 5400 | Avg Rew: 41.24 | Success: 0.52
+[Stage1_Bootstrap] Ep 5500 | Avg Rew: 43.45 | Success: 0.59
+[Stage1_Bootstrap] Ep 5600 | Avg Rew: 44.23 | Success: 0.63
+[Stage1_Bootstrap] Ep 5700 | Avg Rew: 39.50 | Success: 0.56
+[Stage1_Bootstrap] Ep 5800 | Avg Rew: 38.69 | Success: 0.50
+[Stage1_Bootstrap] Ep 5900 | Avg Rew: 42.98 | Success: 0.60
+[Stage1_Bootstrap] Ep 6000 | Avg Rew: 42.10 | Success: 0.64
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage1_Bootstrap_ep6000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage1_Bootstrap_ep6000.pth
+[Stage1_Bootstrap] Ep 6100 | Avg Rew: 49.03 | Success: 0.66
+[Stage1_Bootstrap] Ep 6200 | Avg Rew: 43.49 | Success: 0.59
+[Stage1_Bootstrap] Ep 6300 | Avg Rew: 31.26 | Success: 0.47
+[Stage1_Bootstrap] Ep 6400 | Avg Rew: 39.96 | Success: 0.66
+[Stage1_Bootstrap] Ep 6500 | Avg Rew: 47.26 | Success: 0.73
+[Stage1_Bootstrap] Ep 6600 | Avg Rew: 43.08 | Success: 0.60
+[Stage1_Bootstrap] Ep 6700 | Avg Rew: 49.85 | Success: 0.72
+[Stage1_Bootstrap] Ep 6800 | Avg Rew: 43.22 | Success: 0.63
+[Stage1_Bootstrap] Ep 6900 | Avg Rew: 45.00 | Success: 0.66
+[Stage1_Bootstrap] Ep 7000 | Avg Rew: 50.10 | Success: 0.69
+[Stage1_Bootstrap] Ep 7100 | Avg Rew: 48.90 | Success: 0.64
+[Stage1_Bootstrap] Ep 7200 | Avg Rew: 51.11 | Success: 0.73
+[Stage1_Bootstrap] Ep 7300 | Avg Rew: 53.03 | Success: 0.75
+[Stage1_Bootstrap] Ep 7400 | Avg Rew: 53.59 | Success: 0.76
+[Stage1_Bootstrap] Ep 7500 | Avg Rew: 49.48 | Success: 0.67
+[Stage1_Bootstrap] Ep 7600 | Avg Rew: 52.58 | Success: 0.71
+[Stage1_Bootstrap] Ep 7700 | Avg Rew: 56.45 | Success: 0.79
+[Stage1_Bootstrap] Ep 7800 | Avg Rew: 59.24 | Success: 0.82
+[Stage1_Bootstrap] Ep 7900 | Avg Rew: 52.35 | Success: 0.82
+[Stage1_Bootstrap] Ep 8000 | Avg Rew: 59.60 | Success: 0.84
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage1_Bootstrap_ep8000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage1_Bootstrap_ep8000.pth
+[Stage1_Bootstrap] Ep 8100 | Avg Rew: 59.53 | Success: 0.87
+[Stage1_Bootstrap] Ep 8200 | Avg Rew: 66.94 | Success: 0.94
+[Stage1_Bootstrap] Ep 8300 | Avg Rew: 53.81 | Success: 0.77
+[Stage1_Bootstrap] Ep 8400 | Avg Rew: 54.59 | Success: 0.72
+[Stage1_Bootstrap] Ep 8500 | Avg Rew: 67.15 | Success: 0.87
+[Stage1_Bootstrap] Ep 8600 | Avg Rew: 65.26 | Success: 0.91
+[Stage1_Bootstrap] Ep 8700 | Avg Rew: 56.09 | Success: 0.80
+[Stage1_Bootstrap] Ep 8800 | Avg Rew: 63.10 | Success: 0.83
+[Stage1_Bootstrap] Ep 8900 | Avg Rew: 65.49 | Success: 0.81
+[Stage1_Bootstrap] Ep 9000 | Avg Rew: 64.87 | Success: 0.87
+[Stage1_Bootstrap] Ep 9100 | Avg Rew: 68.05 | Success: 0.89
+[Stage1_Bootstrap] Ep 9200 | Avg Rew: 63.28 | Success: 0.87
+[Stage1_Bootstrap] Ep 9300 | Avg Rew: 61.92 | Success: 0.90
+[Stage1_Bootstrap] Ep 9400 | Avg Rew: 70.13 | Success: 0.92
+[Stage1_Bootstrap] Ep 9500 | Avg Rew: 66.45 | Success: 0.93
+[Stage1_Bootstrap] Ep 9600 | Avg Rew: 68.41 | Success: 0.87
+[Stage1_Bootstrap] Ep 9700 | Avg Rew: 71.34 | Success: 0.88
+[Stage1_Bootstrap] Ep 9800 | Avg Rew: 59.91 | Success: 0.79
+[Stage1_Bootstrap] Ep 9900 | Avg Rew: 70.50 | Success: 0.90
+[Stage1_Bootstrap] Ep 10000 | Avg Rew: 70.47 | Success: 0.92
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage1_Bootstrap_ep10000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage1_Bootstrap_ep10000.pth
+[Stage1_Bootstrap] Ep 10100 | Avg Rew: 76.28 | Success: 0.94
+[Stage1_Bootstrap] Ep 10200 | Avg Rew: 71.96 | Success: 0.95
+[Stage1_Bootstrap] Ep 10300 | Avg Rew: 73.22 | Success: 0.90
+[Stage1_Bootstrap] Ep 10400 | Avg Rew: 76.03 | Success: 0.97
+[Stage1_Bootstrap] Ep 10500 | Avg Rew: 71.08 | Success: 0.91
+[Stage1_Bootstrap] Ep 10600 | Avg Rew: 69.20 | Success: 0.91
+[Stage1_Bootstrap] Ep 10700 | Avg Rew: 75.59 | Success: 0.99
+[Stage1_Bootstrap] Ep 10800 | Avg Rew: 70.24 | Success: 0.94
+[Stage1_Bootstrap] Ep 10900 | Avg Rew: 77.78 | Success: 0.96
+[Stage1_Bootstrap] Ep 11000 | Avg Rew: 75.08 | Success: 0.96
+[Stage1_Bootstrap] Ep 11100 | Avg Rew: 72.90 | Success: 0.97
+[Stage1_Bootstrap] Ep 11200 | Avg Rew: 69.23 | Success: 0.93
+[Stage1_Bootstrap] Ep 11300 | Avg Rew: 75.76 | Success: 0.99
+[Stage1_Bootstrap] Ep 11400 | Avg Rew: 76.68 | Success: 0.96
+[Stage1_Bootstrap] Ep 11500 | Avg Rew: 79.68 | Success: 0.98
+[Stage1_Bootstrap] Ep 11600 | Avg Rew: 73.01 | Success: 0.96
+[Stage1_Bootstrap] Ep 11700 | Avg Rew: 72.75 | Success: 0.96
+[Stage1_Bootstrap] Ep 11800 | Avg Rew: 75.10 | Success: 0.94
+[Stage1_Bootstrap] Ep 11900 | Avg Rew: 43.91 | Success: 0.64
+[Stage1_Bootstrap] Ep 12000 | Avg Rew: 52.42 | Success: 0.69
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage1_Bootstrap_ep12000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage1_Bootstrap_ep12000.pth
+Finished Stage1_Bootstrap. Saved model to /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/weights/model_Stage1_Bootstrap_FINAL.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/weights/actor_Stage1_Bootstrap_FINAL.pth
+
+=============================================
+STARTING Stage2_Robustness
+Episodes: 12000 | LR: 0.0001
+Global Episode Offset: 12000
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+
+[ENV] Config Updated for Stage 2:
+      Width: (1, 12), Noise: 0.0
+      Tissue: False, Strict Stop: False
+      Curvature: 1.0, Branches: False
+      Intensity: 0.40-0.70
+[Stage2_Robustness] Ep 100 | Avg Rew: 61.18 | Success: 0.71
+[Stage2_Robustness] Ep 200 | Avg Rew: 57.50 | Success: 0.67
+[Stage2_Robustness] Ep 300 | Avg Rew: 68.74 | Success: 0.79
+[Stage2_Robustness] Ep 400 | Avg Rew: 67.84 | Success: 0.75
+[Stage2_Robustness] Ep 500 | Avg Rew: 65.98 | Success: 0.79
+[Stage2_Robustness] Ep 600 | Avg Rew: 68.29 | Success: 0.81
+[Stage2_Robustness] Ep 700 | Avg Rew: 65.92 | Success: 0.78
+[Stage2_Robustness] Ep 800 | Avg Rew: 67.11 | Success: 0.80
+[Stage2_Robustness] Ep 900 | Avg Rew: 72.01 | Success: 0.78
+[Stage2_Robustness] Ep 1000 | Avg Rew: 81.79 | Success: 0.86
+[Stage2_Robustness] Ep 1100 | Avg Rew: 71.62 | Success: 0.82
+[Stage2_Robustness] Ep 1200 | Avg Rew: 76.61 | Success: 0.83
+[Stage2_Robustness] Ep 1300 | Avg Rew: 73.15 | Success: 0.86
+[Stage2_Robustness] Ep 1400 | Avg Rew: 66.75 | Success: 0.80
+[Stage2_Robustness] Ep 1500 | Avg Rew: 71.02 | Success: 0.80
+[Stage2_Robustness] Ep 1600 | Avg Rew: 75.95 | Success: 0.87
+[Stage2_Robustness] Ep 1700 | Avg Rew: 76.30 | Success: 0.83
+[Stage2_Robustness] Ep 1800 | Avg Rew: 70.12 | Success: 0.80
+[Stage2_Robustness] Ep 1900 | Avg Rew: 74.85 | Success: 0.85
+[Stage2_Robustness] Ep 2000 | Avg Rew: 76.90 | Success: 0.84
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage2_Robustness_ep2000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage2_Robustness_ep2000.pth
+[Stage2_Robustness] Ep 2100 | Avg Rew: 78.81 | Success: 0.85
+[Stage2_Robustness] Ep 2200 | Avg Rew: 74.83 | Success: 0.88
+[Stage2_Robustness] Ep 2300 | Avg Rew: 78.04 | Success: 0.87
+[Stage2_Robustness] Ep 2400 | Avg Rew: 78.51 | Success: 0.84
+[Stage2_Robustness] Ep 2500 | Avg Rew: 69.91 | Success: 0.85
+[Stage2_Robustness] Ep 2600 | Avg Rew: 80.67 | Success: 0.91
+[Stage2_Robustness] Ep 2700 | Avg Rew: 82.55 | Success: 0.91
+[Stage2_Robustness] Ep 2800 | Avg Rew: 77.59 | Success: 0.89
+[Stage2_Robustness] Ep 2900 | Avg Rew: 79.69 | Success: 0.95
+[Stage2_Robustness] Ep 3000 | Avg Rew: 80.09 | Success: 0.83
+[Stage2_Robustness] Ep 3100 | Avg Rew: 86.50 | Success: 0.86
+[Stage2_Robustness] Ep 3200 | Avg Rew: 81.70 | Success: 0.91
+[Stage2_Robustness] Ep 3300 | Avg Rew: 80.14 | Success: 0.87
+[Stage2_Robustness] Ep 3400 | Avg Rew: 73.49 | Success: 0.86
+[Stage2_Robustness] Ep 3500 | Avg Rew: 83.76 | Success: 0.94
+[Stage2_Robustness] Ep 3600 | Avg Rew: 75.13 | Success: 0.84
+[Stage2_Robustness] Ep 3700 | Avg Rew: 79.89 | Success: 0.88
+[Stage2_Robustness] Ep 3800 | Avg Rew: 83.38 | Success: 0.92
+[Stage2_Robustness] Ep 3900 | Avg Rew: 79.08 | Success: 0.89
+[Stage2_Robustness] Ep 4000 | Avg Rew: 80.29 | Success: 0.90
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage2_Robustness_ep4000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage2_Robustness_ep4000.pth
+[Stage2_Robustness] Ep 4100 | Avg Rew: 78.15 | Success: 0.84
+[Stage2_Robustness] Ep 4200 | Avg Rew: 84.34 | Success: 0.95
+[Stage2_Robustness] Ep 4300 | Avg Rew: 78.96 | Success: 0.91
+[Stage2_Robustness] Ep 4400 | Avg Rew: 81.45 | Success: 0.95
+[Stage2_Robustness] Ep 4500 | Avg Rew: 82.42 | Success: 0.89
+[Stage2_Robustness] Ep 4600 | Avg Rew: 76.07 | Success: 0.84
+[Stage2_Robustness] Ep 4700 | Avg Rew: 78.42 | Success: 0.84
+[Stage2_Robustness] Ep 4800 | Avg Rew: 84.41 | Success: 0.90
+[Stage2_Robustness] Ep 4900 | Avg Rew: 83.28 | Success: 0.89
+[Stage2_Robustness] Ep 5000 | Avg Rew: 79.49 | Success: 0.87
+[Stage2_Robustness] Ep 5100 | Avg Rew: 80.75 | Success: 0.83
+[Stage2_Robustness] Ep 5200 | Avg Rew: 80.68 | Success: 0.89
+[Stage2_Robustness] Ep 5300 | Avg Rew: 83.23 | Success: 0.86
+[Stage2_Robustness] Ep 5400 | Avg Rew: 88.99 | Success: 0.94
+[Stage2_Robustness] Ep 5500 | Avg Rew: 87.96 | Success: 0.92
+[Stage2_Robustness] Ep 5600 | Avg Rew: 86.52 | Success: 0.89
+[Stage2_Robustness] Ep 5700 | Avg Rew: 88.05 | Success: 0.95
+[Stage2_Robustness] Ep 5800 | Avg Rew: 86.20 | Success: 0.89
+[Stage2_Robustness] Ep 5900 | Avg Rew: 80.92 | Success: 0.89
+[Stage2_Robustness] Ep 6000 | Avg Rew: 86.23 | Success: 0.91
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage2_Robustness_ep6000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage2_Robustness_ep6000.pth
+[Stage2_Robustness] Ep 6100 | Avg Rew: 84.03 | Success: 0.87
+[Stage2_Robustness] Ep 6200 | Avg Rew: 87.16 | Success: 0.93
+[Stage2_Robustness] Ep 6300 | Avg Rew: 83.77 | Success: 0.91
+[Stage2_Robustness] Ep 6400 | Avg Rew: 83.85 | Success: 0.90
+[Stage2_Robustness] Ep 6500 | Avg Rew: 86.16 | Success: 0.87
+[Stage2_Robustness] Ep 6600 | Avg Rew: 84.10 | Success: 0.89
+[Stage2_Robustness] Ep 6700 | Avg Rew: 86.39 | Success: 0.90
+[Stage2_Robustness] Ep 6800 | Avg Rew: 83.64 | Success: 0.93
+[Stage2_Robustness] Ep 6900 | Avg Rew: 84.28 | Success: 0.90
+[Stage2_Robustness] Ep 7000 | Avg Rew: 86.27 | Success: 0.87
+[Stage2_Robustness] Ep 7100 | Avg Rew: 91.63 | Success: 0.95
+[Stage2_Robustness] Ep 7200 | Avg Rew: 84.76 | Success: 0.89
+[Stage2_Robustness] Ep 7300 | Avg Rew: 80.96 | Success: 0.88
+[Stage2_Robustness] Ep 7400 | Avg Rew: 79.20 | Success: 0.91
+[Stage2_Robustness] Ep 7500 | Avg Rew: 87.89 | Success: 0.96
+[Stage2_Robustness] Ep 7600 | Avg Rew: 90.84 | Success: 0.93
+[Stage2_Robustness] Ep 7700 | Avg Rew: 82.36 | Success: 0.87
+[Stage2_Robustness] Ep 7800 | Avg Rew: 83.76 | Success: 0.92
+[Stage2_Robustness] Ep 7900 | Avg Rew: 85.28 | Success: 0.96
+[Stage2_Robustness] Ep 8000 | Avg Rew: 84.59 | Success: 0.89
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage2_Robustness_ep8000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage2_Robustness_ep8000.pth
+[Stage2_Robustness] Ep 8100 | Avg Rew: 87.35 | Success: 0.96
+[Stage2_Robustness] Ep 8200 | Avg Rew: 79.23 | Success: 0.87
+[Stage2_Robustness] Ep 8300 | Avg Rew: 87.55 | Success: 0.92
+[Stage2_Robustness] Ep 8400 | Avg Rew: 85.06 | Success: 0.93
+[Stage2_Robustness] Ep 8500 | Avg Rew: 84.90 | Success: 0.90
+[Stage2_Robustness] Ep 8600 | Avg Rew: 86.69 | Success: 0.95
+[Stage2_Robustness] Ep 8700 | Avg Rew: 81.17 | Success: 0.89
+[Stage2_Robustness] Ep 8800 | Avg Rew: 84.35 | Success: 0.92
+[Stage2_Robustness] Ep 8900 | Avg Rew: 85.18 | Success: 0.93
+[Stage2_Robustness] Ep 9000 | Avg Rew: 88.10 | Success: 0.89
+[Stage2_Robustness] Ep 9100 | Avg Rew: 89.89 | Success: 0.99
+[Stage2_Robustness] Ep 9200 | Avg Rew: 84.50 | Success: 0.91
+[Stage2_Robustness] Ep 9300 | Avg Rew: 91.62 | Success: 0.95
+[Stage2_Robustness] Ep 9400 | Avg Rew: 89.72 | Success: 0.95
+[Stage2_Robustness] Ep 9500 | Avg Rew: 78.15 | Success: 0.92
+[Stage2_Robustness] Ep 9600 | Avg Rew: 88.16 | Success: 0.99
+[Stage2_Robustness] Ep 9700 | Avg Rew: 83.20 | Success: 0.93
+[Stage2_Robustness] Ep 9800 | Avg Rew: 85.17 | Success: 0.92
+[Stage2_Robustness] Ep 9900 | Avg Rew: 86.51 | Success: 0.89
+[Stage2_Robustness] Ep 10000 | Avg Rew: 95.53 | Success: 0.94
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage2_Robustness_ep10000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage2_Robustness_ep10000.pth
+[Stage2_Robustness] Ep 10100 | Avg Rew: 89.03 | Success: 0.94
+[Stage2_Robustness] Ep 10200 | Avg Rew: 87.84 | Success: 0.91
+[Stage2_Robustness] Ep 10300 | Avg Rew: 87.47 | Success: 0.91
+[Stage2_Robustness] Ep 10400 | Avg Rew: 88.28 | Success: 0.93
+[Stage2_Robustness] Ep 10500 | Avg Rew: 87.88 | Success: 0.96
+[Stage2_Robustness] Ep 10600 | Avg Rew: 88.49 | Success: 0.93
+[Stage2_Robustness] Ep 10700 | Avg Rew: 86.23 | Success: 0.93
+[Stage2_Robustness] Ep 10800 | Avg Rew: 93.54 | Success: 0.95
+[Stage2_Robustness] Ep 10900 | Avg Rew: 92.95 | Success: 0.99
+[Stage2_Robustness] Ep 11000 | Avg Rew: 86.69 | Success: 0.94
+[Stage2_Robustness] Ep 11100 | Avg Rew: 85.98 | Success: 0.93
+[Stage2_Robustness] Ep 11200 | Avg Rew: 84.59 | Success: 0.92
+[Stage2_Robustness] Ep 11300 | Avg Rew: 90.31 | Success: 0.96
+[Stage2_Robustness] Ep 11400 | Avg Rew: 85.98 | Success: 0.92
+[Stage2_Robustness] Ep 11500 | Avg Rew: 89.96 | Success: 0.90
+[Stage2_Robustness] Ep 11600 | Avg Rew: 90.13 | Success: 0.93
+[Stage2_Robustness] Ep 11700 | Avg Rew: 80.67 | Success: 0.91
+[Stage2_Robustness] Ep 11800 | Avg Rew: 84.36 | Success: 0.95
+[Stage2_Robustness] Ep 11900 | Avg Rew: 79.73 | Success: 0.94
+[Stage2_Robustness] Ep 12000 | Avg Rew: 89.19 | Success: 0.93
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage2_Robustness_ep12000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage2_Robustness_ep12000.pth
+Finished Stage2_Robustness. Saved model to /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/weights/model_Stage2_Robustness_FINAL.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/weights/actor_Stage2_Robustness_FINAL.pth
+
+=============================================
+STARTING Stage3_Realism
+Episodes: 15000 | LR: 1e-05
+Global Episode Offset: 24000
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+
+[ENV] Config Updated for Stage 3:
+      Width: (1, 10), Noise: 0.8
+      Tissue: True, Strict Stop: False
+      Curvature: 1.5, Branches: True
+      Intensity: 0.20-0.60
+[Stage3_Realism] Ep 100 | Avg Rew: 42.98 | Success: 0.41
+[Stage3_Realism] Ep 200 | Avg Rew: 35.91 | Success: 0.32
+[Stage3_Realism] Ep 300 | Avg Rew: 40.19 | Success: 0.39
+[Stage3_Realism] Ep 400 | Avg Rew: 43.57 | Success: 0.41
+[Stage3_Realism] Ep 500 | Avg Rew: 42.11 | Success: 0.41
+[Stage3_Realism] Ep 600 | Avg Rew: 35.68 | Success: 0.34
+[Stage3_Realism] Ep 700 | Avg Rew: 52.83 | Success: 0.50
+[Stage3_Realism] Ep 800 | Avg Rew: 54.22 | Success: 0.60
+[Stage3_Realism] Ep 900 | Avg Rew: 47.65 | Success: 0.47
+[Stage3_Realism] Ep 1000 | Avg Rew: 47.21 | Success: 0.49
+[Stage3_Realism] Ep 1100 | Avg Rew: 48.99 | Success: 0.52
+[Stage3_Realism] Ep 1200 | Avg Rew: 55.07 | Success: 0.54
+[Stage3_Realism] Ep 1300 | Avg Rew: 51.37 | Success: 0.48
+[Stage3_Realism] Ep 1400 | Avg Rew: 45.72 | Success: 0.44
+[Stage3_Realism] Ep 1500 | Avg Rew: 46.08 | Success: 0.45
+[Stage3_Realism] Ep 1600 | Avg Rew: 50.74 | Success: 0.46
+[Stage3_Realism] Ep 1700 | Avg Rew: 51.25 | Success: 0.53
+[Stage3_Realism] Ep 1800 | Avg Rew: 50.30 | Success: 0.45
+[Stage3_Realism] Ep 1900 | Avg Rew: 50.48 | Success: 0.48
+[Stage3_Realism] Ep 2000 | Avg Rew: 57.20 | Success: 0.54
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage3_Realism_ep2000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage3_Realism_ep2000.pth
+[Stage3_Realism] Ep 2100 | Avg Rew: 49.42 | Success: 0.51
+[Stage3_Realism] Ep 2200 | Avg Rew: 54.08 | Success: 0.54
+[Stage3_Realism] Ep 2300 | Avg Rew: 50.73 | Success: 0.44
+[Stage3_Realism] Ep 2400 | Avg Rew: 54.93 | Success: 0.57
+[Stage3_Realism] Ep 2500 | Avg Rew: 53.08 | Success: 0.52
+[Stage3_Realism] Ep 2600 | Avg Rew: 47.69 | Success: 0.42
+[Stage3_Realism] Ep 2700 | Avg Rew: 48.39 | Success: 0.47
+[Stage3_Realism] Ep 2800 | Avg Rew: 61.40 | Success: 0.59
+[Stage3_Realism] Ep 2900 | Avg Rew: 55.37 | Success: 0.52
+[Stage3_Realism] Ep 3000 | Avg Rew: 50.85 | Success: 0.44
+[Stage3_Realism] Ep 3100 | Avg Rew: 51.38 | Success: 0.50
+[Stage3_Realism] Ep 3200 | Avg Rew: 53.50 | Success: 0.51
+[Stage3_Realism] Ep 3300 | Avg Rew: 49.40 | Success: 0.41
+[Stage3_Realism] Ep 3400 | Avg Rew: 50.42 | Success: 0.46
+[Stage3_Realism] Ep 3500 | Avg Rew: 52.31 | Success: 0.50
+[Stage3_Realism] Ep 3600 | Avg Rew: 56.86 | Success: 0.58
+[Stage3_Realism] Ep 3700 | Avg Rew: 52.57 | Success: 0.52
+[Stage3_Realism] Ep 3800 | Avg Rew: 48.41 | Success: 0.48
+[Stage3_Realism] Ep 3900 | Avg Rew: 54.64 | Success: 0.58
+[Stage3_Realism] Ep 4000 | Avg Rew: 48.93 | Success: 0.51
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage3_Realism_ep4000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage3_Realism_ep4000.pth
+[Stage3_Realism] Ep 4100 | Avg Rew: 54.30 | Success: 0.51
+[Stage3_Realism] Ep 4200 | Avg Rew: 54.16 | Success: 0.57
+[Stage3_Realism] Ep 4300 | Avg Rew: 51.18 | Success: 0.42
+[Stage3_Realism] Ep 4400 | Avg Rew: 55.44 | Success: 0.49
+[Stage3_Realism] Ep 4500 | Avg Rew: 61.04 | Success: 0.57
+[Stage3_Realism] Ep 4600 | Avg Rew: 61.23 | Success: 0.55
+[Stage3_Realism] Ep 4700 | Avg Rew: 49.96 | Success: 0.45
+[Stage3_Realism] Ep 4800 | Avg Rew: 53.78 | Success: 0.47
+[Stage3_Realism] Ep 4900 | Avg Rew: 51.52 | Success: 0.49
+[Stage3_Realism] Ep 5000 | Avg Rew: 58.43 | Success: 0.56
+[Stage3_Realism] Ep 5100 | Avg Rew: 50.41 | Success: 0.53
+[Stage3_Realism] Ep 5200 | Avg Rew: 51.26 | Success: 0.46
+[Stage3_Realism] Ep 5300 | Avg Rew: 59.17 | Success: 0.58
+[Stage3_Realism] Ep 5400 | Avg Rew: 62.22 | Success: 0.53
+[Stage3_Realism] Ep 5500 | Avg Rew: 60.04 | Success: 0.60
+[Stage3_Realism] Ep 5600 | Avg Rew: 56.08 | Success: 0.54
+[Stage3_Realism] Ep 5700 | Avg Rew: 59.39 | Success: 0.56
+[Stage3_Realism] Ep 5800 | Avg Rew: 52.78 | Success: 0.47
+[Stage3_Realism] Ep 5900 | Avg Rew: 53.37 | Success: 0.53
+[Stage3_Realism] Ep 6000 | Avg Rew: 54.69 | Success: 0.47
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage3_Realism_ep6000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage3_Realism_ep6000.pth
+[Stage3_Realism] Ep 6100 | Avg Rew: 52.99 | Success: 0.42
+[Stage3_Realism] Ep 6200 | Avg Rew: 52.62 | Success: 0.47
+[Stage3_Realism] Ep 6300 | Avg Rew: 51.59 | Success: 0.46
+[Stage3_Realism] Ep 6400 | Avg Rew: 55.44 | Success: 0.52
+[Stage3_Realism] Ep 6500 | Avg Rew: 51.70 | Success: 0.48
+[Stage3_Realism] Ep 6600 | Avg Rew: 61.40 | Success: 0.45
+[Stage3_Realism] Ep 6700 | Avg Rew: 48.87 | Success: 0.43
+[Stage3_Realism] Ep 6800 | Avg Rew: 56.98 | Success: 0.47
+[Stage3_Realism] Ep 6900 | Avg Rew: 60.90 | Success: 0.61
+[Stage3_Realism] Ep 7000 | Avg Rew: 52.02 | Success: 0.58
+[Stage3_Realism] Ep 7100 | Avg Rew: 46.55 | Success: 0.41
+[Stage3_Realism] Ep 7200 | Avg Rew: 50.33 | Success: 0.52
+[Stage3_Realism] Ep 7300 | Avg Rew: 48.97 | Success: 0.49
+[Stage3_Realism] Ep 7400 | Avg Rew: 58.51 | Success: 0.50
+[Stage3_Realism] Ep 7500 | Avg Rew: 57.44 | Success: 0.52
+[Stage3_Realism] Ep 7600 | Avg Rew: 50.92 | Success: 0.51
+[Stage3_Realism] Ep 7700 | Avg Rew: 51.69 | Success: 0.46
+[Stage3_Realism] Ep 7800 | Avg Rew: 54.34 | Success: 0.53
+[Stage3_Realism] Ep 7900 | Avg Rew: 68.56 | Success: 0.60
+[Stage3_Realism] Ep 8000 | Avg Rew: 59.34 | Success: 0.58
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage3_Realism_ep8000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage3_Realism_ep8000.pth
+[Stage3_Realism] Ep 8100 | Avg Rew: 54.00 | Success: 0.48
+[Stage3_Realism] Ep 8200 | Avg Rew: 64.90 | Success: 0.58
+[Stage3_Realism] Ep 8300 | Avg Rew: 59.62 | Success: 0.61
+[Stage3_Realism] Ep 8400 | Avg Rew: 59.37 | Success: 0.51
+[Stage3_Realism] Ep 8500 | Avg Rew: 62.89 | Success: 0.57
+[Stage3_Realism] Ep 8600 | Avg Rew: 54.64 | Success: 0.51
+[Stage3_Realism] Ep 8700 | Avg Rew: 50.69 | Success: 0.52
+[Stage3_Realism] Ep 8800 | Avg Rew: 49.89 | Success: 0.48
+[Stage3_Realism] Ep 8900 | Avg Rew: 58.23 | Success: 0.60
+[Stage3_Realism] Ep 9000 | Avg Rew: 61.11 | Success: 0.58
+[Stage3_Realism] Ep 9100 | Avg Rew: 53.45 | Success: 0.52
+[Stage3_Realism] Ep 9200 | Avg Rew: 57.22 | Success: 0.53
+[Stage3_Realism] Ep 9300 | Avg Rew: 58.06 | Success: 0.52
+[Stage3_Realism] Ep 9400 | Avg Rew: 55.44 | Success: 0.52
+[Stage3_Realism] Ep 9500 | Avg Rew: 62.08 | Success: 0.62
+[Stage3_Realism] Ep 9600 | Avg Rew: 60.17 | Success: 0.50
+[Stage3_Realism] Ep 9700 | Avg Rew: 62.12 | Success: 0.58
+[Stage3_Realism] Ep 9800 | Avg Rew: 57.61 | Success: 0.54
+[Stage3_Realism] Ep 9900 | Avg Rew: 59.13 | Success: 0.59
+[Stage3_Realism] Ep 10000 | Avg Rew: 53.00 | Success: 0.50
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage3_Realism_ep10000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage3_Realism_ep10000.pth
+[Stage3_Realism] Ep 10100 | Avg Rew: 56.14 | Success: 0.57
+[Stage3_Realism] Ep 10200 | Avg Rew: 53.93 | Success: 0.56
+[Stage3_Realism] Ep 10300 | Avg Rew: 52.99 | Success: 0.50
+[Stage3_Realism] Ep 10400 | Avg Rew: 61.60 | Success: 0.59
+[Stage3_Realism] Ep 10500 | Avg Rew: 56.59 | Success: 0.52
+[Stage3_Realism] Ep 10600 | Avg Rew: 63.16 | Success: 0.60
+[Stage3_Realism] Ep 10700 | Avg Rew: 51.71 | Success: 0.51
+[Stage3_Realism] Ep 10800 | Avg Rew: 58.68 | Success: 0.53
+[Stage3_Realism] Ep 10900 | Avg Rew: 52.51 | Success: 0.49
+[Stage3_Realism] Ep 11000 | Avg Rew: 58.47 | Success: 0.62
+[Stage3_Realism] Ep 11100 | Avg Rew: 57.42 | Success: 0.60
+[Stage3_Realism] Ep 11200 | Avg Rew: 56.74 | Success: 0.50
+[Stage3_Realism] Ep 11300 | Avg Rew: 62.63 | Success: 0.57
+[Stage3_Realism] Ep 11400 | Avg Rew: 56.21 | Success: 0.58
+[Stage3_Realism] Ep 11500 | Avg Rew: 55.87 | Success: 0.52
+[Stage3_Realism] Ep 11600 | Avg Rew: 52.41 | Success: 0.48
+[Stage3_Realism] Ep 11700 | Avg Rew: 56.42 | Success: 0.52
+[Stage3_Realism] Ep 11800 | Avg Rew: 59.65 | Success: 0.62
+[Stage3_Realism] Ep 11900 | Avg Rew: 62.21 | Success: 0.61
+[Stage3_Realism] Ep 12000 | Avg Rew: 55.21 | Success: 0.55
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage3_Realism_ep12000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage3_Realism_ep12000.pth
+[Stage3_Realism] Ep 12100 | Avg Rew: 56.02 | Success: 0.52
+[Stage3_Realism] Ep 12200 | Avg Rew: 55.14 | Success: 0.50
+[Stage3_Realism] Ep 12300 | Avg Rew: 61.70 | Success: 0.60
+[Stage3_Realism] Ep 12400 | Avg Rew: 62.13 | Success: 0.62
+[Stage3_Realism] Ep 12500 | Avg Rew: 59.92 | Success: 0.53
+[Stage3_Realism] Ep 12600 | Avg Rew: 58.21 | Success: 0.55
+[Stage3_Realism] Ep 12700 | Avg Rew: 56.05 | Success: 0.51
+[Stage3_Realism] Ep 12800 | Avg Rew: 57.90 | Success: 0.56
+[Stage3_Realism] Ep 12900 | Avg Rew: 60.38 | Success: 0.60
+[Stage3_Realism] Ep 13000 | Avg Rew: 57.69 | Success: 0.54
+[Stage3_Realism] Ep 13100 | Avg Rew: 59.12 | Success: 0.56
+[Stage3_Realism] Ep 13200 | Avg Rew: 51.76 | Success: 0.43
+[Stage3_Realism] Ep 13300 | Avg Rew: 55.65 | Success: 0.55
+[Stage3_Realism] Ep 13400 | Avg Rew: 59.80 | Success: 0.57
+[Stage3_Realism] Ep 13500 | Avg Rew: 52.12 | Success: 0.48
+[Stage3_Realism] Ep 13600 | Avg Rew: 58.94 | Success: 0.53
+[Stage3_Realism] Ep 13700 | Avg Rew: 54.57 | Success: 0.44
+[Stage3_Realism] Ep 13800 | Avg Rew: 60.39 | Success: 0.56
+[Stage3_Realism] Ep 13900 | Avg Rew: 56.44 | Success: 0.50
+[Stage3_Realism] Ep 14000 | Avg Rew: 65.25 | Success: 0.62
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/ckpt_Stage3_Realism_ep14000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints/actor_Stage3_Realism_ep14000.pth
+[Stage3_Realism] Ep 14100 | Avg Rew: 56.96 | Success: 0.53
+[Stage3_Realism] Ep 14200 | Avg Rew: 55.26 | Success: 0.52
+[Stage3_Realism] Ep 14300 | Avg Rew: 62.73 | Success: 0.63
+[Stage3_Realism] Ep 14400 | Avg Rew: 55.49 | Success: 0.49
+[Stage3_Realism] Ep 14500 | Avg Rew: 55.27 | Success: 0.50
+[Stage3_Realism] Ep 14600 | Avg Rew: 55.38 | Success: 0.50
+[Stage3_Realism] Ep 14700 | Avg Rew: 55.59 | Success: 0.54
+[Stage3_Realism] Ep 14800 | Avg Rew: 56.58 | Success: 0.52
+[Stage3_Realism] Ep 14900 | Avg Rew: 52.43 | Success: 0.49
+[Stage3_Realism] Ep 15000 | Avg Rew: 59.46 | Success: 0.57
+Finished Stage3_Realism. Saved model to /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/weights/model_Stage3_Realism_FINAL.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/weights/actor_Stage3_Realism_FINAL.pth
+
+=== TRAINING COMPLETE ===
+Training Start Time: 2026-01-02 00:41:27
+Training End Time: 2026-01-02 02:04:02
+Total Training Time: 1h 22m 34s (4954.6 seconds)
+All results saved to: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127
+  - Checkpoints: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/checkpoints
+  - Final weights: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/weights
+  - Training log: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/logs/training.log
+  - Configuration: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/config.json
+  - Metrics: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment1/runs/20260102_004127/metrics.json

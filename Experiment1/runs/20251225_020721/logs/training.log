@@ -1,0 +1,14 @@
+
+=============================================
+STARTING Stage1_Bootstrap
+Episodes: 200 | LR: 0.0001
+Global Episode Offset: 0
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+
+[ENV] Config Updated for Stage 1:
+      Width: (1, 2), Noise: 0.0
+      Tissue: False, Strict Stop: False
+      Curvature: 0.5, Branches: False
+      Intensity: 0.08-0.20
+[Stage1_Bootstrap] Ep 100 | Avg Rew: -13.77 | Success: 0.00
