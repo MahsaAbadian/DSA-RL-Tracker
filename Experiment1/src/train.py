@@ -157,7 +157,8 @@ class CurveMakerFlexible:
         x = self.rng.integers(margin, self.w - margin)
         return np.array([y, x], dtype=np.float32)
 
-    def _generate_bezier_points(self, p0=None, n_samples=None, curvature_factor=1.0):
+    def _generate_bezier_points(self, p0=None, n_samples=None, curvature_factor=1.0,
+                                allow_self_cross=False, self_cross_prob=0.0):
         """Generates a list of (y,x) points forming a smooth bezier curve."""
         n_samples = n_samples if n_samples is not None else self.bezier_n_samples
         
@@ -176,8 +177,17 @@ class CurveMakerFlexible:
         # Control points - curvature_factor affects how much control points deviate
         center = (p0 + p3) / 2.0
         spread = np.array([self.h, self.w], dtype=np.float32) * self.bezier_spread * curvature_factor
-        p1 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
-        p2 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
+
+        if allow_self_cross and self.rng.random() < self_cross_prob:
+            # Force control points to opposite sides of the center to encourage a self-cross
+            dir_vec = self.rng.normal(0, 1, 2)
+            norm = np.linalg.norm(dir_vec) + 1e-8
+            dir_unit = dir_vec / norm
+            p1 = center + dir_unit * spread * self.bezier_factor
+            p2 = center - dir_unit * spread * self.bezier_factor
+        else:
+            p1 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
+            p2 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
         
         ts = np.linspace(0, 1, n_samples, dtype=np.float32)
         pts = np.stack([_cubic_bezier(p0, p1, p2, p3, t) for t in ts], axis=0)
@@ -275,7 +285,9 @@ class CurveMakerFlexible:
                      intensity_variation="none",
                      start_intensity=None,
                      end_intensity=None,
-                     background_intensity=None):       
+                     background_intensity=None,
+                     allow_self_cross=False,
+                     self_cross_prob=0.0):       
         """Generate a curve with specified parameters."""
         bg_intensity = background_intensity if background_intensity is not None else 0.0
         img = np.full((self.h, self.w), bg_intensity, dtype=np.float32)
@@ -326,7 +338,11 @@ class CurveMakerFlexible:
         else:
             start_i = end_i = intensity
 
-        pts_main = self._generate_bezier_points(curvature_factor=curvature_factor)
+        pts_main = self._generate_bezier_points(
+            curvature_factor=curvature_factor,
+            allow_self_cross=allow_self_cross,
+            self_cross_prob=self_cross_prob
+        )
         self._draw_aa_curve(img, pts_main, thickness, intensity, width_variation, start_w, end_w,
                            intensity_variation, start_i, end_i)
         self._draw_aa_curve(mask, pts_main, thickness, 1.0, width_variation, start_w, end_w)
