@@ -1057,6 +1057,11 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     print(f"Weights: {weights_dir}")
     print(f"Logs: {log_file}")
     print(f"Training Start Time: {training_start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    
+    # Anti-forgetting: Initialize parameters (defined early for print statement)
+    anti_forgetting_prob = 0.15  # 15% chance to sample from previous stages
+    eval_previous_every = 500  # Evaluate on previous stages every N episodes
+    
     print(f"\n🛡️  Anti-Forgetting Mechanisms Enabled:")
     print(f"   - Mixed Curriculum: {anti_forgetting_prob*100:.0f}% chance to sample from previous stages")
     print(f"   - Periodic Evaluation: Every {eval_previous_every} episodes on previous stages")
@@ -1106,8 +1111,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     
     # Anti-forgetting: Track all previous stage configs for mixed curriculum training
     previous_stages = []  # List of (stage_config, stage_name) tuples
-    anti_forgetting_prob = 0.15  # 15% chance to sample from previous stages
-    eval_previous_every = 500  # Evaluate on previous stages every N episodes
+    # Note: anti_forgetting_prob and eval_previous_every are defined earlier (before print statement)
     
     def evaluate_on_stage(model, stage_config, stage_name, num_episodes=10, base_seed=42):
         """Evaluate model performance on a previous stage to detect forgetting."""
