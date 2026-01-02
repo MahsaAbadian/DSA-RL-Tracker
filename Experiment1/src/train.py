@@ -619,6 +619,10 @@ class CurveEnvUnified:
         
         self.L_prev = get_distance_to_poly(self.agent, self.ep.gt_poly)
         
+        # Track if we're at the very beginning (for bootstrap rewards)
+        self.is_at_start = (self.prev_idx == 0)
+        self.initial_steps = 0  # Count first few steps for bootstrap rewards
+        
         # Increment episode counter for next reset
         self.current_episode += 1
         
@@ -669,6 +673,36 @@ class CurveEnvUnified:
         best_idx = nearest_gt_index(self.agent, self.ep.gt_poly)
         progress_delta = best_idx - self.prev_idx
         
+        # Track initial steps for bootstrap rewards
+        if self.is_at_start:
+            self.initial_steps += 1
+            # Stop tracking after 5 steps or when we've made progress
+            if self.initial_steps >= 5 or progress_delta > 0:
+                self.is_at_start = False
+            
+            # Direction hint reward: encourage moving in the direction of the curve
+            if len(self.ep.gt_poly) > 1:
+                # Get direction vector from start point
+                start_pt = self.ep.gt_poly[0]
+                # Look ahead a few points to get curve direction
+                lookahead_idx = min(3, len(self.ep.gt_poly) - 1)
+                direction_pt = self.ep.gt_poly[lookahead_idx]
+                curve_dir = np.array([direction_pt[0] - start_pt[0], direction_pt[1] - start_pt[1]])
+                curve_dir_norm = np.linalg.norm(curve_dir)
+                
+                if curve_dir_norm > 1e-6:
+                    curve_dir = curve_dir / curve_dir_norm
+                    action_dir = np.array([dy, dx])
+                    action_dir_norm = np.linalg.norm(action_dir)
+                    
+                    if action_dir_norm > 1e-6:
+                        action_dir = action_dir / action_dir_norm
+                        # Cosine similarity: 1.0 = same direction, -1.0 = opposite
+                        direction_alignment = np.dot(curve_dir, action_dir)
+                        # Reward alignment with curve direction (stronger for first steps)
+                        direction_bonus = direction_alignment * (3.0 - self.initial_steps * 0.4) * 0.3
+                        r += direction_bonus
+        
         sigma = 1.5 if self.stage_config['stage_id'] == 1 else 1.0
         precision_score = np.exp(-(L_t**2) / (2 * sigma**2))
         
@@ -682,6 +716,23 @@ class CurveEnvUnified:
             r += precision_score * 2.0
         elif progress_delta <= 0:
             r -= 0.1
+        
+        # Bootstrap reward for initial steps when starting from the beginning
+        # Problem: At the start, all history positions are the same, action history is empty,
+        #          so the model must infer direction from the image alone (very hard!)
+        # Solution: Provide stronger rewards and direction hints for the first few steps
+        #           to guide the model toward the correct initial direction
+        if self.is_at_start and self.initial_steps <= 5:
+            bootstrap_multiplier = max(1.0, 3.0 - self.initial_steps * 0.4)  # 3.0, 2.6, 2.2, 1.8, 1.4, 1.0
+            if progress_delta > 0:
+                # Strong reward for making progress from the start
+                r += precision_score * bootstrap_multiplier * 1.5
+            elif L_t < self.L_prev:
+                # Reward for getting closer to the curve (even without progress yet)
+                r += abs(r) * bootstrap_multiplier * 0.5
+            # Less penalty for wrong moves at the start (encourages exploration)
+            if progress_delta < 0:
+                r = max(r, -0.5)  # Cap penalty at -0.5 instead of -0.1
 
         if self.stage_config['stage_id'] >= 2:
             lookahead_idx = min(best_idx + 4, len(self.ep.gt_poly) - 1)
@@ -1006,6 +1057,10 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     print(f"Weights: {weights_dir}")
     print(f"Logs: {log_file}")
     print(f"Training Start Time: {training_start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"\n🛡️  Anti-Forgetting Mechanisms Enabled:")
+    print(f"   - Mixed Curriculum: {anti_forgetting_prob*100:.0f}% chance to sample from previous stages")
+    print(f"   - Periodic Evaluation: Every {eval_previous_every} episodes on previous stages")
+    print(f"   - This prevents catastrophic forgetting during curriculum learning")
     
     # Redirect stdout to both console and log file
     class TeeOutput:
@@ -1048,6 +1103,59 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
 
     # Track global episode counter across stages for seed calculation
     global_episode_offset = 0
+    
+    # Anti-forgetting: Track all previous stage configs for mixed curriculum training
+    previous_stages = []  # List of (stage_config, stage_name) tuples
+    anti_forgetting_prob = 0.15  # 15% chance to sample from previous stages
+    eval_previous_every = 500  # Evaluate on previous stages every N episodes
+    
+    def evaluate_on_stage(model, stage_config, stage_name, num_episodes=10, base_seed=42):
+        """Evaluate model performance on a previous stage to detect forgetting."""
+        eval_env = CurveEnvUnified(h=img_h, w=img_w, base_seed=base_seed, 
+                                   stage_id=stage_config['stage_id'], curve_config=curve_config)
+        eval_env.set_stage(stage_config)
+        
+        successes = []
+        returns = []
+        
+        for eval_ep in range(num_episodes):
+            obs_dict = eval_env.reset(episode_number=base_seed + eval_ep + 100000)  # Offset seed
+            done = False
+            ahist = []
+            ep_return = 0.0
+            
+            while not done:
+                obs_a = torch.tensor(obs_dict['actor'][None], dtype=torch.float32, device=DEVICE)
+                obs_c = torch.tensor(obs_dict['critic_gt'][None], dtype=torch.float32, device=DEVICE)
+                A = fixed_window_history(ahist, K, N_ACTIONS)[None, ...]
+                A_t = torch.tensor(A, dtype=torch.float32, device=DEVICE)
+                
+                with torch.no_grad():
+                    logits, _, _, _ = model(obs_a, obs_c, A_t)
+                    logits = torch.clamp(logits, -20, 20)
+                    dist = Categorical(logits=logits)
+                    action = dist.sample().item()
+                
+                next_obs, r, done, info = eval_env.step(action)
+                ep_return += r
+                
+                a_onehot = np.zeros(N_ACTIONS)
+                a_onehot[action] = 1.0
+                ahist.append(a_onehot)
+                obs_dict = next_obs
+            
+            returns.append(ep_return)
+            if stage_config['strict_stop']:
+                success = 1 if info.get('stopped_correctly') else 0
+            else:
+                success = 1 if info.get('reached_end') else 0
+            successes.append(success)
+        
+        return {
+            'avg_return': float(np.mean(returns)),
+            'success_rate': float(np.mean(successes)),
+            'stage_name': stage_name
+        }
 
     for stage_idx, stage in enumerate(stages):
         # Skip completed stages if resuming
@@ -1055,6 +1163,8 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
             print(f"\n⏭️  Skipping {stage['name']} (already completed)")
             # Update global episode offset
             global_episode_offset += stage['episodes']
+            # Anti-forgetting: Add completed stages to previous_stages when resuming
+            previous_stages.append((stage['config'].copy(), stage['name']))
             continue
         
         # Check if we need to resume mid-stage
@@ -1130,7 +1240,25 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         for ep in range(start_episode, stage['episodes'] + 1):
             # Calculate global episode number for seed
             global_episode = global_episode_offset + ep
-            obs_dict = env.reset(episode_number=global_episode)
+            
+            # Anti-forgetting: Periodically sample from previous stages (mixed curriculum)
+            use_previous_stage = False
+            if previous_stages and np.random.rand() < anti_forgetting_prob:
+                # Sample from a random previous stage
+                prev_idx = np.random.randint(0, len(previous_stages))
+                prev_stage_config, prev_stage_name = previous_stages[prev_idx]
+                env.set_stage(prev_stage_config)
+                use_previous_stage = True
+                eval_seed_offset = 50000  # Offset to avoid seed collision
+                if ep % 100 == 0:  # Only print occasionally to avoid spam
+                    print(f"   🔄 Anti-forgetting: Training on previous stage '{prev_stage_name}'")
+            else:
+                # Use current stage
+                env.set_stage(stage['config'])
+                use_previous_stage = False
+                eval_seed_offset = 0
+            
+            obs_dict = env.reset(episode_number=global_episode + eval_seed_offset)
             done = False
             
             ahist = []
@@ -1167,6 +1295,10 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                 a_onehot = np.zeros(N_ACTIONS); a_onehot[action] = 1.0
                 ahist.append(a_onehot)
                 obs_dict = next_obs
+            
+            # Reset to current stage if we used a previous stage
+            if use_previous_stage:
+                env.set_stage(stage['config'])
 
             if len(ep_traj["rew"]) > 2:
                 rews = np.array(ep_traj["rew"])
@@ -1222,12 +1354,33 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
             if ep % 100 == 0:
                 avg_r = np.mean(ep_returns[-100:])
                 succ_rate = np.mean(ep_successes[-100:]) if ep_successes else 0.0
-                print(f"[{stage['name']}] Ep {ep} | Avg Rew: {avg_r:.2f} | Success: {succ_rate:.2f}")
+                prev_stage_info = f" [Prev: {sum(1 for _ in previous_stages)}]" if previous_stages else ""
+                print(f"[{stage['name']}] Ep {ep} | Avg Rew: {avg_r:.2f} | Success: {succ_rate:.2f}{prev_stage_info}")
                 
                 # Save metrics
                 stage_metrics["episodes"].append(ep)
                 stage_metrics["avg_rewards"].append(float(avg_r))
                 stage_metrics["success_rates"].append(float(succ_rate))
+                
+                # Anti-forgetting: Evaluate on previous stages periodically
+                if previous_stages and ep % eval_previous_every == 0:
+                    print(f"\n🔍 Evaluating on {len(previous_stages)} previous stage(s) to check for forgetting...")
+                    eval_results = []
+                    for prev_stage_config, prev_stage_name in previous_stages:
+                        eval_result = evaluate_on_stage(model, prev_stage_config, prev_stage_name, 
+                                                       num_episodes=10, base_seed=base_seed)
+                        eval_results.append(eval_result)
+                        print(f"   {prev_stage_name}: Success={eval_result['success_rate']:.2f}, "
+                              f"Return={eval_result['avg_return']:.2f}")
+                    
+                    # Store evaluation results in metrics
+                    if "previous_stage_evaluations" not in stage_metrics:
+                        stage_metrics["previous_stage_evaluations"] = []
+                    stage_metrics["previous_stage_evaluations"].append({
+                        "episode": ep,
+                        "evaluations": eval_results
+                    })
+                    print()  # Empty line for readability
                 
                 # Save metrics periodically
                 if ep % 1000 == 0:
@@ -1259,6 +1412,13 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         actor_weights = {k: v for k, v in model.state_dict().items() if k.startswith('actor_')}
         actor_final_path = os.path.join(weights_dir, f"actor_{stage['name']}_FINAL.pth")
         torch.save(actor_weights, actor_final_path)
+        
+        # Anti-forgetting: Add completed stage to previous_stages for mixed curriculum training
+        previous_stages.append((stage['config'].copy(), stage['name']))
+        print(f"✅ Added {stage['name']} to previous stages pool (total: {len(previous_stages)} stages)")
+        
+        # Update global episode offset for next stage
+        global_episode_offset += stage['episodes']
         print(f"Actor-only weights saved: {actor_final_path}")
         
         # Add final metrics
