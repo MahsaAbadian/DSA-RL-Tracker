@@ -763,7 +763,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     curve_config, actual_config_path = load_curve_config(curve_config_path)
     
     # Get image dimensions from config if available
-    cfg = curve_config.get('image', {})
+    img_cfg = curve_config.get('image', {})
     img_h = img_cfg.get('height', 128)
     img_w = img_cfg.get('width', 128)
     
