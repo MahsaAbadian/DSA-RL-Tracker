@@ -673,29 +673,6 @@ class CurveEnvUnified:
             # Stop tracking after 5 steps or when we've made progress
             if self.initial_steps >= 5 or progress_delta > 0:
                 self.is_at_start = False
-            
-            # Direction hint reward: encourage moving in the direction of the curve
-            if len(self.ep.gt_poly) > 1:
-                # Get direction vector from start point
-                start_pt = self.ep.gt_poly[0]
-                # Look ahead a few points to get curve direction
-                lookahead_idx = min(3, len(self.ep.gt_poly) - 1)
-                direction_pt = self.ep.gt_poly[lookahead_idx]
-                curve_dir = np.array([direction_pt[0] - start_pt[0], direction_pt[1] - start_pt[1]])
-                curve_dir_norm = np.linalg.norm(curve_dir)
-                
-                if curve_dir_norm > 1e-6:
-                    curve_dir = curve_dir / curve_dir_norm
-                    action_dir = np.array([dy, dx])
-                    action_dir_norm = np.linalg.norm(action_dir)
-                    
-                    if action_dir_norm > 1e-6:
-                        action_dir = action_dir / action_dir_norm
-                        # Cosine similarity: 1.0 = same direction, -1.0 = opposite
-                        direction_alignment = np.dot(curve_dir, action_dir)
-                        # Reward alignment with curve direction (stronger for first steps)
-                        direction_bonus = direction_alignment * (3.0 - self.initial_steps * 0.4) * 0.3
-                        r += direction_bonus
         
         sigma = 1.5 if self.stage_config['stage_id'] == 1 else 1.0
         precision_score = np.exp(-(L_t**2) / (2 * sigma**2))
@@ -705,6 +682,29 @@ class CurveEnvUnified:
         else:
             r = -np.log(EPSILON + dist_diff)
         r = float(np.clip(r, -2.0, 2.0))
+        
+        # Direction hint reward: encourage moving in the direction of the curve (after r is initialized)
+        if self.is_at_start and self.initial_steps <= 5 and len(self.ep.gt_poly) > 1:
+            # Get direction vector from start point
+            start_pt = self.ep.gt_poly[0]
+            # Look ahead a few points to get curve direction
+            lookahead_idx = min(3, len(self.ep.gt_poly) - 1)
+            direction_pt = self.ep.gt_poly[lookahead_idx]
+            curve_dir = np.array([direction_pt[0] - start_pt[0], direction_pt[1] - start_pt[1]])
+            curve_dir_norm = np.linalg.norm(curve_dir)
+            
+            if curve_dir_norm > 1e-6:
+                curve_dir = curve_dir / curve_dir_norm
+                action_dir = np.array([dy, dx])
+                action_dir_norm = np.linalg.norm(action_dir)
+                
+                if action_dir_norm > 1e-6:
+                    action_dir = action_dir / action_dir_norm
+                    # Cosine similarity: 1.0 = same direction, -1.0 = opposite
+                    direction_alignment = np.dot(curve_dir, action_dir)
+                    # Reward alignment with curve direction (stronger for first steps)
+                    direction_bonus = direction_alignment * (3.0 - self.initial_steps * 0.4) * 0.3
+                    r += direction_bonus
 
         if progress_delta > 0:
             r += precision_score * 2.0
