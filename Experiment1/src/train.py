@@ -838,50 +838,103 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
             raise FileNotFoundError(f"Checkpoint not found: {resume_path}")
         
         # Extract run directory from checkpoint path
+        # Handle both checkpoints/ and weights/ directories
         checkpoint_dir = os.path.dirname(resume_path)
-        run_dir = os.path.dirname(checkpoint_dir)
+        if os.path.basename(checkpoint_dir) == "checkpoints":
+            run_dir = os.path.dirname(checkpoint_dir)
+        elif os.path.basename(checkpoint_dir) == "weights":
+            run_dir = os.path.dirname(checkpoint_dir)
+        else:
+            # Fallback: assume checkpoint is in run_dir/checkpoints/
+            run_dir = os.path.dirname(checkpoint_dir)
         
-        # Load config to determine stage and seed
+        # Load config to determine stage and seed (optional - may not exist in older runs)
         config_file = os.path.join(run_dir, "config.json")
-        if not os.path.exists(config_file):
-            raise FileNotFoundError(f"Config file not found in run directory: {config_file}")
+        saved_config = {}
+        if os.path.exists(config_file):
+            with open(config_file, 'r') as f:
+                saved_config = json.load(f)
+        else:
+            print(f"⚠️  Config file not found: {config_file}")
+            print("   Using defaults and curve_config.json from run directory")
         
-        with open(config_file, 'r') as f:
-            saved_config = json.load(f)
-        
-        # Get base_seed from config
+        # Get base_seed from config or use default
         base_seed = saved_config.get('base_seed', BASE_SEED)
         
-        # Load curve config path from saved config if available
+        # Load curve config - try run directory first, then saved path
+        # Override the curve_config loaded earlier with the one from the run directory
         saved_curve_config_path = saved_config.get('curve_config_path', None)
-        if saved_curve_config_path:
-            # Try to load from saved path, or from run directory
-            saved_config_abs = os.path.join(run_dir, "curve_config.json")
-            if os.path.exists(saved_config_abs):
-                curve_config, actual_config_path = load_curve_config(saved_config_abs)
-            else:
-                curve_config, actual_config_path = load_curve_config(saved_curve_config_path)
-            img_cfg = curve_config.get('image', {})
-            img_h = img_cfg.get('height', 128)
-            img_w = img_cfg.get('width', 128)
+        curve_config_in_run = os.path.join(run_dir, "curve_config.json")
+        
+        if os.path.exists(curve_config_in_run):
+            curve_config, actual_config_path = load_curve_config(curve_config_in_run)
+            print(f"✓ Loaded curve config from run directory: {actual_config_path}")
+        elif saved_curve_config_path and os.path.exists(saved_curve_config_path):
+            curve_config, actual_config_path = load_curve_config(saved_curve_config_path)
+            print(f"✓ Loaded curve config from saved path: {actual_config_path}")
+        else:
+            print(f"⚠️  Using curve config from command line/default")
+            # Keep the curve_config loaded earlier
+        
+        img_cfg = curve_config.get('image', {})
+        img_h = img_cfg.get('height', 128)
+        img_w = img_cfg.get('width', 128)
         
         # Extract stage name and episode from checkpoint filename
         checkpoint_name = os.path.basename(resume_path)
+        resume_episode = None
+        
+        # Handle both "ckpt_StageName_epXXXX.pth" and "model_StageName_FINAL.pth" formats
         if "_ep" in checkpoint_name:
             parts = checkpoint_name.replace("ckpt_", "").replace(".pth", "").split("_ep")
             stage_name = parts[0]
             resume_episode = int(parts[1])
-            
-            stage_names = ['Stage1_Bootstrap', 'Stage2_Robustness', 'Stage3_Realism']
-            if stage_name in stage_names:
-                resume_stage_idx = stage_names.index(stage_name)
+        elif "FINAL" in checkpoint_name:
+            # Extract stage name from FINAL checkpoint (e.g., "model_Stage2_Curvature_FINAL.pth")
+            parts = checkpoint_name.replace("model_", "").replace("_FINAL.pth", "").split("_")
+            # Reconstruct stage name (e.g., "Stage2_Curvature")
+            if len(parts) >= 2:
+                stage_name = "_".join(parts)  # "Stage2_Curvature"
+            else:
+                stage_name = parts[0] if parts else "Unknown"
+            # For FINAL checkpoints, resume from the next stage (episode 0 means start of next stage)
+            resume_episode = None  # Will start from beginning of next stage
+        
+        # Extract stage number from stage name (e.g., "Stage2_Curvature" -> stage_num=2)
+        # Stage numbers in names are 1-indexed, but resume_stage_idx is 0-indexed
+        import re
+        stage_num_match = re.search(r'Stage(\d+)_', stage_name)
+        if stage_num_match:
+            stage_num = int(stage_num_match.group(1))  # 1-indexed (Stage2 -> 2)
+            if "FINAL" in checkpoint_name:
+                # FINAL checkpoint means this stage is complete, so resume from NEXT stage
+                resume_stage_idx = stage_num  # Stage2_FINAL -> resume from Stage3 (index 2)
+                resume_episode = None  # Start from beginning of next stage
+            else:
+                # Regular checkpoint: resume from same stage, next episode
+                resume_stage_idx = stage_num - 1  # Stage2 -> index 1 (0-indexed)
+        else:
+            # Fallback: try to map known stage names
+            stage_name_mapping = {
+                'Stage1_Bootstrap': 0, 'Stage1_Foundation': 0,
+                'Stage2_Robustness': 1, 'Stage2_Curvature': 1,
+                'Stage3_Realism': 2, 'Stage3_ThinPaths': 2
+            }
+            if stage_name in stage_name_mapping:
+                resume_stage_idx = stage_name_mapping[stage_name]
+                if "FINAL" in checkpoint_name:
+                    resume_stage_idx += 1  # Move to next stage
+                    resume_episode = None
         
         print(f"\n🔄 RESUMING TRAINING FROM CHECKPOINT")
         print(f"   Checkpoint: {resume_path}")
         print(f"   Run Directory: {run_dir}")
         print(f"   Base Seed: {base_seed}")
         if resume_stage_idx is not None:
-            print(f"   Resuming from: {stage_names[resume_stage_idx]}, Episode {resume_episode}")
+            if resume_episode is not None:
+                print(f"   Resuming from Stage {resume_stage_idx + 1}, Episode {resume_episode}")
+            else:
+                print(f"   Resuming from Stage {resume_stage_idx + 1} (start of stage)")
         print()
     else:
         # Create new timestamped run directory
