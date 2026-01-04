@@ -96,7 +96,7 @@ class SharedBackboneActorCritic(nn.Module):
         movement_logits = self.actor_head(joint_features)  # (B, 8)
         
         # Stop head: Binary classification
-        stop_logit = self.stop_head(joint_features).squeeze(-1)  # (B,)
+        stop_logit = self.stop_head(joint_features)  # (B, 1)
 
         # Critic (separate from shared backbone)
         critic_input = torch.cat([actor_obs, critic_gt], dim=1)
@@ -164,7 +164,7 @@ class ActorOnlyWithStop(nn.Module):
         movement_logits = self.actor_head(joint_features)
         
         # Stop head
-        stop_logit = self.stop_head(joint_features).squeeze(-1)
+        stop_logit = self.stop_head(joint_features)  # (B, 1)
         
         return movement_logits, stop_logit, hc_shared
 

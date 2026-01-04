@@ -281,7 +281,7 @@ def main():
         
         with torch.no_grad():
             movement_logits, stop_logit, _ = model(obs_t, A_t)
-            stop_prob = torch.sigmoid(stop_logit)
+            stop_prob = torch.sigmoid(stop_logit).view(-1)
             # Greedy stop decision
             if stop_prob.item() > 0.5:
                 action = ACTION_STOP_IDX
