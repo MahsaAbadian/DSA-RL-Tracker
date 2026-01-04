@@ -114,7 +114,7 @@
       "training": {
         "noise": 0.0,
         "tissue": false,
-        "strict_stop": false,
+        "strict_stop": true,
         "mixed_start": true
       }
     },
@@ -144,7 +144,7 @@
       "training": {
         "noise": 0.0,
         "tissue": false,
-        "strict_stop": false,
+        "strict_stop": true,
         "mixed_start": true
       }
     },
@@ -174,7 +174,7 @@
       "training": {
         "noise": 0.1,
         "tissue": false,
-        "strict_stop": false,
+        "strict_stop": true,
         "mixed_start": true
       }
     },
@@ -204,7 +204,7 @@
       "training": {
         "noise": 0.2,
         "tissue": false,
-        "strict_stop": false,
+        "strict_stop": true,
         "mixed_start": true
       }
     },
@@ -234,7 +234,7 @@
       "training": {
         "noise": 0.1,
         "tissue": false,
-        "strict_stop": false,
+        "strict_stop": true,
         "mixed_start": true
       }
     },
@@ -264,7 +264,7 @@
       "training": {
         "noise": 0.2,
         "tissue": false,
-        "strict_stop": false,
+        "strict_stop": true,
         "mixed_start": true
       }
     },
@@ -294,7 +294,7 @@
       "training": {
         "noise": 0.3,
         "tissue": false,
-        "strict_stop": false,
+        "strict_stop": true,
         "mixed_start": true
       }
     },
@@ -324,10 +324,9 @@
       "training": {
         "noise": 0.4,
         "tissue": false,
-        "strict_stop": false,
+        "strict_stop": true,
         "mixed_start": true
       }
     }
   ]
 }
-
