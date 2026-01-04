@@ -437,6 +437,48 @@ def nearest_gt_index(pt, poly):
     d2 = np.sum(dif * dif, axis=1)
     return int(np.argmin(d2))
 
+def nearest_gt_index_within_window(pt, poly, expected_idx, window_size=20):
+    """Find nearest point on polyline within a window around expected progress.
+    
+    This prevents the agent from jumping to a different path segment.
+    
+    Args:
+        pt: Current point (y, x)
+        poly: Polyline points
+        expected_idx: Expected progress index
+        window_size: Size of window to search around expected_idx
+    
+    Returns:
+        tuple: (nearest_idx, distance, is_within_window)
+    """
+    dif = poly - np.array(pt, dtype=np.float32)
+    d2 = np.sum(dif * dif, axis=1)
+    
+    # Search within window first
+    window_start = max(0, expected_idx - window_size)
+    window_end = min(len(poly), expected_idx + window_size + 1)
+    
+    if window_end > window_start:
+        window_d2 = d2[window_start:window_end]
+        window_min_idx = int(np.argmin(window_d2))
+        window_nearest_idx = window_start + window_min_idx
+        window_min_dist = np.sqrt(window_d2[window_min_idx])
+        
+        # Check if there's a closer point outside the window
+        global_min_idx = int(np.argmin(d2))
+        global_min_dist = np.sqrt(d2[global_min_idx])
+        
+        if global_min_dist < window_min_dist * 0.8:  # If significantly closer outside window
+            # This might be a jump to another path - return it but flag it
+            return global_min_idx, global_min_dist, False
+        else:
+            return window_nearest_idx, window_min_dist, True
+    else:
+        # Fallback to global search
+        global_min_idx = int(np.argmin(d2))
+        global_min_dist = np.sqrt(d2[global_min_idx])
+        return global_min_idx, global_min_dist, False
+
 @dataclass
 class CurveEpisode:
     img: np.ndarray
@@ -664,8 +706,30 @@ class CurveEnvUnified:
 
         L_t = get_distance_to_poly(self.agent, self.ep.gt_poly)
         dist_diff = abs(L_t - self.L_prev)
-        best_idx = nearest_gt_index(self.agent, self.ep.gt_poly)
+        
+        # Use windowed search to prevent jumping to different paths
+        # Expected progress: should be near prev_idx or slightly ahead
+        expected_progress = max(self.prev_idx, min(self.prev_idx + 5, len(self.ep.gt_poly) - 1))
+        window_size = max(15, len(self.ep.gt_poly) // 10)  # Adaptive window size
+        best_idx, L_t_windowed, is_within_window = nearest_gt_index_within_window(
+            self.agent, self.ep.gt_poly, expected_progress, window_size
+        )
+        
+        # Use windowed distance if available (more accurate for correct path)
+        if is_within_window:
+            L_t = L_t_windowed
+        
         progress_delta = best_idx - self.prev_idx
+        
+        # Detect path jumping: if best_idx is far from expected progress
+        idx_jump = abs(best_idx - expected_progress)
+        path_jump_penalty = 0.0
+        if idx_jump > window_size * 0.5:  # Jumped more than half the window size
+            # Strong penalty for jumping to a different path segment
+            path_jump_penalty = -min(5.0, idx_jump * 0.1)
+            # Also penalize large backward jumps (likely wrong path)
+            if progress_delta < -10:
+                path_jump_penalty -= 3.0
         
         # Track initial steps for bootstrap rewards
         if self.is_at_start:
@@ -676,6 +740,31 @@ class CurveEnvUnified:
         
         sigma = 1.5 if self.stage_config['stage_id'] == 1 else 1.0
         precision_score = np.exp(-(L_t**2) / (2 * sigma**2))
+        
+        # Detect low contrast scenario: check intensity at current position and nearby path
+        # Low contrast makes it harder to follow paths, so we need stronger rewards
+        contrast_boost = 1.0
+        if best_idx < len(self.ep.gt_poly):
+            # Get intensity at the nearest ground truth point
+            gt_pt = self.ep.gt_poly[best_idx]
+            gt_y, gt_x = int(gt_pt[0]), int(gt_pt[1])
+            if 0 <= gt_y < self.h and 0 <= gt_x < self.w:
+                path_intensity = self.ep.img[gt_y, gt_x]
+                # Sample background intensity (corners of image)
+                bg_samples = [
+                    self.ep.img[0, 0], self.ep.img[0, self.w-1],
+                    self.ep.img[self.h-1, 0], self.ep.img[self.h-1, self.w-1]
+                ]
+                bg_intensity = np.mean(bg_samples)
+                contrast = abs(path_intensity - bg_intensity)
+                
+                # Low contrast: contrast < 0.15 (very faint paths)
+                if contrast < 0.15:
+                    # Boost rewards for low contrast paths (harder task)
+                    contrast_boost = 1.5 + (0.15 - contrast) * 3.0  # 1.5x to 2.0x boost
+                    # Also make precision score more forgiving for low contrast
+                    sigma = sigma * 1.3  # Wider tolerance
+                    precision_score = np.exp(-(L_t**2) / (2 * sigma**2))
         
         if L_t < self.L_prev:
             r = np.log(EPSILON + dist_diff)
@@ -707,9 +796,13 @@ class CurveEnvUnified:
                     r += direction_bonus
 
         if progress_delta > 0:
-            r += precision_score * 2.0
+            # Apply contrast boost for low contrast paths (harder task needs stronger rewards)
+            r += precision_score * 2.0 * contrast_boost
         elif progress_delta <= 0:
             r -= 0.1
+        
+        # Apply path jump penalty (prevents agent from jumping to different paths)
+        r += path_jump_penalty
         
         # Bootstrap reward for initial steps when starting from the beginning
         # Problem: At the start, all history positions are the same, action history is empty,
@@ -719,8 +812,8 @@ class CurveEnvUnified:
         if self.is_at_start and self.initial_steps <= 5:
             bootstrap_multiplier = max(1.0, 3.0 - self.initial_steps * 0.4)  # 3.0, 2.6, 2.2, 1.8, 1.4, 1.0
             if progress_delta > 0:
-                # Strong reward for making progress from the start
-                r += precision_score * bootstrap_multiplier * 1.5
+                # Strong reward for making progress from the start (with contrast boost)
+                r += precision_score * bootstrap_multiplier * 1.5 * contrast_boost
             elif L_t < self.L_prev:
                 # Reward for getting closer to the curve (even without progress yet)
                 r += abs(r) * bootstrap_multiplier * 0.5
@@ -752,8 +845,15 @@ class CurveEnvUnified:
         off_track_limit = 10.0 if self.stage_config['stage_id'] == 1 else 8.0
         off_track = L_t > off_track_limit
         
-        if off_track:
-            r -= 5.0
+        # Detect if agent jumped to a completely different path segment
+        # This happens when best_idx is very far from expected progress
+        large_path_jump = idx_jump > window_size * 1.5  # Jumped more than 1.5x window size
+        
+        if off_track or large_path_jump:
+            if large_path_jump:
+                r -= 10.0  # Strong penalty for jumping to wrong path
+            else:
+                r -= 5.0
             done = True
         
         if self.steps >= self.max_steps:

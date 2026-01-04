@@ -7,6 +7,10 @@ import argparse
 import numpy as np
 import torch
 import cv2
+import os
+import sys
+import glob
+import re
 import matplotlib.pyplot as plt
 from scipy.interpolate import splprep, splev
 
@@ -41,6 +45,59 @@ def fixed_window_history(ahist_list, K, n_actions):
     return out
 
 # ---------- UTILITIES ----------
+def find_latest_actor_weights(runs_dir=None):
+    """Find the latest actor weights from the latest run and latest stage.
+    
+    Returns:
+        str: Path to the latest actor weights file, or None if not found
+    """
+    if runs_dir is None:
+        # Default to Experiment1/runs/
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        parent_dir = os.path.dirname(script_dir)  # Experiment1 directory
+        runs_dir = os.path.join(parent_dir, "runs")
+    
+    if not os.path.exists(runs_dir):
+        return None
+    
+    # Find all run directories (timestamped)
+    run_dirs = [d for d in os.listdir(runs_dir) 
+                if os.path.isdir(os.path.join(runs_dir, d))]
+    
+    if not run_dirs:
+        return None
+    
+    # Sort by name (timestamp) to get latest
+    run_dirs.sort(reverse=True)
+    latest_run_dir = os.path.join(runs_dir, run_dirs[0])
+    
+    # Find all actor_FINAL weights in this run
+    weights_dir = os.path.join(latest_run_dir, "weights")
+    if not os.path.exists(weights_dir):
+        return None
+    
+    # Find all actor_*_FINAL.pth files
+    actor_final_pattern = os.path.join(weights_dir, "actor_*_FINAL.pth")
+    actor_files = glob.glob(actor_final_pattern)
+    
+    if not actor_files:
+        return None
+    
+    # Sort by modification time to get the latest
+    actor_files.sort(key=os.path.getmtime, reverse=True)
+    
+    # Also try to extract stage number for better sorting
+    def get_stage_number(path):
+        """Extract stage number from filename (e.g., Stage10_... -> 10)"""
+        filename = os.path.basename(path)
+        match = re.search(r'Stage(\d+)_', filename)
+        return int(match.group(1)) if match else 0
+    
+    # Sort by stage number (highest first), then by modification time
+    actor_files.sort(key=lambda x: (get_stage_number(x), os.path.getmtime(x)), reverse=True)
+    
+    return actor_files[0]
+
 def preprocess_full_image(path):
     """Load and preprocess DSA image for inference."""
     img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
@@ -205,13 +262,24 @@ def main():
     parser = argparse.ArgumentParser(description="DSA RL Inference - Track curves in real DSA images")
     parser.add_argument("--image_path", type=str, required=True,
                         help="Path to DSA image file")
-    parser.add_argument("--actor_weights", type=str, required=True,
-                        help="Path to actor-only weights (e.g., actor_Stage3_Realism_FINAL.pth)")
+    parser.add_argument("--actor_weights", type=str, default=None,
+                        help="Path to actor-only weights (default: auto-detect latest from latest run)")
     parser.add_argument("--max_steps", type=int, default=1000,
                         help="Maximum steps before stopping")
     args = parser.parse_args()
     
-    # 1. Load and preprocess image
+    # 1. Auto-detect latest weights if not provided
+    if args.actor_weights is None:
+        print("🔍 Auto-detecting latest actor weights...")
+        latest_weights = find_latest_actor_weights()
+        if latest_weights is None:
+            print("❌ Error: Could not find any actor weights.")
+            print("   Please specify --actor_weights manually or ensure training has completed.")
+            return
+        args.actor_weights = latest_weights
+        print(f"✓ Found latest weights: {args.actor_weights}")
+    
+    # 2. Load and preprocess image
     raw_img = cv2.imread(args.image_path, cv2.IMREAD_GRAYSCALE)
     if raw_img is None:
         print(f"Error: Could not load image from {args.image_path}")
@@ -219,7 +287,7 @@ def main():
     
     processed_img = preprocess_full_image(args.image_path)
     
-    # 2. Load ActorOnly model
+    # 3. Load ActorOnly model
     K = 8
     model = ActorOnly(n_actions=N_ACTIONS, K=K).to(DEVICE)
     
@@ -228,7 +296,7 @@ def main():
         model.load_state_dict(actor_weights)
         print(f"✓ Loaded actor weights from: {args.actor_weights}")
     except Exception as e:
-        print(f"Error loading weights: {e}")
+        print(f"❌ Error loading weights: {e}")
         print("\nMake sure you're using actor-only weights (actor_*.pth), not full model weights.")
         print("Actor weights are automatically saved during training.")
         return
