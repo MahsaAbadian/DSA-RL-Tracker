@@ -1320,14 +1320,10 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         
         # Check if we need to resume mid-stage
         start_episode = 1
-        if resume_stage_idx is not None and stage_idx == resume_stage_idx:
-            if resume_episode is not None:
-                start_episode = resume_episode + 1
-                print(f"\n🔄 Resuming {stage['name']} from episode {start_episode}")
-            else:
-                # FINAL checkpoint: start from beginning of next stage
-                print(f"\n🔄 Starting {stage['name']} (resumed from previous stage's FINAL checkpoint)")
-            resume_stage_idx = None  # Clear resume flag so subsequent stages train normally
+        if resume_stage_idx is not None and stage_idx == resume_stage_idx and resume_episode is not None:
+            start_episode = resume_episode + 1
+            print(f"\n🔄 Resuming {stage['name']} from episode {start_episode}")
+            resume_stage_idx = None
         
         # Add stage config to training config
         stage_config_entry = {
