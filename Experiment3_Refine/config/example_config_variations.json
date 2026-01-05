@@ -1,0 +1,70 @@
+[
+  {
+    "comment": "Wide curves, low curvature, high intensity",
+    "training_stages.0.curve_generation.width_range": [3, 6],
+    "training_stages.0.curve_generation.curvature_factor": 0.5,
+    "training_stages.0.curve_generation.min_intensity": 0.7,
+    "training_stages.0.curve_generation.max_intensity": 0.9,
+    "training_stages.0.training.noise": 0.0
+  },
+  {
+    "comment": "Narrow curves, medium curvature, medium intensity",
+    "training_stages.0.curve_generation.width_range": [1, 2],
+    "training_stages.0.curve_generation.curvature_factor": 1.0,
+    "training_stages.0.curve_generation.min_intensity": 0.5,
+    "training_stages.0.curve_generation.max_intensity": 0.7,
+    "training_stages.0.training.noise": 0.3
+  },
+  {
+    "comment": "Medium width, high curvature, medium intensity",
+    "training_stages.0.curve_generation.width_range": [2, 4],
+    "training_stages.0.curve_generation.curvature_factor": 1.5,
+    "training_stages.0.curve_generation.min_intensity": 0.6,
+    "training_stages.0.curve_generation.max_intensity": 0.8,
+    "training_stages.0.training.noise": 0.5
+  },
+  {
+    "comment": "With branches enabled",
+    "training_stages.0.curve_generation.width_range": [2, 4],
+    "training_stages.0.curve_generation.curvature_factor": 1.0,
+    "training_stages.0.curve_generation.branches": true,
+    "training_stages.0.curve_generation.min_intensity": 0.6,
+    "training_stages.0.curve_generation.max_intensity": 0.8,
+    "training_stages.0.training.noise": 0.4
+  },
+  {
+    "comment": "Low intensity, wide variation",
+    "training_stages.0.curve_generation.width_range": [2, 4],
+    "training_stages.0.curve_generation.curvature_factor": 0.8,
+    "training_stages.0.curve_generation.min_intensity": 0.3,
+    "training_stages.0.curve_generation.max_intensity": 0.5,
+    "training_stages.0.training.noise": 0.6,
+    "training_stages.0.training.tissue": true
+  },
+  {
+    "comment": "Width variation: wide to narrow",
+    "training_stages.0.curve_generation.width_range": [2, 4],
+    "training_stages.0.curve_generation.width_variation": "wide_to_narrow",
+    "training_stages.0.curve_generation.start_width": 5,
+    "training_stages.0.curve_generation.end_width": 2,
+    "training_stages.0.curve_generation.curvature_factor": 1.0,
+    "training_stages.0.curve_generation.min_intensity": 0.6
+  },
+  {
+    "comment": "Intensity variation: bright to dim",
+    "training_stages.0.curve_generation.width_range": [2, 4],
+    "training_stages.0.curve_generation.intensity_variation": "bright_to_dim",
+    "training_stages.0.curve_generation.start_intensity": 0.8,
+    "training_stages.0.curve_generation.end_intensity": 0.4,
+    "training_stages.0.curve_generation.curvature_factor": 1.0
+  },
+  {
+    "comment": "Multiple stages variation - Stage 2 with different params",
+    "training_stages.0.curve_generation.width_range": [2, 4],
+    "training_stages.0.curve_generation.curvature_factor": 0.5,
+    "training_stages.1.curve_generation.width_range": [1, 5],
+    "training_stages.1.curve_generation.curvature_factor": 1.5,
+    "training_stages.1.training.noise": 0.7
+  }
+]
+

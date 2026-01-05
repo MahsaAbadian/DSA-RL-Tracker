@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 """
 Inference script for DSA RL Experiment.
-Uses ActorOnlyWithStop model (no critic) for efficient inference.
+Uses ActorOnly model (no critic) for efficient inference.
 """
 import argparse
-import os
-import sys
 import numpy as np
 import torch
 import cv2
-import os
 import matplotlib.pyplot as plt
 from scipy.interpolate import splprep, splev
 
@@ -21,14 +18,14 @@ if _parent_dir not in sys.path:
     sys.path.insert(0, _parent_dir)
 
 # Use absolute import - works both as module and script
-from src.models import ActorOnlyWithStop
+from src.models import ActorOnly
 
 # Import constants and utilities
 # (These are also defined in train.py, but we define them here for standalone use)
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 ACTIONS_MOVEMENT = [(-1, 0), (1, 0), (0,-1), (0, 1), (-1,-1), (-1,1), (1,-1), (1,1)]
-N_MOVEMENT_ACTIONS = len(ACTIONS_MOVEMENT)
 ACTION_STOP_IDX = 8
+N_ACTIONS = 9
 CROP = 33
 
 def clamp(v, lo, hi): 
@@ -224,7 +221,7 @@ def main():
     
     # 2. Load ActorOnly model
     K = 8
-    model = ActorOnlyWithStop(n_movement_actions=N_MOVEMENT_ACTIONS, K=K).to(DEVICE)
+    model = ActorOnly(n_actions=N_ACTIONS, K=K).to(DEVICE)
     
     try:
         actor_weights = torch.load(args.actor_weights, map_location=DEVICE)
@@ -266,7 +263,7 @@ def main():
     
     # 5. Prime action history
     start_action = get_closest_action(vec_y, vec_x)
-    a_onehot = np.zeros(N_MOVEMENT_ACTIONS)
+    a_onehot = np.zeros(N_ACTIONS)
     a_onehot[start_action] = 1.0
     ahist = [a_onehot] * K
     
@@ -277,24 +274,20 @@ def main():
     while not done:
         obs = env.obs()
         obs_t = torch.tensor(obs[None], dtype=torch.float32, device=DEVICE)
-        A = fixed_window_history(ahist, K, N_MOVEMENT_ACTIONS)[None, ...]
+        A = fixed_window_history(ahist, K, N_ACTIONS)[None, ...]
         A_t = torch.tensor(A, dtype=torch.float32, device=DEVICE)
         
         with torch.no_grad():
-            movement_logits, stop_logit, _ = model(obs_t, A_t)
-            stop_prob = torch.sigmoid(stop_logit).view(-1)
-            # Greedy stop decision
-            if stop_prob.item() > 0.5:
-                action = ACTION_STOP_IDX
-            else:
-                action = torch.argmax(movement_logits, dim=1).item()
+            # Clean API: no dummy critic input needed!
+            logits, _ = model(obs_t, A_t)
+            probs = torch.softmax(logits, dim=1)
+            action = torch.argmax(probs, dim=1).item()
         
         done, reason = env.step(action)
         
         # Update history
-        new_onehot = np.zeros(N_MOVEMENT_ACTIONS)
-        if action != ACTION_STOP_IDX and action < N_MOVEMENT_ACTIONS:
-            new_onehot[action] = 1.0
+        new_onehot = np.zeros(N_ACTIONS)
+        new_onehot[action] = 1.0
         ahist.append(new_onehot)
     
     print(f"Finished: {reason} ({env.steps} steps)")
