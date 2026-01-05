@@ -1,0 +1,39 @@
+
+=============================================
+STARTING Stage1_Foundation
+Episodes: 10000 | LR: 0.0001
+Global Episode Offset: 0
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Episode 1 | Return: -44.06 | Stop Success: 0
+   Episode 2 | Return: -23.26 | Stop Success: 0
+   Episode 3 | Return: -108.75 | Stop Success: 0
+   Episode 4 | Return: -43.58 | Stop Success: 0
+   Episode 5 | Return: -69.46 | Stop Success: 0
+   Episode 6 | Return: -28.34 | Stop Success: 0
+   Episode 7 | Return: -23.16 | Stop Success: 0
+   Episode 8 | Return: -67.52 | Stop Success: 0
+   Episode 9 | Return: -19.81 | Stop Success: 0
+   Episode 10 | Return: -120.43 | Stop Success: 0
+   Episode 11 | Return: -33.69 | Stop Success: 0
+   Episode 12 | Return: -77.11 | Stop Success: 0
+   Episode 13 | Return: -76.36 | Stop Success: 0
+   Episode 14 | Return: -54.29 | Stop Success: 0
+   Episode 15 | Return: -55.17 | Stop Success: 0
+   Episode 16 | Return: -33.65 | Stop Success: 0
+   Episode 17 | Return: -85.37 | Stop Success: 0
+   Episode 18 | Return: -34.41 | Stop Success: 0
+   Episode 19 | Return: -90.61 | Stop Success: 0
+   Episode 20 | Return: -85.86 | Stop Success: 0
+   Episode 21 | Return: -79.06 | Stop Success: 0
+   Episode 22 | Return: -37.13 | Stop Success: 0
+   Episode 23 | Return: -83.98 | Stop Success: 0
+   Episode 24 | Return: -174.50 | Stop Success: 0
+   Episode 25 | Return: -56.03 | Stop Success: 0
+   Episode 26 | Return: -73.59 | Stop Success: 0
+   Episode 27 | Return: -44.78 | Stop Success: 0
+   Episode 28 | Return: -26.51 | Stop Success: 0
+   Episode 29 | Return: -60.67 | Stop Success: 0
+   Episode 30 | Return: -41.97 | Stop Success: 0
+   Episode 31 | Return: -98.11 | Stop Success: 0
+   Episode 32 | Return: -45.23 | Stop Success: 0

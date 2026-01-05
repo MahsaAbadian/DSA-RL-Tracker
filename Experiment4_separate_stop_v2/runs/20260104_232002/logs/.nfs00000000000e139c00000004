@@ -1,0 +1,16 @@
+
+=============================================
+STARTING Stage1_Foundation
+Episodes: 10000 | LR: 0.0001
+Global Episode Offset: 0
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+[Stage1_Foundation] Ep 100 | Avg Rew: -22.27 | Success: 0.00
+[Stage1_Foundation] Ep 200 | Avg Rew: -9.34 | Success: 0.00
+[Stage1_Foundation] Ep 300 | Avg Rew: -7.92 | Success: 0.00
+[Stage1_Foundation] Ep 400 | Avg Rew: -9.07 | Success: 0.01
+[Stage1_Foundation] Ep 500 | Avg Rew: -9.11 | Success: 0.00
+[Stage1_Foundation] Ep 600 | Avg Rew: -7.38 | Success: 0.01
+[Stage1_Foundation] Ep 700 | Avg Rew: -8.59 | Success: 0.02
+[Stage1_Foundation] Ep 800 | Avg Rew: -10.14 | Success: 0.03
+[Stage1_Foundation] Ep 900 | Avg Rew: -6.92 | Success: 0.04

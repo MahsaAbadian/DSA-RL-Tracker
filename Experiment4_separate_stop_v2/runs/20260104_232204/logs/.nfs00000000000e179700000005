@@ -1,0 +1,8 @@
+
+=============================================
+STARTING Stage1_Foundation
+Episodes: 10000 | LR: 0.0001
+Global Episode Offset: 0
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+[Stage1_Foundation] Ep 100 | Avg Rew: -29.48 | Success: 0.01
