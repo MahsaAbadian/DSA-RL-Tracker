@@ -1424,6 +1424,9 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                 else:
                     success_val = 1 if info.get('reached_end') else 0
                 ep_successes.append(success_val)
+                
+                # Per-episode logging for stop success
+                print(f"   Episode {ep} | Return: {ep_return:.2f} | Stop Success: {success_val}")
 
                 # Save image, mask, and path for the last 5 episodes of this stage
                 if ep >= stage['episodes'] - 4:
