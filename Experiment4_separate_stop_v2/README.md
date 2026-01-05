@@ -1,22 +1,15 @@
 # Experiment 4 — Decoupled Vision + Separate Stop Head
 
-This experiment improves the reliability of the stopping mechanism by giving the **Stop Head** its own dedicated vision backbone (CNN).
+This README only notes how Experiment 4 differs from the base (Experiment 1) and Experiment 2.
 
-## 🚀 Run Training
-```bash
-./run_train.sh --experiment_name exp4_decoupled --curve_config config/curve_config.json
-```
+Differences vs Experiment 1/2
 
-## 🔍 Run Inference
-```bash
-./run_rollout.sh --image_path <path_to_image> --actor_weights <path_to_weights> --max_steps 1000
-```
+- Stop head has its **own CNN backbone**; it only sees the current crop (channel 0).
+- Movement head remains on the actor backbone; stop head is independent (helps with sparse stop labels).
 
-## 🧠 Key Differences from v1 (Experiment 2)
-- **Decoupled Backbones**: Instead of sharing a backbone, the Stop Head uses a specialized CNN that only looks at the **current visual crop** (Channel 0).
-- **Task Specialization**: The Actor focuses on "Where to go" (Path following), while the Stop Head focuses purely on "Is this the end?" (Feature detection).
-- **Robustness**: If the Actor gets lost or starts looping, the Stop Head can still function independently to detect the curve endpoint.
+Run (same scripts as base)
 
-## 🎓 Learning More
-For a detailed explanation of why this architecture works better for rare labels and endpoint detection, see the tutor guide:
-👉 **`../docs/DECOUPLED_STOP_EXPLAINED.md`**
+- Training: `./run_train.sh --experiment_name exp4_decoupled --curve_config config/curve_config.json`
+- Inference: `./run_rollout.sh --image_path <img> --actor_weights <weights> --max_steps 1000`
+
+More details: `../docs/DECOUPLED_STOP_EXPLAINED.md`
