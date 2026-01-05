@@ -1,0 +1,42 @@
+
+=============================================
+STARTING Stage1_Bootstrap
+Episodes: 10 | LR: 0.0001
+Global Episode Offset: 0
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+Finished Stage1_Bootstrap. Saved model to /content/DSA-RL-Tracker/Experiment5_reward_config/runs/colab_exp5_quick_20260105_040118/weights/model_Stage1_Bootstrap_FINAL.pth
+✅ Added Stage1_Bootstrap to previous stages pool (total: 1 stages)
+Actor-only weights saved: /content/DSA-RL-Tracker/Experiment5_reward_config/runs/colab_exp5_quick_20260105_040118/weights/actor_Stage1_Bootstrap_FINAL.pth
+
+=============================================
+STARTING Stage2_Robustness
+Episodes: 10 | LR: 5e-05
+Global Episode Offset: 20
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+Finished Stage2_Robustness. Saved model to /content/DSA-RL-Tracker/Experiment5_reward_config/runs/colab_exp5_quick_20260105_040118/weights/model_Stage2_Robustness_FINAL.pth
+✅ Added Stage2_Robustness to previous stages pool (total: 2 stages)
+Actor-only weights saved: /content/DSA-RL-Tracker/Experiment5_reward_config/runs/colab_exp5_quick_20260105_040118/weights/actor_Stage2_Robustness_FINAL.pth
+
+=============================================
+STARTING Stage3_Realism
+Episodes: 10 | LR: 5e-05
+Global Episode Offset: 40
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+Finished Stage3_Realism. Saved model to /content/DSA-RL-Tracker/Experiment5_reward_config/runs/colab_exp5_quick_20260105_040118/weights/model_Stage3_Realism_FINAL.pth
+✅ Added Stage3_Realism to previous stages pool (total: 3 stages)
+Actor-only weights saved: /content/DSA-RL-Tracker/Experiment5_reward_config/runs/colab_exp5_quick_20260105_040118/weights/actor_Stage3_Realism_FINAL.pth
+
+=== TRAINING COMPLETE ===
+Training Start Time: 2026-01-05 04:01:18
+Training End Time: 2026-01-05 04:01:22
+Total Training Time: 0h 0m 4s (4.5 seconds)
+All results saved to: /content/DSA-RL-Tracker/Experiment5_reward_config/runs/colab_exp5_quick_20260105_040118
+  - Checkpoints: /content/DSA-RL-Tracker/Experiment5_reward_config/runs/colab_exp5_quick_20260105_040118/checkpoints
+  - Final weights: /content/DSA-RL-Tracker/Experiment5_reward_config/runs/colab_exp5_quick_20260105_040118/weights
+  - Training log: /content/DSA-RL-Tracker/Experiment5_reward_config/runs/colab_exp5_quick_20260105_040118/logs/training.log
+  - Configuration: /content/DSA-RL-Tracker/Experiment5_reward_config/runs/colab_exp5_quick_20260105_040118/config.json
+  - Metrics: /content/DSA-RL-Tracker/Experiment5_reward_config/runs/colab_exp5_quick_20260105_040118/metrics.json
+🧹 Cleaning up checkpoints directory: /content/DSA-RL-Tracker/Experiment5_reward_config/runs/colab_exp5_quick_20260105_040118/checkpoints
