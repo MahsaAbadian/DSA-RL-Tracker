@@ -773,7 +773,7 @@ class CurveEnvUnified:
 # ---------- NETWORK ARCHITECTURE ----------
 # Import from shared models file
 # Use absolute import - works both as module and script
-from src.models import DecoupledStopBackboneActorCritic
+from src.models import SharedBackboneActorCritic
 
 # ---------- PPO UPDATE ----------
 def update_ppo(ppo_opt, model, buf_list, clip=0.2, epochs=4, minibatch=32, lambda_stop=1.0):
@@ -797,9 +797,9 @@ def update_ppo(ppo_opt, model, buf_list, clip=0.2, epochs=4, minibatch=32, lambd
             mb = idxs[s:s+minibatch]
             if len(mb) == 0: continue
             
-            # Decoupled model returns 5 values
             movement_logits, stop_logit, val, _, _ = model(obs_a[mb], obs_c[mb], ahist[mb])
             movement_logits = torch.clamp(movement_logits, -20, 20)
+            stop_logit = stop_logit.view(-1)  # ensure 1D batch
             stop_prob = torch.sigmoid(stop_logit)
             move_logp_all = F.log_softmax(movement_logits, dim=1)
 
@@ -830,7 +830,7 @@ def update_ppo(ppo_opt, model, buf_list, clip=0.2, epochs=4, minibatch=32, lambd
             surr2 = torch.clamp(ratio, 1.0-clip, 1.0+clip) * adv[mb]
             p_loss = -torch.min(surr1, surr2).mean()
             v_loss = F.mse_loss(val, ret[mb])
-            stop_loss = bce(stop_logit, stop_labels[mb])
+            stop_loss = bce(stop_logit, stop_labels[mb].view(-1))
             
             loss = p_loss + 0.5 * v_loss + lambda_stop * stop_loss - 0.01 * entropy
             
@@ -1159,8 +1159,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     original_stdout = sys.stdout
     sys.stdout = TeeOutput(original_stdout, log_fp)
 
-    # Use the new decoupled model class for Experiment 4
-    model = DecoupledStopBackboneActorCritic(n_movement_actions=N_MOVEMENT_ACTIONS).to(DEVICE)
+    model = SharedBackboneActorCritic(n_movement_actions=N_MOVEMENT_ACTIONS).to(DEVICE)
     K = 8
     
     # Load checkpoint if resuming
