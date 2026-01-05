@@ -39,7 +39,7 @@ else:
 # 8 Movement Actions + 1 Stop Action = 9 Total
 ACTIONS_MOVEMENT = [(-1, 0), (1, 0), (0,-1), (0, 1), (-1,-1), (-1,1), (1,-1), (1,1)]
 ACTION_STOP_IDX = 8
-N_ACTIONS = 9
+N_ACTIONS = 8
 
 STEP_ALPHA = 2.0
 CROP = 33
