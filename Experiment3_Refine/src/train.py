@@ -702,10 +702,14 @@ class CurveEnvUnified:
 
         # Use windowed search to prevent jumping to nearby paths
         # Expected progress: should be near prev_idx or slightly ahead
-        # Use smaller window when paths are close together (prevents jumping to wrong path)
+        # Adaptive window size: smaller for early stages, larger for complex paths
         expected_progress = max(self.prev_idx, min(self.prev_idx + 5, len(self.ep.gt_poly) - 1))
-        # Smaller window size (8-12 points) to prevent jumping to nearby paths
-        window_size = max(8, min(12, len(self.ep.gt_poly) // 15))
+        # Adaptive window size: 10-15 points (more forgiving than 8-12)
+        # Larger window for longer paths, smaller for shorter paths
+        base_window = max(10, min(15, len(self.ep.gt_poly) // 12))
+        # Reduce window size for early stages (stricter), increase for later stages (more forgiving)
+        stage_factor = 1.0 if self.stage_config['stage_id'] >= 10 else 0.9
+        window_size = int(base_window * stage_factor)
         
         best_idx, L_t_windowed, is_within_window = nearest_gt_index_within_window(
             self.agent, self.ep.gt_poly, expected_progress, window_size
@@ -725,21 +729,26 @@ class CurveEnvUnified:
         
         # Check if jump is far in index AND also far spatially (indicates different path)
         # If L_t is small (close to path), even large index jumps are OK (same path, just different segment)
-        idx_jump_large = idx_jump > window_size * 0.5
-        spatial_far = L_t > 3.0  # More than 3 pixels from path center
+        # Adaptive thresholds: more forgiving for complex paths
+        idx_jump_large = idx_jump > window_size * 0.6  # Slightly more forgiving (0.6 instead of 0.5)
+        # Spatial threshold depends on path width - wider paths need larger threshold
+        path_width_estimate = np.mean(self.stage_config['width']) if isinstance(self.stage_config['width'], tuple) else 3.0
+        spatial_threshold = max(4.0, path_width_estimate * 1.5)  # At least 4 pixels, or 1.5x path width
+        spatial_far = L_t > spatial_threshold
         
         # Only penalize if BOTH conditions: large index jump AND far spatially
         if idx_jump_large and spatial_far:
             # This indicates jumping to a different nearby path
-            path_jump_penalty = -min(10.0, idx_jump * 0.2)
+            # Reduced penalty: less harsh to allow model to learn
+            path_jump_penalty = -min(5.0, idx_jump * 0.15)  # Reduced from 10.0 to 5.0
             # Extra penalty for large backward jumps to different path
             if progress_delta < -5:
-                path_jump_penalty -= 5.0
+                path_jump_penalty -= 3.0  # Reduced from 5.0 to 3.0
         elif idx_jump_large and not spatial_far:
             # Large index jump but close spatially = same path, different segment (OK)
             # Only small penalty for non-ideal but acceptable jump
             if progress_delta < -window_size * 0.5:  # Very large backward jump even on same path
-                path_jump_penalty = -1.0  # Small penalty for large backward jump
+                path_jump_penalty = -0.5  # Reduced from -1.0 to -0.5
         
         # Track initial steps for bootstrap rewards
         if self.is_at_start:
@@ -832,17 +841,19 @@ class CurveEnvUnified:
         # Detect if agent jumped to a completely different path (not just different segment of same path)
         # Only terminate if jump is BOTH far in index AND far spatially (indicates different path)
         # Jumps on same path (large index but small spatial distance) are OK
-        large_index_jump = idx_jump > window_size * 0.8
-        large_spatial_jump = L_t > 5.0  # More than 5 pixels from path center
+        # More forgiving thresholds for termination
+        large_index_jump = idx_jump > window_size * 1.0  # Increased from 0.8 to 1.0 (more forgiving)
+        # Spatial threshold for termination: use same adaptive threshold as penalty
+        large_spatial_jump = L_t > spatial_threshold * 1.5  # 1.5x the penalty threshold
         large_path_jump = large_index_jump and large_spatial_jump  # BOTH conditions needed
         
         # Large backward jump to different path (index far back AND spatially far)
-        large_backward_index = progress_delta < -window_size * 0.5
+        large_backward_index = progress_delta < -window_size * 0.7  # More forgiving (0.7 instead of 0.5)
         large_backward_jump = large_backward_index and large_spatial_jump
         
         if off_track or large_path_jump or large_backward_jump:
             if large_path_jump or large_backward_jump:
-                r -= 15.0  # Very strong penalty for jumping to different path
+                r -= 10.0  # Reduced from 15.0 to 10.0 (less harsh)
             else:
                 r -= 5.0
             done = True
