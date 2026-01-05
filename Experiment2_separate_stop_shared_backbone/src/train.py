@@ -1573,6 +1573,11 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     print(f"  - Configuration: {config_file}")
     print(f"  - Metrics: {metrics_file}")
     
+    # Delete checkpoints after successful completion
+    if os.path.exists(checkpoint_dir):
+        print(f"🧹 Cleaning up checkpoints directory: {checkpoint_dir}")
+        shutil.rmtree(checkpoint_dir)
+        
     # Restore stdout and close log file
     sys.stdout = original_stdout
     log_fp.close()

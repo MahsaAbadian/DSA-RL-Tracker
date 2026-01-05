@@ -36,10 +36,10 @@ if DEVICE == "cuda":
 else:
     print("⚠️  GPU not available, using CPU (training will be slower)")
 
-# 8 Movement Actions + 1 Stop Action = 9 Total
+# 8 Movement Actions; Stop is handled separately by stop head
 ACTIONS_MOVEMENT = [(-1, 0), (1, 0), (0,-1), (0, 1), (-1,-1), (-1,1), (1,-1), (1,1)]
-ACTION_STOP_IDX = 8
-N_ACTIONS = 9
+N_MOVEMENT_ACTIONS = len(ACTIONS_MOVEMENT)  # 8
+ACTION_STOP_IDX = 8  # Reserve 8 for stop when talking to env
 
 STEP_ALPHA = 2.0
 CROP = 33
@@ -773,10 +773,10 @@ class CurveEnvUnified:
 # ---------- NETWORK ARCHITECTURE ----------
 # Import from shared models file
 # Use absolute import - works both as module and script
-from src.models import AsymmetricActorCritic
+from src.models import SharedBackboneActorCritic
 
 # ---------- PPO UPDATE ----------
-def update_ppo(ppo_opt, model, buf_list, clip=0.2, epochs=4, minibatch=32):
+def update_ppo(ppo_opt, model, buf_list, clip=0.2, epochs=4, minibatch=32, lambda_stop=1.0):
     obs_a = torch.tensor(np.concatenate([x['obs']['actor'] for x in buf_list]), dtype=torch.float32, device=DEVICE)
     obs_c = torch.tensor(np.concatenate([x['obs']['critic_gt'] for x in buf_list]), dtype=torch.float32, device=DEVICE)
     ahist = torch.tensor(np.concatenate([x['ahist'] for x in buf_list]), dtype=torch.float32, device=DEVICE)
@@ -784,30 +784,55 @@ def update_ppo(ppo_opt, model, buf_list, clip=0.2, epochs=4, minibatch=32):
     logp  = torch.tensor(np.concatenate([x['logp'] for x in buf_list]), dtype=torch.float32, device=DEVICE)
     adv   = torch.tensor(np.concatenate([x['adv'] for x in buf_list]), dtype=torch.float32, device=DEVICE)
     ret   = torch.tensor(np.concatenate([x['ret'] for x in buf_list]), dtype=torch.float32, device=DEVICE)
+    stop_labels = torch.tensor(np.concatenate([x['stop_label'] for x in buf_list]), dtype=torch.float32, device=DEVICE)
 
     if adv.numel() > 1: adv = (adv - adv.mean()) / (adv.std() + 1e-8)
     
     N = obs_a.shape[0]
     idxs = np.arange(N)
+    bce = nn.BCEWithLogitsLoss()
     for _ in range(epochs):
         np.random.shuffle(idxs)
         for s in range(0, N, minibatch):
             mb = idxs[s:s+minibatch]
             if len(mb) == 0: continue
             
-            logits, val, _, _ = model(obs_a[mb], obs_c[mb], ahist[mb])
-            logits = torch.clamp(logits, -20, 20)
-            dist = Categorical(logits=logits)
-            new_logp = dist.log_prob(act[mb])
-            entropy = dist.entropy().mean()
-            
+            movement_logits, stop_logit, val, _, _ = model(obs_a[mb], obs_c[mb], ahist[mb])
+            movement_logits = torch.clamp(movement_logits, -20, 20)
+            stop_logit = stop_logit.view(-1)  # ensure 1D batch
+            stop_prob = torch.sigmoid(stop_logit)
+            move_logp_all = F.log_softmax(movement_logits, dim=1)
+
+            stop_logp = torch.log(stop_prob + 1e-8)
+            cont_logp = torch.log1p(-stop_prob + 1e-8)
+
+            act_mb = act[mb]
+            stop_mask = (act_mb == ACTION_STOP_IDX)
+            move_mask = ~stop_mask
+
+            new_logp = torch.zeros_like(stop_prob, dtype=torch.float32)
+            # Stop actions: log p(stop)
+            if stop_mask.any():
+                new_logp[stop_mask] = stop_logp[stop_mask]
+            # Movement actions: log p(continue) + log p(move | continue)
+            if move_mask.any():
+                chosen_moves = act_mb[move_mask]
+                move_lp = move_logp_all[move_mask, :].gather(1, chosen_moves.view(-1,1)).squeeze(1)
+                new_logp[move_mask] = cont_logp[move_mask] + move_lp
+
+            # Entropy: Bernoulli + categorical
+            bern_entropy = -(stop_prob * stop_logp + (1 - stop_prob) * cont_logp)
+            move_entropy = Categorical(logits=movement_logits).entropy()
+            entropy = (bern_entropy + move_entropy).mean()
+
             ratio = torch.exp(new_logp - logp[mb])
             surr1 = ratio * adv[mb]
             surr2 = torch.clamp(ratio, 1.0-clip, 1.0+clip) * adv[mb]
             p_loss = -torch.min(surr1, surr2).mean()
             v_loss = F.mse_loss(val, ret[mb])
+            stop_loss = bce(stop_logit, stop_labels[mb].view(-1))
             
-            loss = p_loss + 0.5 * v_loss - 0.01 * entropy
+            loss = p_loss + 0.5 * v_loss + lambda_stop * stop_loss - 0.01 * entropy
             
             ppo_opt.zero_grad()
             loss.backward()
@@ -1005,7 +1030,8 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     training_config = {
         "timestamp": datetime.now().isoformat(),
         "device": DEVICE,
-        "n_actions": N_ACTIONS,
+        "n_movement_actions": N_MOVEMENT_ACTIONS,
+        "has_stop_head": True,
         "base_seed": base_seed,
         "curve_generation": "on_the_fly",
         "curve_config_path": stored_config_path,
@@ -1096,7 +1122,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     
     print("=== STARTING UNIFIED RL TRAINING ===")
     print(f"Number of Stages: {num_stages}")
-    print(f"Device: {DEVICE} | Actions: {N_ACTIONS} (Inc. STOP)")
+    print(f"Device: {DEVICE} | Movement Actions: {N_MOVEMENT_ACTIONS} (+ separate STOP head)")
     print(f"Base Seed: {base_seed} (for reproducibility)")
     print(f"Curve Generation: On-The-Fly")
     print(f"Run Directory: {run_dir}")
@@ -1133,7 +1159,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     original_stdout = sys.stdout
     sys.stdout = TeeOutput(original_stdout, log_fp)
 
-    model = AsymmetricActorCritic(n_actions=N_ACTIONS).to(DEVICE)
+    model = SharedBackboneActorCritic(n_movement_actions=N_MOVEMENT_ACTIONS).to(DEVICE)
     K = 8
     
     # Load checkpoint if resuming
@@ -1178,20 +1204,26 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
             while not done:
                 obs_a = torch.tensor(obs_dict['actor'][None], dtype=torch.float32, device=DEVICE)
                 obs_c = torch.tensor(obs_dict['critic_gt'][None], dtype=torch.float32, device=DEVICE)
-                A = fixed_window_history(ahist, K, N_ACTIONS)[None, ...]
+                A = fixed_window_history(ahist, K, N_MOVEMENT_ACTIONS)[None, ...]
                 A_t = torch.tensor(A, dtype=torch.float32, device=DEVICE)
                 
                 with torch.no_grad():
-                    logits, _, _, _ = model(obs_a, obs_c, A_t)
-                    logits = torch.clamp(logits, -20, 20)
-                    dist = Categorical(logits=logits)
-                    action = dist.sample().item()
+                    movement_logits, stop_logit, _, _, _ = model(obs_a, obs_c, A_t)
+                    movement_logits = torch.clamp(movement_logits, -20, 20)
+                    stop_prob = torch.sigmoid(stop_logit).view(-1)
+                    stop_sample = torch.bernoulli(stop_prob).item()
+                    if stop_sample >= 0.5:
+                        action = ACTION_STOP_IDX
+                    else:
+                        dist = Categorical(logits=movement_logits)
+                        action = dist.sample().item()
                 
                 next_obs, r, done, info = eval_env.step(action)
                 ep_return += r
                 
-                a_onehot = np.zeros(N_ACTIONS)
-                a_onehot[action] = 1.0
+                a_onehot = np.zeros(N_MOVEMENT_ACTIONS)
+                if action != ACTION_STOP_IDX and action < N_MOVEMENT_ACTIONS:
+                    a_onehot[action] = 1.0
                 ahist.append(a_onehot)
                 obs_dict = next_obs
             
@@ -1315,22 +1347,29 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
             ahist = []
             ep_traj = {
                 "obs":{'actor':[], 'critic_gt':[]}, "ahist":[], 
-                "act":[], "logp":[], "val":[], "rew":[]
+                "act":[], "logp":[], "val":[], "rew":[], "stop_label":[]
             }
             
             while not done:
                 obs_a = torch.tensor(obs_dict['actor'][None], dtype=torch.float32, device=DEVICE)
                 obs_c = torch.tensor(obs_dict['critic_gt'][None], dtype=torch.float32, device=DEVICE)
                 
-                A = fixed_window_history(ahist, K, N_ACTIONS)[None, ...]
+                A = fixed_window_history(ahist, K, N_MOVEMENT_ACTIONS)[None, ...]
                 A_t = torch.tensor(A, dtype=torch.float32, device=DEVICE)
 
                 with torch.no_grad():
-                    logits, value, _, _ = model(obs_a, obs_c, A_t)
-                    logits = torch.clamp(logits, -20, 20)
-                    dist = Categorical(logits=logits)
-                    action = dist.sample().item()
-                    logp = dist.log_prob(torch.tensor(action, device=DEVICE)).item()
+                    movement_logits, stop_logit, value, _, _ = model(obs_a, obs_c, A_t)
+                    movement_logits = torch.clamp(movement_logits, -20, 20)
+                    stop_prob = torch.sigmoid(stop_logit).view(-1)
+                    stop_sample = torch.bernoulli(stop_prob).item()
+                    if stop_sample >= 0.5:
+                        action = ACTION_STOP_IDX
+                        logp = torch.log(stop_prob + 1e-8).item()
+                    else:
+                        dist = Categorical(logits=movement_logits)
+                        action = dist.sample().item()
+                        logp_move = dist.log_prob(torch.tensor(action, device=DEVICE)).item()
+                        logp = torch.log1p(-stop_prob + 1e-8).item() + logp_move
                     val = value.item()
 
                 next_obs, r, done, info = env.step(action)
@@ -1342,8 +1381,12 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                 ep_traj["logp"].append(logp)
                 ep_traj["val"].append(val)
                 ep_traj["rew"].append(r)
+                stop_label = 1 if (info.get('stopped_correctly') or info.get('reached_end')) else 0
+                ep_traj["stop_label"].append(stop_label)
                 
-                a_onehot = np.zeros(N_ACTIONS); a_onehot[action] = 1.0
+                a_onehot = np.zeros(N_MOVEMENT_ACTIONS)
+                if action != ACTION_STOP_IDX and action < N_MOVEMENT_ACTIONS:
+                    a_onehot[action] = 1.0
                 ahist.append(a_onehot)
                 obs_dict = next_obs
             
@@ -1367,7 +1410,8 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                     "ahist": np.array(ep_traj["ahist"]),
                     "act": np.array(ep_traj["act"]),
                     "logp": np.array(ep_traj["logp"]),
-                    "adv": adv, "ret": ret
+                    "adv": adv, "ret": ret,
+                    "stop_label": np.array(ep_traj["stop_label"])
                 }
                 batch_buffer.append(final_ep_data)
                 ep_return = sum(rews)
@@ -1449,8 +1493,8 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                 torch.save(model.state_dict(), ckpt_path)
                 print(f"Checkpoint saved: {ckpt_path}")
                 
-                # Also save actor-only weights for inference
-                actor_weights = {k: v for k, v in model.state_dict().items() if k.startswith('actor_')}
+                # Also save actor/stop/shared weights for inference (exclude critic)
+                actor_weights = {k: v for k, v in model.state_dict().items() if not k.startswith('critic_')}
                 actor_path = os.path.join(checkpoint_dir, f"actor_{stage['name']}_ep{ep}.pth")
                 torch.save(actor_weights, actor_path)
                 print(f"Actor-only weights saved: {actor_path}")
@@ -1459,8 +1503,8 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         torch.save(model.state_dict(), final_path)
         print(f"Finished {stage['name']}. Saved model to {final_path}")
         
-        # Also save actor-only weights for inference
-        actor_weights = {k: v for k, v in model.state_dict().items() if k.startswith('actor_')}
+        # Also save actor/stop/shared weights for inference (exclude critic)
+        actor_weights = {k: v for k, v in model.state_dict().items() if not k.startswith('critic_')}
         actor_final_path = os.path.join(weights_dir, f"actor_{stage['name']}_FINAL.pth")
         torch.save(actor_weights, actor_final_path)
         
