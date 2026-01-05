@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-01-03T23:13:19.433215",
+  "timestamp": "2026-01-05T11:46:21.958225",
   "device": "cuda",
   "n_actions": 9,
   "base_seed": 42,
@@ -7,8 +7,39 @@
   "curve_config_path": "curve_config.json",
   "image_height": 128,
   "image_width": 128,
-  "stages": [],
-  "training_start_time": "2026-01-03T23:13:19.433282",
-  "training_end_time": "2026-01-03T23:13:19.753224",
-  "training_duration_seconds": 0.319942
+  "stages": [
+    {
+      "name": "Stage10_ComplexCurves",
+      "episodes": 15000,
+      "lr": 5e-05,
+      "config": {
+        "stage_id": 10,
+        "width": [
+          1,
+          8
+        ],
+        "noise": 0.4,
+        "tissue": false,
+        "strict_stop": false,
+        "mixed_start": true,
+        "invert": 0.5,
+        "min_intensity": 0.2,
+        "max_intensity": 0.6,
+        "branches": false,
+        "curvature_factor": 1.5,
+        "allow_self_cross": false,
+        "self_cross_prob": 0.0,
+        "width_variation": "wide_to_narrow",
+        "start_width": null,
+        "end_width": null,
+        "intensity_variation": "bright_to_dim",
+        "start_intensity": null,
+        "end_intensity": null,
+        "background_intensity": 0.2
+      }
+    }
+  ],
+  "training_start_time": "2026-01-05T11:46:21.958291",
+  "training_end_time": "2026-01-05T12:10:54.989696",
+  "training_duration_seconds": 1473.031405
 }
