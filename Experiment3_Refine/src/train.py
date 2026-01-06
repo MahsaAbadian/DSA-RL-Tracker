@@ -41,12 +41,12 @@ ACTIONS_MOVEMENT = [(-1, 0), (1, 0), (0,-1), (0, 1), (-1,-1), (-1,1), (1,-1), (1
 ACTION_STOP_IDX = 8
 N_ACTIONS = 8
 
-STEP_ALPHA = 1.2 
+STEP_ALPHA = 1.0
 CROP = 33
 EPSILON = 1e-6
 
 # Base seed for reproducibility (can be overridden)
-BASE_SEED = 42
+BASE_SEED = 50
 
 # ---------- CONFIG LOADING ----------
 def load_curve_config(config_path=None):
@@ -674,7 +674,7 @@ class CurveEnvUnified:
             if self.initial_steps >= 5 or progress_delta > 0:
                 self.is_at_start = False
         
-        sigma = 0.7 if self.stage_config['stage_id'] >= 3 else 1.5
+        sigma = 1.5 if self.stage_config['stage_id'] == 1 else 1.0
         precision_score = np.exp(-(L_t**2) / (2 * sigma**2))
         
         if L_t < self.L_prev:
@@ -711,23 +711,6 @@ class CurveEnvUnified:
         elif progress_delta <= 0:
             r -= 0.1
         
-        smoothness_bonus = 0.0
-        if len(self.history_pos) >= 2:
-            # Vector of last move
-            prev_dy = self.history_pos[-1][0] - self.history_pos[-2][0]
-            prev_dx = self.history_pos[-1][1] - self.history_pos[-2][1]
-            
-            # Normalize vectors
-            mag_p = np.sqrt(prev_dy**2 + prev_dx**2) + 1e-6
-            mag_c = np.sqrt(dy**2 + dx**2) + 1e-6 # current action dy, dx
-            
-            # Cosine similarity (1.0 = straight, -1.0 = U-turn)
-            cos_sim = (prev_dy*dy + prev_dx*dx) / (mag_p * mag_c)
-            
-            # Reward straight-line stability
-            smoothness_bonus = 0.2 * cos_sim 
-        r += smoothness_bonus
-
         # Bootstrap reward for initial steps when starting from the beginning
         # Problem: At the start, all history positions are the same, action history is empty,
         #          so the model must infer direction from the image alone (very hard!)
@@ -756,7 +739,7 @@ class CurveEnvUnified:
                 if cos_sim > 0: r += cos_sim * 0.5
 
         if self.prev_action != -1 and self.prev_action != a_idx:
-            r -= 0.25
+            r -= 0.05
         self.prev_action = a_idx
         r -= 0.05
 
