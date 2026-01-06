@@ -1,0 +1,1081 @@
+
+=============================================
+STARTING Stage1_Geometry_and_Stability
+Episodes: 12000 | LR: 0.0001
+Global Episode Offset: 0
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+[Stage1_Geometry_and_Stability] Ep 100 | Avg Rew: -3.57 | Success: 0.00
+[Stage1_Geometry_and_Stability] Ep 200 | Avg Rew: -3.70 | Success: 0.00
+[Stage1_Geometry_and_Stability] Ep 300 | Avg Rew: -0.41 | Success: 0.00
+[Stage1_Geometry_and_Stability] Ep 400 | Avg Rew: 2.77 | Success: 0.03
+[Stage1_Geometry_and_Stability] Ep 500 | Avg Rew: 4.94 | Success: 0.01
+[Stage1_Geometry_and_Stability] Ep 600 | Avg Rew: 2.81 | Success: 0.00
+[Stage1_Geometry_and_Stability] Ep 700 | Avg Rew: 10.10 | Success: 0.01
+[Stage1_Geometry_and_Stability] Ep 800 | Avg Rew: 8.57 | Success: 0.06
+[Stage1_Geometry_and_Stability] Ep 900 | Avg Rew: 8.84 | Success: 0.07
+[Stage1_Geometry_and_Stability] Ep 1000 | Avg Rew: 13.48 | Success: 0.08
+[Stage1_Geometry_and_Stability] Ep 1100 | Avg Rew: 6.54 | Success: 0.04
+[Stage1_Geometry_and_Stability] Ep 1200 | Avg Rew: 11.34 | Success: 0.05
+[Stage1_Geometry_and_Stability] Ep 1300 | Avg Rew: 18.76 | Success: 0.11
+[Stage1_Geometry_and_Stability] Ep 1400 | Avg Rew: 12.85 | Success: 0.10
+[Stage1_Geometry_and_Stability] Ep 1500 | Avg Rew: 13.96 | Success: 0.04
+[Stage1_Geometry_and_Stability] Ep 1600 | Avg Rew: 14.15 | Success: 0.09
+[Stage1_Geometry_and_Stability] Ep 1700 | Avg Rew: 13.75 | Success: 0.07
+[Stage1_Geometry_and_Stability] Ep 1800 | Avg Rew: 16.08 | Success: 0.07
+[Stage1_Geometry_and_Stability] Ep 1900 | Avg Rew: 15.25 | Success: 0.11
+[Stage1_Geometry_and_Stability] Ep 2000 | Avg Rew: 15.80 | Success: 0.10
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage1_Geometry_and_Stability_ep2000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage1_Geometry_and_Stability_ep2000.pth
+[Stage1_Geometry_and_Stability] Ep 2100 | Avg Rew: 18.73 | Success: 0.06
+[Stage1_Geometry_and_Stability] Ep 2200 | Avg Rew: 19.79 | Success: 0.07
+[Stage1_Geometry_and_Stability] Ep 2300 | Avg Rew: 14.43 | Success: 0.11
+[Stage1_Geometry_and_Stability] Ep 2400 | Avg Rew: 14.08 | Success: 0.08
+[Stage1_Geometry_and_Stability] Ep 2500 | Avg Rew: 20.91 | Success: 0.10
+[Stage1_Geometry_and_Stability] Ep 2600 | Avg Rew: 25.62 | Success: 0.14
+[Stage1_Geometry_and_Stability] Ep 2700 | Avg Rew: 26.63 | Success: 0.07
+[Stage1_Geometry_and_Stability] Ep 2800 | Avg Rew: 26.19 | Success: 0.13
+[Stage1_Geometry_and_Stability] Ep 2900 | Avg Rew: 22.64 | Success: 0.14
+[Stage1_Geometry_and_Stability] Ep 3000 | Avg Rew: 21.70 | Success: 0.10
+[Stage1_Geometry_and_Stability] Ep 3100 | Avg Rew: 22.53 | Success: 0.11
+[Stage1_Geometry_and_Stability] Ep 3200 | Avg Rew: 22.33 | Success: 0.11
+[Stage1_Geometry_and_Stability] Ep 3300 | Avg Rew: 21.35 | Success: 0.09
+[Stage1_Geometry_and_Stability] Ep 3400 | Avg Rew: 19.45 | Success: 0.10
+[Stage1_Geometry_and_Stability] Ep 3500 | Avg Rew: 26.10 | Success: 0.10
+[Stage1_Geometry_and_Stability] Ep 3600 | Avg Rew: 24.76 | Success: 0.12
+[Stage1_Geometry_and_Stability] Ep 3700 | Avg Rew: 27.13 | Success: 0.10
+[Stage1_Geometry_and_Stability] Ep 3800 | Avg Rew: 25.32 | Success: 0.13
+[Stage1_Geometry_and_Stability] Ep 3900 | Avg Rew: 29.64 | Success: 0.14
+[Stage1_Geometry_and_Stability] Ep 4000 | Avg Rew: 29.95 | Success: 0.08
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage1_Geometry_and_Stability_ep4000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage1_Geometry_and_Stability_ep4000.pth
+[Stage1_Geometry_and_Stability] Ep 4100 | Avg Rew: 46.51 | Success: 0.11
+[Stage1_Geometry_and_Stability] Ep 4200 | Avg Rew: 32.36 | Success: 0.13
+[Stage1_Geometry_and_Stability] Ep 4300 | Avg Rew: 34.69 | Success: 0.12
+[Stage1_Geometry_and_Stability] Ep 4400 | Avg Rew: 27.64 | Success: 0.10
+[Stage1_Geometry_and_Stability] Ep 4500 | Avg Rew: 30.75 | Success: 0.12
+[Stage1_Geometry_and_Stability] Ep 4600 | Avg Rew: 29.39 | Success: 0.13
+[Stage1_Geometry_and_Stability] Ep 4700 | Avg Rew: 33.37 | Success: 0.17
+[Stage1_Geometry_and_Stability] Ep 4800 | Avg Rew: 25.03 | Success: 0.06
+[Stage1_Geometry_and_Stability] Ep 4900 | Avg Rew: 43.87 | Success: 0.18
+[Stage1_Geometry_and_Stability] Ep 5000 | Avg Rew: 38.44 | Success: 0.10
+[Stage1_Geometry_and_Stability] Ep 5100 | Avg Rew: 41.71 | Success: 0.16
+[Stage1_Geometry_and_Stability] Ep 5200 | Avg Rew: 44.87 | Success: 0.17
+[Stage1_Geometry_and_Stability] Ep 5300 | Avg Rew: 42.20 | Success: 0.19
+[Stage1_Geometry_and_Stability] Ep 5400 | Avg Rew: 39.70 | Success: 0.13
+[Stage1_Geometry_and_Stability] Ep 5500 | Avg Rew: 40.19 | Success: 0.16
+[Stage1_Geometry_and_Stability] Ep 5600 | Avg Rew: 39.56 | Success: 0.14
+[Stage1_Geometry_and_Stability] Ep 5700 | Avg Rew: 43.97 | Success: 0.22
+[Stage1_Geometry_and_Stability] Ep 5800 | Avg Rew: 31.74 | Success: 0.15
+[Stage1_Geometry_and_Stability] Ep 5900 | Avg Rew: 62.13 | Success: 0.31
+[Stage1_Geometry_and_Stability] Ep 6000 | Avg Rew: 41.42 | Success: 0.23
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage1_Geometry_and_Stability_ep6000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage1_Geometry_and_Stability_ep6000.pth
+[Stage1_Geometry_and_Stability] Ep 6100 | Avg Rew: 43.74 | Success: 0.20
+[Stage1_Geometry_and_Stability] Ep 6200 | Avg Rew: 43.88 | Success: 0.21
+[Stage1_Geometry_and_Stability] Ep 6300 | Avg Rew: 48.78 | Success: 0.20
+[Stage1_Geometry_and_Stability] Ep 6400 | Avg Rew: 48.60 | Success: 0.19
+[Stage1_Geometry_and_Stability] Ep 6500 | Avg Rew: 45.16 | Success: 0.18
+[Stage1_Geometry_and_Stability] Ep 6600 | Avg Rew: 49.54 | Success: 0.16
+[Stage1_Geometry_and_Stability] Ep 6700 | Avg Rew: 53.42 | Success: 0.21
+[Stage1_Geometry_and_Stability] Ep 6800 | Avg Rew: 44.71 | Success: 0.18
+[Stage1_Geometry_and_Stability] Ep 6900 | Avg Rew: 38.26 | Success: 0.20
+[Stage1_Geometry_and_Stability] Ep 7000 | Avg Rew: 47.61 | Success: 0.18
+[Stage1_Geometry_and_Stability] Ep 7100 | Avg Rew: 52.99 | Success: 0.19
+[Stage1_Geometry_and_Stability] Ep 7200 | Avg Rew: 51.96 | Success: 0.19
+[Stage1_Geometry_and_Stability] Ep 7300 | Avg Rew: 51.84 | Success: 0.28
+[Stage1_Geometry_and_Stability] Ep 7400 | Avg Rew: 49.28 | Success: 0.24
+[Stage1_Geometry_and_Stability] Ep 7500 | Avg Rew: 49.81 | Success: 0.11
+[Stage1_Geometry_and_Stability] Ep 7600 | Avg Rew: 46.92 | Success: 0.19
+[Stage1_Geometry_and_Stability] Ep 7700 | Avg Rew: 53.57 | Success: 0.20
+[Stage1_Geometry_and_Stability] Ep 7800 | Avg Rew: 55.48 | Success: 0.30
+[Stage1_Geometry_and_Stability] Ep 7900 | Avg Rew: 64.51 | Success: 0.29
+[Stage1_Geometry_and_Stability] Ep 8000 | Avg Rew: 55.95 | Success: 0.21
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage1_Geometry_and_Stability_ep8000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage1_Geometry_and_Stability_ep8000.pth
+[Stage1_Geometry_and_Stability] Ep 8100 | Avg Rew: 48.85 | Success: 0.21
+[Stage1_Geometry_and_Stability] Ep 8200 | Avg Rew: 50.94 | Success: 0.22
+[Stage1_Geometry_and_Stability] Ep 8300 | Avg Rew: 58.99 | Success: 0.27
+[Stage1_Geometry_and_Stability] Ep 8400 | Avg Rew: 55.41 | Success: 0.35
+[Stage1_Geometry_and_Stability] Ep 8500 | Avg Rew: 56.63 | Success: 0.28
+[Stage1_Geometry_and_Stability] Ep 8600 | Avg Rew: 56.93 | Success: 0.30
+[Stage1_Geometry_and_Stability] Ep 8700 | Avg Rew: 71.01 | Success: 0.39
+[Stage1_Geometry_and_Stability] Ep 8800 | Avg Rew: 61.04 | Success: 0.37
+[Stage1_Geometry_and_Stability] Ep 8900 | Avg Rew: 64.94 | Success: 0.35
+[Stage1_Geometry_and_Stability] Ep 9000 | Avg Rew: 60.52 | Success: 0.42
+[Stage1_Geometry_and_Stability] Ep 9100 | Avg Rew: 59.85 | Success: 0.35
+[Stage1_Geometry_and_Stability] Ep 9200 | Avg Rew: 62.67 | Success: 0.33
+[Stage1_Geometry_and_Stability] Ep 9300 | Avg Rew: 58.78 | Success: 0.35
+[Stage1_Geometry_and_Stability] Ep 9400 | Avg Rew: 70.84 | Success: 0.37
+[Stage1_Geometry_and_Stability] Ep 9500 | Avg Rew: 72.82 | Success: 0.32
+[Stage1_Geometry_and_Stability] Ep 9600 | Avg Rew: 67.42 | Success: 0.36
+[Stage1_Geometry_and_Stability] Ep 9700 | Avg Rew: 57.06 | Success: 0.31
+[Stage1_Geometry_and_Stability] Ep 9800 | Avg Rew: 66.33 | Success: 0.35
+[Stage1_Geometry_and_Stability] Ep 9900 | Avg Rew: 77.99 | Success: 0.42
+[Stage1_Geometry_and_Stability] Ep 10000 | Avg Rew: 66.33 | Success: 0.35
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage1_Geometry_and_Stability_ep10000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage1_Geometry_and_Stability_ep10000.pth
+[Stage1_Geometry_and_Stability] Ep 10100 | Avg Rew: 64.31 | Success: 0.39
+[Stage1_Geometry_and_Stability] Ep 10200 | Avg Rew: 73.33 | Success: 0.46
+[Stage1_Geometry_and_Stability] Ep 10300 | Avg Rew: 72.19 | Success: 0.34
+[Stage1_Geometry_and_Stability] Ep 10400 | Avg Rew: 81.00 | Success: 0.36
+[Stage1_Geometry_and_Stability] Ep 10500 | Avg Rew: 77.78 | Success: 0.48
+[Stage1_Geometry_and_Stability] Ep 10600 | Avg Rew: 72.79 | Success: 0.40
+[Stage1_Geometry_and_Stability] Ep 10700 | Avg Rew: 69.33 | Success: 0.43
+[Stage1_Geometry_and_Stability] Ep 10800 | Avg Rew: 77.19 | Success: 0.42
+[Stage1_Geometry_and_Stability] Ep 10900 | Avg Rew: 79.30 | Success: 0.45
+[Stage1_Geometry_and_Stability] Ep 11000 | Avg Rew: 79.04 | Success: 0.45
+[Stage1_Geometry_and_Stability] Ep 11100 | Avg Rew: 71.57 | Success: 0.43
+[Stage1_Geometry_and_Stability] Ep 11200 | Avg Rew: 84.47 | Success: 0.52
+[Stage1_Geometry_and_Stability] Ep 11300 | Avg Rew: 72.89 | Success: 0.47
+[Stage1_Geometry_and_Stability] Ep 11400 | Avg Rew: 72.13 | Success: 0.42
+[Stage1_Geometry_and_Stability] Ep 11500 | Avg Rew: 78.59 | Success: 0.42
+[Stage1_Geometry_and_Stability] Ep 11600 | Avg Rew: 70.98 | Success: 0.37
+[Stage1_Geometry_and_Stability] Ep 11700 | Avg Rew: 84.67 | Success: 0.51
+[Stage1_Geometry_and_Stability] Ep 11800 | Avg Rew: 78.06 | Success: 0.44
+[Stage1_Geometry_and_Stability] Ep 11900 | Avg Rew: 70.47 | Success: 0.37
+[Stage1_Geometry_and_Stability] Ep 12000 | Avg Rew: 77.79 | Success: 0.42
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage1_Geometry_and_Stability_ep12000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage1_Geometry_and_Stability_ep12000.pth
+Finished Stage1_Geometry_and_Stability. Saved model to /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/weights/model_Stage1_Geometry_and_Stability_FINAL.pth
+✅ Added Stage1_Geometry_and_Stability to previous stages pool (total: 1 stages)
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/weights/actor_Stage1_Geometry_and_Stability_FINAL.pth
+
+=============================================
+STARTING Stage2_Extreme_Curvature
+Episodes: 15000 | LR: 8e-05
+Global Episode Offset: 24000
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+[Stage2_Extreme_Curvature] Ep 100 | Avg Rew: 92.06 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 200 | Avg Rew: 85.03 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 300 | Avg Rew: 82.34 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 400 | Avg Rew: 85.78 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 500 | Avg Rew: 130.50 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=96.52
+
+[Stage2_Extreme_Curvature] Ep 600 | Avg Rew: 97.25 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 700 | Avg Rew: 87.51 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 800 | Avg Rew: 128.78 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 900 | Avg Rew: 124.02 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 1000 | Avg Rew: 123.40 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.50, Return=67.51
+
+[Stage2_Extreme_Curvature] Ep 1100 | Avg Rew: 83.46 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 1200 | Avg Rew: 82.43 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 1300 | Avg Rew: 94.43 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 1400 | Avg Rew: 87.49 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 1500 | Avg Rew: 105.86 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.30, Return=82.02
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 1600 | Avg Rew: 110.05 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 1700 | Avg Rew: 102.06 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 1800 | Avg Rew: 95.15 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 1900 | Avg Rew: 89.64 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 2000 | Avg Rew: 93.16 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.40, Return=62.05
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage2_Extreme_Curvature_ep2000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage2_Extreme_Curvature_ep2000.pth
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 2100 | Avg Rew: 100.58 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 2200 | Avg Rew: 104.52 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 2300 | Avg Rew: 129.35 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 2400 | Avg Rew: 118.14 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 2500 | Avg Rew: 103.97 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.50, Return=63.13
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 2600 | Avg Rew: 111.22 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 2700 | Avg Rew: 95.26 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 2800 | Avg Rew: 123.77 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 2900 | Avg Rew: 122.06 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 3000 | Avg Rew: 116.55 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.40, Return=80.67
+
+[Stage2_Extreme_Curvature] Ep 3100 | Avg Rew: 111.59 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 3200 | Avg Rew: 101.82 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 3300 | Avg Rew: 93.35 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 3400 | Avg Rew: 133.80 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 3500 | Avg Rew: 105.63 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.40, Return=84.97
+
+[Stage2_Extreme_Curvature] Ep 3600 | Avg Rew: 130.70 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 3700 | Avg Rew: 159.88 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 3800 | Avg Rew: 123.59 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 3900 | Avg Rew: 142.48 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 4000 | Avg Rew: 118.56 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.30, Return=82.42
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage2_Extreme_Curvature_ep4000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage2_Extreme_Curvature_ep4000.pth
+[Stage2_Extreme_Curvature] Ep 4100 | Avg Rew: 118.62 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 4200 | Avg Rew: 120.29 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 4300 | Avg Rew: 132.47 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 4400 | Avg Rew: 101.50 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 4500 | Avg Rew: 142.93 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=100.35
+
+[Stage2_Extreme_Curvature] Ep 4600 | Avg Rew: 143.03 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 4700 | Avg Rew: 127.09 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 4800 | Avg Rew: 121.17 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 4900 | Avg Rew: 137.46 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 5000 | Avg Rew: 131.86 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=85.67
+
+[Stage2_Extreme_Curvature] Ep 5100 | Avg Rew: 133.08 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 5200 | Avg Rew: 119.16 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 5300 | Avg Rew: 147.36 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 5400 | Avg Rew: 133.51 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 5500 | Avg Rew: 161.44 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.70, Return=97.49
+
+[Stage2_Extreme_Curvature] Ep 5600 | Avg Rew: 148.86 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 5700 | Avg Rew: 156.62 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 5800 | Avg Rew: 166.84 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 5900 | Avg Rew: 129.84 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 6000 | Avg Rew: 142.08 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.70, Return=98.47
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage2_Extreme_Curvature_ep6000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage2_Extreme_Curvature_ep6000.pth
+[Stage2_Extreme_Curvature] Ep 6100 | Avg Rew: 138.01 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 6200 | Avg Rew: 116.93 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 6300 | Avg Rew: 138.54 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 6400 | Avg Rew: 152.15 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 6500 | Avg Rew: 169.74 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=102.25
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 6600 | Avg Rew: 142.93 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 6700 | Avg Rew: 174.58 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 6800 | Avg Rew: 169.31 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 6900 | Avg Rew: 170.26 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 7000 | Avg Rew: 187.65 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.80, Return=115.78
+
+[Stage2_Extreme_Curvature] Ep 7100 | Avg Rew: 162.25 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 7200 | Avg Rew: 150.22 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 7300 | Avg Rew: 171.82 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 7400 | Avg Rew: 162.64 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 7500 | Avg Rew: 159.97 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.80, Return=118.91
+
+[Stage2_Extreme_Curvature] Ep 7600 | Avg Rew: 160.88 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 7700 | Avg Rew: 184.42 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 7800 | Avg Rew: 160.34 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 7900 | Avg Rew: 174.06 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 8000 | Avg Rew: 166.28 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.70, Return=113.95
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage2_Extreme_Curvature_ep8000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage2_Extreme_Curvature_ep8000.pth
+[Stage2_Extreme_Curvature] Ep 8100 | Avg Rew: 147.56 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 8200 | Avg Rew: 157.48 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 8300 | Avg Rew: 163.22 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 8400 | Avg Rew: 174.71 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 8500 | Avg Rew: 138.58 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=109.94
+
+[Stage2_Extreme_Curvature] Ep 8600 | Avg Rew: 173.33 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 8700 | Avg Rew: 134.24 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 8800 | Avg Rew: 148.59 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 8900 | Avg Rew: 173.96 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 9000 | Avg Rew: 158.63 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.90, Return=132.60
+
+[Stage2_Extreme_Curvature] Ep 9100 | Avg Rew: 159.43 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 9200 | Avg Rew: 160.78 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 9300 | Avg Rew: 153.48 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 9400 | Avg Rew: 154.22 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 9500 | Avg Rew: 165.59 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.80, Return=110.87
+
+[Stage2_Extreme_Curvature] Ep 9600 | Avg Rew: 148.62 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 9700 | Avg Rew: 160.18 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 9800 | Avg Rew: 188.05 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 9900 | Avg Rew: 151.95 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 10000 | Avg Rew: 159.80 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.70, Return=112.89
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage2_Extreme_Curvature_ep10000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage2_Extreme_Curvature_ep10000.pth
+[Stage2_Extreme_Curvature] Ep 10100 | Avg Rew: 162.94 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 10200 | Avg Rew: 169.09 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 10300 | Avg Rew: 155.67 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 10400 | Avg Rew: 193.22 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 10500 | Avg Rew: 163.26 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.50, Return=98.84
+
+[Stage2_Extreme_Curvature] Ep 10600 | Avg Rew: 141.06 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 10700 | Avg Rew: 149.97 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 10800 | Avg Rew: 203.57 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 10900 | Avg Rew: 170.01 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 11000 | Avg Rew: 170.26 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.80, Return=108.72
+
+[Stage2_Extreme_Curvature] Ep 11100 | Avg Rew: 149.99 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 11200 | Avg Rew: 169.40 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 11300 | Avg Rew: 191.66 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 11400 | Avg Rew: 170.50 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 11500 | Avg Rew: 153.14 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.70, Return=113.64
+
+[Stage2_Extreme_Curvature] Ep 11600 | Avg Rew: 176.98 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 11700 | Avg Rew: 174.35 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 11800 | Avg Rew: 193.14 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 11900 | Avg Rew: 176.05 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 12000 | Avg Rew: 187.80 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=95.17
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage2_Extreme_Curvature_ep12000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage2_Extreme_Curvature_ep12000.pth
+[Stage2_Extreme_Curvature] Ep 12100 | Avg Rew: 165.71 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 12200 | Avg Rew: 194.56 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 12300 | Avg Rew: 155.53 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 12400 | Avg Rew: 163.69 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 12500 | Avg Rew: 184.52 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=87.40
+
+[Stage2_Extreme_Curvature] Ep 12600 | Avg Rew: 181.99 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 12700 | Avg Rew: 177.54 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 12800 | Avg Rew: 147.42 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 12900 | Avg Rew: 201.72 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 13000 | Avg Rew: 179.75 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.90, Return=132.66
+
+[Stage2_Extreme_Curvature] Ep 13100 | Avg Rew: 185.59 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 13200 | Avg Rew: 152.02 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 13300 | Avg Rew: 192.04 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 13400 | Avg Rew: 155.15 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 13500 | Avg Rew: 165.05 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.80, Return=121.05
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 13600 | Avg Rew: 179.71 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 13700 | Avg Rew: 172.71 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 13800 | Avg Rew: 159.38 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 13900 | Avg Rew: 170.82 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 14000 | Avg Rew: 205.35 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=112.60
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage2_Extreme_Curvature_ep14000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage2_Extreme_Curvature_ep14000.pth
+[Stage2_Extreme_Curvature] Ep 14100 | Avg Rew: 172.53 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 14200 | Avg Rew: 172.60 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 14300 | Avg Rew: 205.89 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 14400 | Avg Rew: 200.18 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 14500 | Avg Rew: 189.09 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.80, Return=114.41
+
+[Stage2_Extreme_Curvature] Ep 14600 | Avg Rew: 174.59 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 14700 | Avg Rew: 190.48 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 14800 | Avg Rew: 179.59 | Success: 0.00 [Prev: 1]
+[Stage2_Extreme_Curvature] Ep 14900 | Avg Rew: 178.03 | Success: 0.00 [Prev: 1]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage2_Extreme_Curvature] Ep 15000 | Avg Rew: 198.97 | Success: 0.00 [Prev: 1]
+
+🔍 Evaluating on 1 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.80, Return=109.85
+
+Finished Stage2_Extreme_Curvature. Saved model to /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/weights/model_Stage2_Extreme_Curvature_FINAL.pth
+✅ Added Stage2_Extreme_Curvature to previous stages pool (total: 2 stages)
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/weights/actor_Stage2_Extreme_Curvature_FINAL.pth
+
+=============================================
+STARTING Stage3_Thin_Paths
+Episodes: 18000 | LR: 5e-05
+Global Episode Offset: 54000
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+[Stage3_Thin_Paths] Ep 100 | Avg Rew: 97.11 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 200 | Avg Rew: 138.22 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 300 | Avg Rew: 135.57 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 400 | Avg Rew: 110.52 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 500 | Avg Rew: 139.00 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.80, Return=100.25
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=190.47
+
+[Stage3_Thin_Paths] Ep 600 | Avg Rew: 156.49 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 700 | Avg Rew: 163.39 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 800 | Avg Rew: 188.59 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 900 | Avg Rew: 166.94 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 1000 | Avg Rew: 154.49 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=87.34
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=191.02
+
+[Stage3_Thin_Paths] Ep 1100 | Avg Rew: 185.93 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 1200 | Avg Rew: 227.05 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 1300 | Avg Rew: 218.45 | Success: 0.00 [Prev: 2]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Extreme_Curvature'
+[Stage3_Thin_Paths] Ep 1400 | Avg Rew: 216.87 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 1500 | Avg Rew: 226.20 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=108.50
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=184.54
+
+[Stage3_Thin_Paths] Ep 1600 | Avg Rew: 217.80 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 1700 | Avg Rew: 226.60 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 1800 | Avg Rew: 216.65 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 1900 | Avg Rew: 233.26 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 2000 | Avg Rew: 210.98 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.40, Return=111.61
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=214.84
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage3_Thin_Paths_ep2000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage3_Thin_Paths_ep2000.pth
+[Stage3_Thin_Paths] Ep 2100 | Avg Rew: 266.31 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 2200 | Avg Rew: 248.31 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 2300 | Avg Rew: 246.23 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 2400 | Avg Rew: 252.97 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 2500 | Avg Rew: 215.37 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.30, Return=115.22
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=217.08
+
+[Stage3_Thin_Paths] Ep 2600 | Avg Rew: 274.06 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 2700 | Avg Rew: 223.94 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 2800 | Avg Rew: 252.27 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 2900 | Avg Rew: 260.67 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 3000 | Avg Rew: 255.86 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.40, Return=105.27
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=227.65
+
+[Stage3_Thin_Paths] Ep 3100 | Avg Rew: 221.06 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 3200 | Avg Rew: 232.80 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 3300 | Avg Rew: 220.04 | Success: 0.00 [Prev: 2]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Extreme_Curvature'
+[Stage3_Thin_Paths] Ep 3400 | Avg Rew: 227.74 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 3500 | Avg Rew: 213.48 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=110.32
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=165.09
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Extreme_Curvature'
+[Stage3_Thin_Paths] Ep 3600 | Avg Rew: 254.64 | Success: 0.00 [Prev: 2]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Extreme_Curvature'
+[Stage3_Thin_Paths] Ep 3700 | Avg Rew: 193.11 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 3800 | Avg Rew: 229.93 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 3900 | Avg Rew: 246.47 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 4000 | Avg Rew: 247.11 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.30, Return=97.83
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=241.31
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage3_Thin_Paths_ep4000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage3_Thin_Paths_ep4000.pth
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage3_Thin_Paths] Ep 4100 | Avg Rew: 242.94 | Success: 0.00 [Prev: 2]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage3_Thin_Paths] Ep 4200 | Avg Rew: 207.99 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 4300 | Avg Rew: 245.69 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 4400 | Avg Rew: 251.74 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 4500 | Avg Rew: 225.26 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.50, Return=65.83
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=140.47
+
+[Stage3_Thin_Paths] Ep 4600 | Avg Rew: 194.24 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 4700 | Avg Rew: 228.36 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 4800 | Avg Rew: 230.37 | Success: 0.00 [Prev: 2]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Extreme_Curvature'
+[Stage3_Thin_Paths] Ep 4900 | Avg Rew: 280.22 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 5000 | Avg Rew: 236.57 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.50, Return=97.50
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=199.72
+
+[Stage3_Thin_Paths] Ep 5100 | Avg Rew: 251.39 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 5200 | Avg Rew: 238.63 | Success: 0.00 [Prev: 2]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Extreme_Curvature'
+[Stage3_Thin_Paths] Ep 5300 | Avg Rew: 235.17 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 5400 | Avg Rew: 260.49 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 5500 | Avg Rew: 223.71 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.50, Return=103.10
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=149.60
+
+[Stage3_Thin_Paths] Ep 5600 | Avg Rew: 222.67 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 5700 | Avg Rew: 228.64 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 5800 | Avg Rew: 256.53 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 5900 | Avg Rew: 260.81 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 6000 | Avg Rew: 235.27 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.50, Return=106.65
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=242.49
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage3_Thin_Paths_ep6000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage3_Thin_Paths_ep6000.pth
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage3_Thin_Paths] Ep 6100 | Avg Rew: 228.03 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 6200 | Avg Rew: 241.18 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 6300 | Avg Rew: 259.01 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 6400 | Avg Rew: 266.17 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 6500 | Avg Rew: 251.17 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.70, Return=129.12
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=255.19
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage3_Thin_Paths] Ep 6600 | Avg Rew: 219.95 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 6700 | Avg Rew: 279.50 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 6800 | Avg Rew: 254.29 | Success: 0.00 [Prev: 2]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage3_Thin_Paths] Ep 6900 | Avg Rew: 235.31 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 7000 | Avg Rew: 231.51 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=125.34
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=230.65
+
+[Stage3_Thin_Paths] Ep 7100 | Avg Rew: 245.88 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 7200 | Avg Rew: 246.16 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 7300 | Avg Rew: 239.18 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 7400 | Avg Rew: 218.95 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 7500 | Avg Rew: 221.73 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=108.95
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=271.87
+
+[Stage3_Thin_Paths] Ep 7600 | Avg Rew: 243.28 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 7700 | Avg Rew: 217.20 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 7800 | Avg Rew: 239.28 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 7900 | Avg Rew: 258.44 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 8000 | Avg Rew: 249.83 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.40, Return=68.19
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=170.71
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage3_Thin_Paths_ep8000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage3_Thin_Paths_ep8000.pth
+[Stage3_Thin_Paths] Ep 8100 | Avg Rew: 228.87 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 8200 | Avg Rew: 258.86 | Success: 0.00 [Prev: 2]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Extreme_Curvature'
+[Stage3_Thin_Paths] Ep 8300 | Avg Rew: 267.18 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 8400 | Avg Rew: 241.84 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 8500 | Avg Rew: 240.52 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.50, Return=106.20
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=250.19
+
+[Stage3_Thin_Paths] Ep 8600 | Avg Rew: 251.05 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 8700 | Avg Rew: 244.15 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 8800 | Avg Rew: 258.31 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 8900 | Avg Rew: 249.02 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 9000 | Avg Rew: 204.50 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.80, Return=148.55
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=245.18
+
+[Stage3_Thin_Paths] Ep 9100 | Avg Rew: 242.32 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 9200 | Avg Rew: 258.87 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 9300 | Avg Rew: 225.62 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 9400 | Avg Rew: 236.91 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 9500 | Avg Rew: 266.16 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=123.42
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=225.70
+
+[Stage3_Thin_Paths] Ep 9600 | Avg Rew: 228.67 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 9700 | Avg Rew: 235.73 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 9800 | Avg Rew: 249.55 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 9900 | Avg Rew: 278.77 | Success: 0.00 [Prev: 2]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Extreme_Curvature'
+[Stage3_Thin_Paths] Ep 10000 | Avg Rew: 249.23 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.80, Return=97.82
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=205.32
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage3_Thin_Paths_ep10000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage3_Thin_Paths_ep10000.pth
+[Stage3_Thin_Paths] Ep 10100 | Avg Rew: 238.54 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 10200 | Avg Rew: 262.67 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 10300 | Avg Rew: 250.54 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 10400 | Avg Rew: 242.56 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 10500 | Avg Rew: 239.20 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.50, Return=101.29
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=121.29
+
+[Stage3_Thin_Paths] Ep 10600 | Avg Rew: 255.35 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 10700 | Avg Rew: 267.02 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 10800 | Avg Rew: 284.26 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 10900 | Avg Rew: 254.93 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 11000 | Avg Rew: 250.96 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.30, Return=94.07
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=147.22
+
+[Stage3_Thin_Paths] Ep 11100 | Avg Rew: 254.79 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 11200 | Avg Rew: 266.14 | Success: 0.00 [Prev: 2]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Extreme_Curvature'
+[Stage3_Thin_Paths] Ep 11300 | Avg Rew: 222.29 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 11400 | Avg Rew: 262.08 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 11500 | Avg Rew: 230.39 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=126.89
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=189.66
+
+[Stage3_Thin_Paths] Ep 11600 | Avg Rew: 229.45 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 11700 | Avg Rew: 265.74 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 11800 | Avg Rew: 239.03 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 11900 | Avg Rew: 219.51 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 12000 | Avg Rew: 260.76 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.50, Return=103.96
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=209.00
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage3_Thin_Paths_ep12000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage3_Thin_Paths_ep12000.pth
+[Stage3_Thin_Paths] Ep 12100 | Avg Rew: 261.51 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 12200 | Avg Rew: 263.95 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 12300 | Avg Rew: 266.28 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 12400 | Avg Rew: 269.70 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 12500 | Avg Rew: 281.22 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.40, Return=124.72
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=202.29
+
+[Stage3_Thin_Paths] Ep 12600 | Avg Rew: 241.33 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 12700 | Avg Rew: 229.55 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 12800 | Avg Rew: 264.10 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 12900 | Avg Rew: 289.41 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 13000 | Avg Rew: 243.58 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.50, Return=119.86
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=149.58
+
+[Stage3_Thin_Paths] Ep 13100 | Avg Rew: 282.85 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 13200 | Avg Rew: 264.46 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 13300 | Avg Rew: 274.73 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 13400 | Avg Rew: 247.94 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 13500 | Avg Rew: 227.20 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=110.57
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=259.90
+
+[Stage3_Thin_Paths] Ep 13600 | Avg Rew: 232.48 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 13700 | Avg Rew: 263.39 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 13800 | Avg Rew: 259.70 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 13900 | Avg Rew: 244.20 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 14000 | Avg Rew: 232.57 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.40, Return=103.44
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=221.45
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage3_Thin_Paths_ep14000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage3_Thin_Paths_ep14000.pth
+[Stage3_Thin_Paths] Ep 14100 | Avg Rew: 224.63 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 14200 | Avg Rew: 222.30 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 14300 | Avg Rew: 285.79 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 14400 | Avg Rew: 295.89 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 14500 | Avg Rew: 218.55 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.40, Return=133.00
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=212.33
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Extreme_Curvature'
+[Stage3_Thin_Paths] Ep 14600 | Avg Rew: 295.28 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 14700 | Avg Rew: 276.61 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 14800 | Avg Rew: 251.90 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 14900 | Avg Rew: 242.72 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 15000 | Avg Rew: 249.19 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.30, Return=94.19
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=249.26
+
+[Stage3_Thin_Paths] Ep 15100 | Avg Rew: 251.39 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 15200 | Avg Rew: 217.22 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 15300 | Avg Rew: 259.76 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 15400 | Avg Rew: 254.07 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 15500 | Avg Rew: 265.16 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.50, Return=127.97
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=228.95
+
+[Stage3_Thin_Paths] Ep 15600 | Avg Rew: 238.38 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 15700 | Avg Rew: 259.62 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 15800 | Avg Rew: 269.97 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 15900 | Avg Rew: 261.91 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 16000 | Avg Rew: 267.94 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.30, Return=113.30
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=197.35
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage3_Thin_Paths_ep16000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage3_Thin_Paths_ep16000.pth
+[Stage3_Thin_Paths] Ep 16100 | Avg Rew: 204.03 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 16200 | Avg Rew: 220.97 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 16300 | Avg Rew: 215.91 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 16400 | Avg Rew: 239.46 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 16500 | Avg Rew: 265.83 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.30, Return=112.50
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=191.83
+
+[Stage3_Thin_Paths] Ep 16600 | Avg Rew: 220.23 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 16700 | Avg Rew: 220.11 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 16800 | Avg Rew: 272.61 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 16900 | Avg Rew: 266.30 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 17000 | Avg Rew: 255.91 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=110.54
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=202.37
+
+[Stage3_Thin_Paths] Ep 17100 | Avg Rew: 254.69 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 17200 | Avg Rew: 283.92 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 17300 | Avg Rew: 249.86 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 17400 | Avg Rew: 263.07 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 17500 | Avg Rew: 262.36 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.30, Return=112.10
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=204.50
+
+[Stage3_Thin_Paths] Ep 17600 | Avg Rew: 259.09 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 17700 | Avg Rew: 300.02 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 17800 | Avg Rew: 253.71 | Success: 0.00 [Prev: 2]
+[Stage3_Thin_Paths] Ep 17900 | Avg Rew: 278.35 | Success: 0.00 [Prev: 2]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage3_Thin_Paths] Ep 18000 | Avg Rew: 244.44 | Success: 0.00 [Prev: 2]
+
+🔍 Evaluating on 2 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.40, Return=126.02
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=196.80
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage3_Thin_Paths_ep18000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage3_Thin_Paths_ep18000.pth
+Finished Stage3_Thin_Paths. Saved model to /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/weights/model_Stage3_Thin_Paths_FINAL.pth
+✅ Added Stage3_Thin_Paths to previous stages pool (total: 3 stages)
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/weights/actor_Stage3_Thin_Paths_FINAL.pth
+
+=============================================
+STARTING Stage4_Noisy_and_Faint
+Episodes: 20000 | LR: 3e-05
+Global Episode Offset: 90000
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+[Stage4_Noisy_and_Faint] Ep 100 | Avg Rew: 240.59 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 200 | Avg Rew: 220.89 | Success: 0.00 [Prev: 3]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Extreme_Curvature'
+[Stage4_Noisy_and_Faint] Ep 300 | Avg Rew: 209.45 | Success: 0.00 [Prev: 3]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Extreme_Curvature'
+[Stage4_Noisy_and_Faint] Ep 400 | Avg Rew: 240.05 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 500 | Avg Rew: 230.03 | Success: 0.00 [Prev: 3]
+
+🔍 Evaluating on 3 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.40, Return=108.88
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=197.89
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage3_Thin_Paths: Success=0.00, Return=275.44
+
+[Stage4_Noisy_and_Faint] Ep 600 | Avg Rew: 237.74 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 700 | Avg Rew: 243.09 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 800 | Avg Rew: 241.65 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 900 | Avg Rew: 214.45 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 1000 | Avg Rew: 194.37 | Success: 0.00 [Prev: 3]
+
+🔍 Evaluating on 3 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.50, Return=100.97
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=193.85
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage3_Thin_Paths: Success=0.00, Return=172.82
+
+[Stage4_Noisy_and_Faint] Ep 1100 | Avg Rew: 222.56 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 1200 | Avg Rew: 201.91 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 1300 | Avg Rew: 213.86 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 1400 | Avg Rew: 266.25 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 1500 | Avg Rew: 242.82 | Success: 0.00 [Prev: 3]
+
+🔍 Evaluating on 3 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.40, Return=101.08
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=239.97
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage3_Thin_Paths: Success=0.00, Return=260.02
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Geometry_and_Stability'
+[Stage4_Noisy_and_Faint] Ep 1600 | Avg Rew: 233.98 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 1700 | Avg Rew: 269.00 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 1800 | Avg Rew: 252.86 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 1900 | Avg Rew: 228.84 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 2000 | Avg Rew: 247.63 | Success: 0.00 [Prev: 3]
+
+🔍 Evaluating on 3 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.70, Return=113.69
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=221.59
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage3_Thin_Paths: Success=0.00, Return=246.67
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/ckpt_Stage4_Noisy_and_Faint_ep2000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_010424/checkpoints/actor_Stage4_Noisy_and_Faint_ep2000.pth
+[Stage4_Noisy_and_Faint] Ep 2100 | Avg Rew: 237.27 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 2200 | Avg Rew: 232.69 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 2300 | Avg Rew: 260.43 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 2400 | Avg Rew: 246.52 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 2500 | Avg Rew: 258.74 | Success: 0.00 [Prev: 3]
+
+🔍 Evaluating on 3 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=117.21
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=270.60
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage3_Thin_Paths: Success=0.00, Return=238.15
+
+[Stage4_Noisy_and_Faint] Ep 2600 | Avg Rew: 256.28 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 2700 | Avg Rew: 251.99 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 2800 | Avg Rew: 224.55 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 2900 | Avg Rew: 258.90 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 3000 | Avg Rew: 299.79 | Success: 0.00 [Prev: 3]
+
+🔍 Evaluating on 3 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=85.32
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=192.58
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage3_Thin_Paths: Success=0.00, Return=231.05
+
+[Stage4_Noisy_and_Faint] Ep 3100 | Avg Rew: 258.63 | Success: 0.00 [Prev: 3]
+   🔄 Anti-forgetting: Training on previous stage 'Stage3_Thin_Paths'
+[Stage4_Noisy_and_Faint] Ep 3200 | Avg Rew: 274.85 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 3300 | Avg Rew: 256.67 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 3400 | Avg Rew: 245.46 | Success: 0.00 [Prev: 3]
+[Stage4_Noisy_and_Faint] Ep 3500 | Avg Rew: 262.58 | Success: 0.00 [Prev: 3]
+
+🔍 Evaluating on 3 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage1_Geometry_and_Stability: Success=0.60, Return=91.91
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage2_Extreme_Curvature: Success=0.00, Return=247.51
+[ENV] On-the-fly curve generation enabled (base_seed=42)
+   Stage3_Thin_Paths: Success=0.00, Return=206.96
+
