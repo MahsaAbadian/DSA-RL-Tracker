@@ -39,9 +39,9 @@ else:
 # 8 Movement Actions + 1 Stop Action = 9 Total
 ACTIONS_MOVEMENT = [(-1, 0), (1, 0), (0,-1), (0, 1), (-1,-1), (-1,1), (1,-1), (1,1)]
 ACTION_STOP_IDX = 8
-N_ACTIONS = 9
+N_ACTIONS = 8
 
-STEP_ALPHA = 2.0
+STEP_ALPHA = 1.2 
 CROP = 33
 EPSILON = 1e-6
 
@@ -437,44 +437,6 @@ def nearest_gt_index(pt, poly):
     d2 = np.sum(dif * dif, axis=1)
     return int(np.argmin(d2))
 
-def nearest_gt_index_within_window(pt, poly, expected_idx, window_size=20):
-    """
-    Find nearest point on polyline within a window around expected progress.
-    This prevents the agent from jumping to a different path segment.
-    STRICT: Always uses windowed result to maintain path continuity.
-    
-    Args:
-        pt: Current point (y, x)
-        poly: Polyline points
-        expected_idx: Expected progress index
-        window_size: Size of window to search around expected_idx
-    
-    Returns:
-        tuple: (nearest_idx, distance, is_within_window)
-    """
-    dif = poly - np.array(pt, dtype=np.float32)
-    d2 = np.sum(dif * dif, axis=1)
-    
-    # Search within window first
-    window_start = max(0, expected_idx - window_size)
-    window_end = min(len(poly), expected_idx + window_size + 1)
-    
-    if window_end > window_start:
-        window_d2 = d2[window_start:window_end]
-        window_min_idx = int(np.argmin(window_d2))
-        window_nearest_idx = window_start + window_min_idx
-        window_min_dist = np.sqrt(window_d2[window_min_idx])
-        
-        # STRICT: Always use windowed result to prevent path jumping
-        # Even if there's a closer point outside the window, we prefer continuity
-        # This prevents the agent from jumping to nearby paths
-        return window_nearest_idx, window_min_dist, True
-    else:
-        # Fallback to global search if window is invalid (shouldn't happen normally)
-        global_min_idx = int(np.argmin(d2))
-        global_min_dist = np.sqrt(d2[global_min_idx])
-        return global_min_idx, global_min_dist, False
-
 @dataclass
 class CurveEpisode:
     img: np.ndarray
@@ -700,55 +662,10 @@ class CurveEnvUnified:
         self.path_points.append(self.agent)
         self.path_mask[int(ny), int(nx)] = 1.0
 
-        # Use windowed search to prevent jumping to nearby paths
-        # Expected progress: should be near prev_idx or slightly ahead
-        # Adaptive window size: smaller for early stages, larger for complex paths
-        expected_progress = max(self.prev_idx, min(self.prev_idx + 5, len(self.ep.gt_poly) - 1))
-        # Adaptive window size: 10-15 points (more forgiving than 8-12)
-        # Larger window for longer paths, smaller for shorter paths
-        base_window = max(10, min(15, len(self.ep.gt_poly) // 12))
-        # Reduce window size for early stages (stricter), increase for later stages (more forgiving)
-        stage_factor = 1.0 if self.stage_config['stage_id'] >= 10 else 0.9
-        window_size = int(base_window * stage_factor)
-        
-        best_idx, L_t_windowed, is_within_window = nearest_gt_index_within_window(
-            self.agent, self.ep.gt_poly, expected_progress, window_size
-        )
-        
-        # Use windowed distance for more accurate tracking (prevents jumps to different paths)
-        L_t = L_t_windowed
-        
+        L_t = get_distance_to_poly(self.agent, self.ep.gt_poly)
         dist_diff = abs(L_t - self.L_prev)
+        best_idx = nearest_gt_index(self.agent, self.ep.gt_poly)
         progress_delta = best_idx - self.prev_idx
-        
-        # Detect path jumping: check both index distance AND spatial distance
-        # Jumps are OK if on the same path (far in index but close spatially)
-        # Only penalize if jump is far in BOTH index AND space (different path)
-        idx_jump = abs(best_idx - expected_progress)
-        path_jump_penalty = 0.0
-        
-        # Check if jump is far in index AND also far spatially (indicates different path)
-        # If L_t is small (close to path), even large index jumps are OK (same path, just different segment)
-        # Adaptive thresholds: more forgiving for complex paths
-        idx_jump_large = idx_jump > window_size * 0.6  # Slightly more forgiving (0.6 instead of 0.5)
-        # Spatial threshold depends on path width - wider paths need larger threshold
-        path_width_estimate = np.mean(self.stage_config['width']) if isinstance(self.stage_config['width'], tuple) else 3.0
-        spatial_threshold = max(4.0, path_width_estimate * 1.5)  # At least 4 pixels, or 1.5x path width
-        spatial_far = L_t > spatial_threshold
-        
-        # Only penalize if BOTH conditions: large index jump AND far spatially
-        if idx_jump_large and spatial_far:
-            # This indicates jumping to a different nearby path
-            # Reduced penalty: less harsh to allow model to learn
-            path_jump_penalty = -min(5.0, idx_jump * 0.15)  # Reduced from 10.0 to 5.0
-            # Extra penalty for large backward jumps to different path
-            if progress_delta < -5:
-                path_jump_penalty -= 3.0  # Reduced from 5.0 to 3.0
-        elif idx_jump_large and not spatial_far:
-            # Large index jump but close spatially = same path, different segment (OK)
-            # Only small penalty for non-ideal but acceptable jump
-            if progress_delta < -window_size * 0.5:  # Very large backward jump even on same path
-                path_jump_penalty = -0.5  # Reduced from -1.0 to -0.5
         
         # Track initial steps for bootstrap rewards
         if self.is_at_start:
@@ -757,7 +674,7 @@ class CurveEnvUnified:
             if self.initial_steps >= 5 or progress_delta > 0:
                 self.is_at_start = False
         
-        sigma = 1.5 if self.stage_config['stage_id'] == 1 else 1.0
+        sigma = 0.7 if self.stage_config['stage_id'] >= 3 else 1.5
         precision_score = np.exp(-(L_t**2) / (2 * sigma**2))
         
         if L_t < self.L_prev:
@@ -794,9 +711,23 @@ class CurveEnvUnified:
         elif progress_delta <= 0:
             r -= 0.1
         
-        # Apply path jump penalty (prevents agent from jumping to different paths)
-        r += path_jump_penalty
-        
+        smoothness_bonus = 0.0
+        if len(self.history_pos) >= 2:
+            # Vector of last move
+            prev_dy = self.history_pos[-1][0] - self.history_pos[-2][0]
+            prev_dx = self.history_pos[-1][1] - self.history_pos[-2][1]
+            
+            # Normalize vectors
+            mag_p = np.sqrt(prev_dy**2 + prev_dx**2) + 1e-6
+            mag_c = np.sqrt(dy**2 + dx**2) + 1e-6 # current action dy, dx
+            
+            # Cosine similarity (1.0 = straight, -1.0 = U-turn)
+            cos_sim = (prev_dy*dy + prev_dx*dx) / (mag_p * mag_c)
+            
+            # Reward straight-line stability
+            smoothness_bonus = 0.2 * cos_sim 
+        r += smoothness_bonus
+
         # Bootstrap reward for initial steps when starting from the beginning
         # Problem: At the start, all history positions are the same, action history is empty,
         #          so the model must infer direction from the image alone (very hard!)
@@ -825,7 +756,7 @@ class CurveEnvUnified:
                 if cos_sim > 0: r += cos_sim * 0.5
 
         if self.prev_action != -1 and self.prev_action != a_idx:
-            r -= 0.05
+            r -= 0.25
         self.prev_action = a_idx
         r -= 0.05
 
@@ -838,24 +769,8 @@ class CurveEnvUnified:
         off_track_limit = 10.0 if self.stage_config['stage_id'] == 1 else 8.0
         off_track = L_t > off_track_limit
         
-        # Detect if agent jumped to a completely different path (not just different segment of same path)
-        # Only terminate if jump is BOTH far in index AND far spatially (indicates different path)
-        # Jumps on same path (large index but small spatial distance) are OK
-        # More forgiving thresholds for termination
-        large_index_jump = idx_jump > window_size * 1.0  # Increased from 0.8 to 1.0 (more forgiving)
-        # Spatial threshold for termination: use same adaptive threshold as penalty
-        large_spatial_jump = L_t > spatial_threshold * 1.5  # 1.5x the penalty threshold
-        large_path_jump = large_index_jump and large_spatial_jump  # BOTH conditions needed
-        
-        # Large backward jump to different path (index far back AND spatially far)
-        large_backward_index = progress_delta < -window_size * 0.7  # More forgiving (0.7 instead of 0.5)
-        large_backward_jump = large_backward_index and large_spatial_jump
-        
-        if off_track or large_path_jump or large_backward_jump:
-            if large_path_jump or large_backward_jump:
-                r -= 10.0  # Reduced from 15.0 to 10.0 (less harsh)
-            else:
-                r -= 5.0
+        if off_track:
+            r -= 5.0
             done = True
         
         if self.steps >= self.max_steps:
@@ -1631,6 +1546,11 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     print(f"  - Configuration: {config_file}")
     print(f"  - Metrics: {metrics_file}")
     
+    # Delete checkpoints after successful completion
+    if os.path.exists(checkpoint_dir):
+        print(f"🧹 Cleaning up checkpoints directory: {checkpoint_dir}")
+        shutil.rmtree(checkpoint_dir)
+        
     # Restore stdout and close log file
     sys.stdout = original_stdout
     log_fp.close()
