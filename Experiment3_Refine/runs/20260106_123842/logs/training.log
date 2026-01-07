@@ -2519,3 +2519,1689 @@ Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Ex
 
 Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage6_VeryThinAndVeryFaint_ep16000.pth
 Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage6_VeryThinAndVeryFaint_ep16000.pth
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Curvature'
+[Stage6_VeryThinAndVeryFaint] Ep 16100 | Avg Rew: 215.94 | Success: 0.99 [Prev: 5]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Foundation'
+[Stage6_VeryThinAndVeryFaint] Ep 16200 | Avg Rew: 224.35 | Success: 0.98 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 16300 | Avg Rew: 215.78 | Success: 0.97 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 16400 | Avg Rew: 213.91 | Success: 0.99 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 16500 | Avg Rew: 211.70 | Success: 0.97 [Prev: 5]
+
+🔍 Evaluating on 5 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.63
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=0.90, Return=214.11
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=201.11
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=207.03
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=0.90, Return=203.88
+
+[Stage6_VeryThinAndVeryFaint] Ep 16600 | Avg Rew: 208.20 | Success: 0.97 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 16700 | Avg Rew: 221.65 | Success: 0.98 [Prev: 5]
+   🔄 Anti-forgetting: Training on previous stage 'Stage4_LowIntensity'
+[Stage6_VeryThinAndVeryFaint] Ep 16800 | Avg Rew: 223.55 | Success: 1.00 [Prev: 5]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Curvature'
+[Stage6_VeryThinAndVeryFaint] Ep 16900 | Avg Rew: 208.97 | Success: 0.97 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 17000 | Avg Rew: 213.16 | Success: 0.96 [Prev: 5]
+
+🔍 Evaluating on 5 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=184.91
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=204.22
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=207.14
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=0.90, Return=195.10
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=209.94
+
+[Stage6_VeryThinAndVeryFaint] Ep 17100 | Avg Rew: 222.44 | Success: 0.97 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 17200 | Avg Rew: 215.29 | Success: 0.97 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 17300 | Avg Rew: 221.15 | Success: 0.98 [Prev: 5]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Curvature'
+[Stage6_VeryThinAndVeryFaint] Ep 17400 | Avg Rew: 216.49 | Success: 0.98 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 17500 | Avg Rew: 222.50 | Success: 1.00 [Prev: 5]
+
+🔍 Evaluating on 5 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=187.78
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=209.20
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=201.64
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=206.64
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=213.60
+
+[Stage6_VeryThinAndVeryFaint] Ep 17600 | Avg Rew: 218.79 | Success: 0.96 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 17700 | Avg Rew: 224.52 | Success: 0.99 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 17800 | Avg Rew: 216.62 | Success: 0.96 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 17900 | Avg Rew: 201.02 | Success: 0.95 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 18000 | Avg Rew: 211.22 | Success: 0.97 [Prev: 5]
+
+🔍 Evaluating on 5 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=190.96
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=205.55
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=207.22
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=199.84
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=215.41
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage6_VeryThinAndVeryFaint_ep18000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage6_VeryThinAndVeryFaint_ep18000.pth
+   🔄 Anti-forgetting: Training on previous stage 'Stage5_ThinAndFaint'
+[Stage6_VeryThinAndVeryFaint] Ep 18100 | Avg Rew: 211.93 | Success: 0.99 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 18200 | Avg Rew: 218.55 | Success: 0.97 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 18300 | Avg Rew: 220.25 | Success: 0.98 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 18400 | Avg Rew: 222.69 | Success: 0.97 [Prev: 5]
+   🔄 Anti-forgetting: Training on previous stage 'Stage5_ThinAndFaint'
+[Stage6_VeryThinAndVeryFaint] Ep 18500 | Avg Rew: 223.07 | Success: 1.00 [Prev: 5]
+
+🔍 Evaluating on 5 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.50
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=207.53
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=201.21
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=207.16
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=208.61
+
+[Stage6_VeryThinAndVeryFaint] Ep 18600 | Avg Rew: 216.43 | Success: 0.99 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 18700 | Avg Rew: 219.25 | Success: 0.98 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 18800 | Avg Rew: 215.45 | Success: 0.98 [Prev: 5]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Curvature'
+[Stage6_VeryThinAndVeryFaint] Ep 18900 | Avg Rew: 212.39 | Success: 0.98 [Prev: 5]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Curvature'
+[Stage6_VeryThinAndVeryFaint] Ep 19000 | Avg Rew: 226.28 | Success: 0.98 [Prev: 5]
+
+🔍 Evaluating on 5 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=182.34
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=210.36
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=205.06
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=208.94
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=209.03
+
+[Stage6_VeryThinAndVeryFaint] Ep 19100 | Avg Rew: 214.92 | Success: 0.97 [Prev: 5]
+   🔄 Anti-forgetting: Training on previous stage 'Stage3_ThinPaths'
+[Stage6_VeryThinAndVeryFaint] Ep 19200 | Avg Rew: 229.79 | Success: 0.99 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 19300 | Avg Rew: 220.23 | Success: 1.00 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 19400 | Avg Rew: 216.74 | Success: 0.99 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 19500 | Avg Rew: 220.54 | Success: 0.97 [Prev: 5]
+
+🔍 Evaluating on 5 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=187.19
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=0.90, Return=205.95
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=207.44
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=205.97
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=211.73
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage3_ThinPaths'
+[Stage6_VeryThinAndVeryFaint] Ep 19600 | Avg Rew: 217.82 | Success: 0.98 [Prev: 5]
+   🔄 Anti-forgetting: Training on previous stage 'Stage4_LowIntensity'
+[Stage6_VeryThinAndVeryFaint] Ep 19700 | Avg Rew: 217.68 | Success: 0.96 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 19800 | Avg Rew: 217.14 | Success: 0.96 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 19900 | Avg Rew: 205.96 | Success: 0.99 [Prev: 5]
+[Stage6_VeryThinAndVeryFaint] Ep 20000 | Avg Rew: 216.82 | Success: 0.95 [Prev: 5]
+
+🔍 Evaluating on 5 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=183.59
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=212.03
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=203.19
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=205.23
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=208.09
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage6_VeryThinAndVeryFaint_ep20000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage6_VeryThinAndVeryFaint_ep20000.pth
+Finished Stage6_VeryThinAndVeryFaint. Saved model to /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/weights/model_Stage6_VeryThinAndVeryFaint_FINAL.pth
+✅ Added Stage6_VeryThinAndVeryFaint to previous stages pool (total: 6 stages)
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/weights/actor_Stage6_VeryThinAndVeryFaint_FINAL.pth
+
+=============================================
+STARTING Stage7_ExtremelyLowIntensity
+Episodes: 20000 | LR: 5e-06
+Global Episode Offset: 180000
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   🔄 Anti-forgetting: Training on previous stage 'Stage5_ThinAndFaint'
+[Stage7_ExtremelyLowIntensity] Ep 100 | Avg Rew: 206.81 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 200 | Avg Rew: 205.65 | Success: 0.96 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 300 | Avg Rew: 209.40 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 400 | Avg Rew: 214.22 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 500 | Avg Rew: 209.78 | Success: 0.96 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=183.52
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=211.03
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=205.45
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=198.95
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=209.01
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=213.52
+
+[Stage7_ExtremelyLowIntensity] Ep 600 | Avg Rew: 228.90 | Success: 1.00 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage3_ThinPaths'
+[Stage7_ExtremelyLowIntensity] Ep 700 | Avg Rew: 207.07 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 800 | Avg Rew: 209.54 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 900 | Avg Rew: 217.03 | Success: 0.99 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage3_ThinPaths'
+[Stage7_ExtremelyLowIntensity] Ep 1000 | Avg Rew: 224.28 | Success: 0.97 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.64
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=0.90, Return=197.03
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=199.68
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=199.85
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=207.43
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=214.42
+
+[Stage7_ExtremelyLowIntensity] Ep 1100 | Avg Rew: 200.79 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 1200 | Avg Rew: 210.89 | Success: 0.99 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage5_ThinAndFaint'
+[Stage7_ExtremelyLowIntensity] Ep 1300 | Avg Rew: 207.67 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 1400 | Avg Rew: 204.36 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 1500 | Avg Rew: 214.29 | Success: 0.98 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=187.02
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=209.53
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=197.07
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=201.99
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=0.90, Return=205.87
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=210.60
+
+[Stage7_ExtremelyLowIntensity] Ep 1600 | Avg Rew: 218.89 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 1700 | Avg Rew: 196.62 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 1800 | Avg Rew: 210.14 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 1900 | Avg Rew: 202.55 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 2000 | Avg Rew: 217.19 | Success: 0.99 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.88
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=209.19
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=199.07
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=205.45
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=210.94
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=212.23
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage7_ExtremelyLowIntensity_ep2000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage7_ExtremelyLowIntensity_ep2000.pth
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Foundation'
+[Stage7_ExtremelyLowIntensity] Ep 2100 | Avg Rew: 208.09 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 2200 | Avg Rew: 198.88 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 2300 | Avg Rew: 212.24 | Success: 0.99 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Foundation'
+[Stage7_ExtremelyLowIntensity] Ep 2400 | Avg Rew: 208.11 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 2500 | Avg Rew: 198.26 | Success: 0.95 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.06
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=212.24
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=198.45
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=201.49
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=210.89
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=213.78
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage5_ThinAndFaint'
+[Stage7_ExtremelyLowIntensity] Ep 2600 | Avg Rew: 210.99 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 2700 | Avg Rew: 209.23 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 2800 | Avg Rew: 209.73 | Success: 0.99 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Curvature'
+[Stage7_ExtremelyLowIntensity] Ep 2900 | Avg Rew: 205.92 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 3000 | Avg Rew: 209.17 | Success: 0.98 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=184.35
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=0.90, Return=201.37
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=195.33
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=204.87
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=211.50
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=215.09
+
+[Stage7_ExtremelyLowIntensity] Ep 3100 | Avg Rew: 216.65 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 3200 | Avg Rew: 205.98 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 3300 | Avg Rew: 216.93 | Success: 0.98 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Curvature'
+[Stage7_ExtremelyLowIntensity] Ep 3400 | Avg Rew: 187.26 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 3500 | Avg Rew: 226.18 | Success: 1.00 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=186.93
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=0.90, Return=205.97
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=197.79
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=197.71
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=214.47
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=221.81
+
+[Stage7_ExtremelyLowIntensity] Ep 3600 | Avg Rew: 215.19 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 3700 | Avg Rew: 209.52 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 3800 | Avg Rew: 218.04 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 3900 | Avg Rew: 205.09 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 4000 | Avg Rew: 218.39 | Success: 0.97 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=189.33
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=210.03
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=203.31
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=205.21
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=217.49
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=217.99
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage7_ExtremelyLowIntensity_ep4000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage7_ExtremelyLowIntensity_ep4000.pth
+[Stage7_ExtremelyLowIntensity] Ep 4100 | Avg Rew: 202.69 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 4200 | Avg Rew: 214.70 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 4300 | Avg Rew: 211.30 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 4400 | Avg Rew: 207.03 | Success: 0.96 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 4500 | Avg Rew: 215.78 | Success: 0.99 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=188.37
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=210.91
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=206.20
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=202.97
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=215.49
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=218.37
+
+[Stage7_ExtremelyLowIntensity] Ep 4600 | Avg Rew: 210.72 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 4700 | Avg Rew: 214.29 | Success: 0.95 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 4800 | Avg Rew: 214.80 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 4900 | Avg Rew: 218.33 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 5000 | Avg Rew: 224.17 | Success: 0.99 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=188.85
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=0.90, Return=202.42
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=198.54
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=209.66
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=215.48
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=216.32
+
+[Stage7_ExtremelyLowIntensity] Ep 5100 | Avg Rew: 222.00 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 5200 | Avg Rew: 203.34 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 5300 | Avg Rew: 207.52 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 5400 | Avg Rew: 209.63 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 5500 | Avg Rew: 222.06 | Success: 0.97 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=184.97
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=203.32
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=205.82
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=203.73
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=209.13
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=219.24
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Foundation'
+[Stage7_ExtremelyLowIntensity] Ep 5600 | Avg Rew: 223.32 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 5700 | Avg Rew: 213.61 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 5800 | Avg Rew: 218.51 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 5900 | Avg Rew: 204.97 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 6000 | Avg Rew: 199.65 | Success: 0.98 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.61
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=210.23
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=201.65
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=204.20
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=217.28
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=216.77
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage7_ExtremelyLowIntensity_ep6000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage7_ExtremelyLowIntensity_ep6000.pth
+[Stage7_ExtremelyLowIntensity] Ep 6100 | Avg Rew: 221.84 | Success: 0.99 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage3_ThinPaths'
+[Stage7_ExtremelyLowIntensity] Ep 6200 | Avg Rew: 205.59 | Success: 0.96 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 6300 | Avg Rew: 224.29 | Success: 1.00 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Curvature'
+[Stage7_ExtremelyLowIntensity] Ep 6400 | Avg Rew: 210.83 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 6500 | Avg Rew: 204.07 | Success: 0.97 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.79
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=209.86
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=202.06
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=201.18
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=215.00
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=222.82
+
+[Stage7_ExtremelyLowIntensity] Ep 6600 | Avg Rew: 211.63 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 6700 | Avg Rew: 215.14 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 6800 | Avg Rew: 211.64 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 6900 | Avg Rew: 214.36 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 7000 | Avg Rew: 205.48 | Success: 0.99 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=188.95
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=205.48
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=207.01
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=198.00
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=212.46
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=225.39
+
+[Stage7_ExtremelyLowIntensity] Ep 7100 | Avg Rew: 205.71 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 7200 | Avg Rew: 216.10 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 7300 | Avg Rew: 213.33 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 7400 | Avg Rew: 224.44 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 7500 | Avg Rew: 216.91 | Success: 0.99 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=188.18
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=199.44
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=204.19
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=200.76
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=216.61
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=222.24
+
+[Stage7_ExtremelyLowIntensity] Ep 7600 | Avg Rew: 218.48 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 7700 | Avg Rew: 209.30 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 7800 | Avg Rew: 220.07 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 7900 | Avg Rew: 207.56 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 8000 | Avg Rew: 207.80 | Success: 0.99 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=188.00
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=202.32
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=201.55
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=209.29
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=213.84
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=219.30
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage7_ExtremelyLowIntensity_ep8000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage7_ExtremelyLowIntensity_ep8000.pth
+[Stage7_ExtremelyLowIntensity] Ep 8100 | Avg Rew: 209.39 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 8200 | Avg Rew: 198.10 | Success: 0.96 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 8300 | Avg Rew: 200.99 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 8400 | Avg Rew: 206.63 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 8500 | Avg Rew: 213.94 | Success: 0.99 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=188.84
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=208.60
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=197.93
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=208.06
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=219.06
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=223.71
+
+[Stage7_ExtremelyLowIntensity] Ep 8600 | Avg Rew: 198.72 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 8700 | Avg Rew: 212.47 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 8800 | Avg Rew: 214.11 | Success: 0.98 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage4_LowIntensity'
+[Stage7_ExtremelyLowIntensity] Ep 8900 | Avg Rew: 201.01 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 9000 | Avg Rew: 211.13 | Success: 0.98 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=189.34
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=210.10
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=196.51
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=207.51
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=211.39
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=216.67
+
+[Stage7_ExtremelyLowIntensity] Ep 9100 | Avg Rew: 215.61 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 9200 | Avg Rew: 210.87 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 9300 | Avg Rew: 204.51 | Success: 0.96 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 9400 | Avg Rew: 225.79 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 9500 | Avg Rew: 204.95 | Success: 0.99 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.65
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=208.19
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=200.03
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=204.95
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=212.89
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=219.20
+
+[Stage7_ExtremelyLowIntensity] Ep 9600 | Avg Rew: 212.43 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 9700 | Avg Rew: 208.66 | Success: 0.96 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 9800 | Avg Rew: 211.87 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 9900 | Avg Rew: 203.41 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 10000 | Avg Rew: 211.48 | Success: 1.00 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=184.38
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=211.51
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=196.86
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=201.38
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=212.23
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=222.19
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage7_ExtremelyLowIntensity_ep10000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage7_ExtremelyLowIntensity_ep10000.pth
+[Stage7_ExtremelyLowIntensity] Ep 10100 | Avg Rew: 216.59 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 10200 | Avg Rew: 211.95 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 10300 | Avg Rew: 215.33 | Success: 1.00 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Curvature'
+[Stage7_ExtremelyLowIntensity] Ep 10400 | Avg Rew: 208.30 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 10500 | Avg Rew: 203.71 | Success: 0.98 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=189.00
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=206.19
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=201.09
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=208.49
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=211.63
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=219.23
+
+[Stage7_ExtremelyLowIntensity] Ep 10600 | Avg Rew: 207.19 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 10700 | Avg Rew: 219.36 | Success: 1.00 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage3_ThinPaths'
+[Stage7_ExtremelyLowIntensity] Ep 10800 | Avg Rew: 206.90 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 10900 | Avg Rew: 211.45 | Success: 0.99 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage6_VeryThinAndVeryFaint'
+[Stage7_ExtremelyLowIntensity] Ep 11000 | Avg Rew: 213.32 | Success: 0.99 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=186.06
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=211.19
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=200.51
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=198.18
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=208.00
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=216.73
+
+[Stage7_ExtremelyLowIntensity] Ep 11100 | Avg Rew: 208.54 | Success: 0.96 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 11200 | Avg Rew: 218.69 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 11300 | Avg Rew: 212.01 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 11400 | Avg Rew: 220.25 | Success: 0.98 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage4_LowIntensity'
+[Stage7_ExtremelyLowIntensity] Ep 11500 | Avg Rew: 209.54 | Success: 0.98 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=188.63
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=209.83
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=203.33
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=201.59
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=211.90
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=219.32
+
+[Stage7_ExtremelyLowIntensity] Ep 11600 | Avg Rew: 212.46 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 11700 | Avg Rew: 216.10 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 11800 | Avg Rew: 200.95 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 11900 | Avg Rew: 221.27 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 12000 | Avg Rew: 213.08 | Success: 0.97 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=186.09
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=206.38
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=200.23
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=209.55
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=204.45
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=220.19
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage7_ExtremelyLowIntensity_ep12000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage7_ExtremelyLowIntensity_ep12000.pth
+[Stage7_ExtremelyLowIntensity] Ep 12100 | Avg Rew: 213.16 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 12200 | Avg Rew: 195.14 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 12300 | Avg Rew: 207.96 | Success: 0.99 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage6_VeryThinAndVeryFaint'
+[Stage7_ExtremelyLowIntensity] Ep 12400 | Avg Rew: 203.04 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 12500 | Avg Rew: 211.16 | Success: 0.99 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=184.07
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=203.88
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=201.02
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=202.84
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=215.81
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=217.13
+
+[Stage7_ExtremelyLowIntensity] Ep 12600 | Avg Rew: 220.58 | Success: 0.98 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Foundation'
+[Stage7_ExtremelyLowIntensity] Ep 12700 | Avg Rew: 223.65 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 12800 | Avg Rew: 222.24 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 12900 | Avg Rew: 213.96 | Success: 0.98 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Foundation'
+[Stage7_ExtremelyLowIntensity] Ep 13000 | Avg Rew: 202.51 | Success: 0.94 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=186.77
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=211.20
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=204.45
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=201.22
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=211.28
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=223.95
+
+[Stage7_ExtremelyLowIntensity] Ep 13100 | Avg Rew: 197.45 | Success: 0.94 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 13200 | Avg Rew: 220.56 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 13300 | Avg Rew: 223.87 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 13400 | Avg Rew: 197.72 | Success: 0.97 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage4_LowIntensity'
+[Stage7_ExtremelyLowIntensity] Ep 13500 | Avg Rew: 199.79 | Success: 0.99 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=187.98
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=0.90, Return=211.80
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=199.49
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=196.72
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=212.70
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=228.48
+
+[Stage7_ExtremelyLowIntensity] Ep 13600 | Avg Rew: 199.11 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 13700 | Avg Rew: 210.63 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 13800 | Avg Rew: 214.41 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 13900 | Avg Rew: 212.47 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 14000 | Avg Rew: 211.87 | Success: 0.98 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=189.89
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=208.60
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=199.72
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=206.47
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=217.47
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=225.50
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage7_ExtremelyLowIntensity_ep14000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage7_ExtremelyLowIntensity_ep14000.pth
+   🔄 Anti-forgetting: Training on previous stage 'Stage4_LowIntensity'
+[Stage7_ExtremelyLowIntensity] Ep 14100 | Avg Rew: 208.10 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 14200 | Avg Rew: 199.82 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 14300 | Avg Rew: 215.03 | Success: 0.99 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage4_LowIntensity'
+[Stage7_ExtremelyLowIntensity] Ep 14400 | Avg Rew: 205.32 | Success: 0.96 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 14500 | Avg Rew: 215.68 | Success: 0.96 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=182.95
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=202.05
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=201.32
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=198.58
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=207.46
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=218.14
+
+[Stage7_ExtremelyLowIntensity] Ep 14600 | Avg Rew: 205.88 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 14700 | Avg Rew: 207.96 | Success: 0.99 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage4_LowIntensity'
+[Stage7_ExtremelyLowIntensity] Ep 14800 | Avg Rew: 215.29 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 14900 | Avg Rew: 217.97 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 15000 | Avg Rew: 217.51 | Success: 0.98 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=184.78
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=207.15
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=198.20
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=204.63
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=212.51
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=215.62
+
+[Stage7_ExtremelyLowIntensity] Ep 15100 | Avg Rew: 211.31 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 15200 | Avg Rew: 211.34 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 15300 | Avg Rew: 206.35 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 15400 | Avg Rew: 219.49 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 15500 | Avg Rew: 209.15 | Success: 0.98 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=190.27
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=210.45
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=203.44
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=207.40
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=216.51
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=215.80
+
+[Stage7_ExtremelyLowIntensity] Ep 15600 | Avg Rew: 224.43 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 15700 | Avg Rew: 209.52 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 15800 | Avg Rew: 208.19 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 15900 | Avg Rew: 217.76 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 16000 | Avg Rew: 216.51 | Success: 0.99 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=182.48
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=201.89
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=201.27
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=200.65
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=211.17
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=214.77
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage7_ExtremelyLowIntensity_ep16000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage7_ExtremelyLowIntensity_ep16000.pth
+[Stage7_ExtremelyLowIntensity] Ep 16100 | Avg Rew: 208.94 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 16200 | Avg Rew: 218.34 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 16300 | Avg Rew: 212.24 | Success: 0.99 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage3_ThinPaths'
+[Stage7_ExtremelyLowIntensity] Ep 16400 | Avg Rew: 216.77 | Success: 0.96 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 16500 | Avg Rew: 211.56 | Success: 0.99 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=183.29
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=205.95
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=204.64
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=200.62
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=210.23
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=223.46
+
+[Stage7_ExtremelyLowIntensity] Ep 16600 | Avg Rew: 216.56 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 16700 | Avg Rew: 219.33 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 16800 | Avg Rew: 214.08 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 16900 | Avg Rew: 214.37 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 17000 | Avg Rew: 218.40 | Success: 0.98 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.45
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=205.37
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=200.25
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=203.04
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=209.54
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=222.19
+
+[Stage7_ExtremelyLowIntensity] Ep 17100 | Avg Rew: 208.71 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 17200 | Avg Rew: 218.39 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 17300 | Avg Rew: 204.52 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 17400 | Avg Rew: 199.67 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 17500 | Avg Rew: 210.52 | Success: 0.98 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=183.37
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=206.66
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=198.30
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=196.49
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=207.80
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=219.91
+
+[Stage7_ExtremelyLowIntensity] Ep 17600 | Avg Rew: 214.30 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 17700 | Avg Rew: 205.04 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 17800 | Avg Rew: 214.68 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 17900 | Avg Rew: 217.76 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 18000 | Avg Rew: 206.04 | Success: 0.97 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.12
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=202.76
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=203.31
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=201.41
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=204.33
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=219.71
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage7_ExtremelyLowIntensity_ep18000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage7_ExtremelyLowIntensity_ep18000.pth
+[Stage7_ExtremelyLowIntensity] Ep 18100 | Avg Rew: 215.98 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 18200 | Avg Rew: 202.65 | Success: 0.99 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage3_ThinPaths'
+[Stage7_ExtremelyLowIntensity] Ep 18300 | Avg Rew: 206.58 | Success: 0.97 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 18400 | Avg Rew: 203.38 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 18500 | Avg Rew: 220.82 | Success: 1.00 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=183.70
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=204.58
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=203.96
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=201.02
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=218.60
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=219.94
+
+[Stage7_ExtremelyLowIntensity] Ep 18600 | Avg Rew: 221.97 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 18700 | Avg Rew: 213.67 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 18800 | Avg Rew: 225.14 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 18900 | Avg Rew: 205.96 | Success: 0.98 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage3_ThinPaths'
+[Stage7_ExtremelyLowIntensity] Ep 19000 | Avg Rew: 210.92 | Success: 0.98 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=180.33
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=208.83
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=201.57
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=203.92
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=212.85
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=217.09
+
+[Stage7_ExtremelyLowIntensity] Ep 19100 | Avg Rew: 213.44 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 19200 | Avg Rew: 203.39 | Success: 0.98 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 19300 | Avg Rew: 208.13 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 19400 | Avg Rew: 216.01 | Success: 0.99 [Prev: 6]
+   🔄 Anti-forgetting: Training on previous stage 'Stage4_LowIntensity'
+[Stage7_ExtremelyLowIntensity] Ep 19500 | Avg Rew: 225.00 | Success: 1.00 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=182.14
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=206.90
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=201.86
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=201.24
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=207.27
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=217.55
+
+[Stage7_ExtremelyLowIntensity] Ep 19600 | Avg Rew: 213.80 | Success: 0.96 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 19700 | Avg Rew: 231.84 | Success: 1.00 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 19800 | Avg Rew: 210.63 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 19900 | Avg Rew: 224.52 | Success: 0.99 [Prev: 6]
+[Stage7_ExtremelyLowIntensity] Ep 20000 | Avg Rew: 219.79 | Success: 0.98 [Prev: 6]
+
+🔍 Evaluating on 6 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.49
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=200.02
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=204.75
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=202.30
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=211.62
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=219.04
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage7_ExtremelyLowIntensity_ep20000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage7_ExtremelyLowIntensity_ep20000.pth
+Finished Stage7_ExtremelyLowIntensity. Saved model to /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/weights/model_Stage7_ExtremelyLowIntensity_FINAL.pth
+✅ Added Stage7_ExtremelyLowIntensity to previous stages pool (total: 7 stages)
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/weights/actor_Stage7_ExtremelyLowIntensity_FINAL.pth
+
+=============================================
+STARTING Stage8_HighBackground
+Episodes: 15000 | LR: 5e-06
+Global Episode Offset: 220000
+=============================================
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+[Stage8_HighBackground] Ep 100 | Avg Rew: 167.36 | Success: 0.62 [Prev: 7]
+[Stage8_HighBackground] Ep 200 | Avg Rew: 160.33 | Success: 0.57 [Prev: 7]
+[Stage8_HighBackground] Ep 300 | Avg Rew: 173.17 | Success: 0.59 [Prev: 7]
+[Stage8_HighBackground] Ep 400 | Avg Rew: 168.88 | Success: 0.61 [Prev: 7]
+[Stage8_HighBackground] Ep 500 | Avg Rew: 158.40 | Success: 0.51 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=188.04
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=209.75
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=202.76
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=202.55
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=216.13
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=215.38
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=1.00, Return=204.87
+
+[Stage8_HighBackground] Ep 600 | Avg Rew: 167.67 | Success: 0.51 [Prev: 7]
+[Stage8_HighBackground] Ep 700 | Avg Rew: 154.68 | Success: 0.54 [Prev: 7]
+[Stage8_HighBackground] Ep 800 | Avg Rew: 182.99 | Success: 0.69 [Prev: 7]
+   🔄 Anti-forgetting: Training on previous stage 'Stage5_ThinAndFaint'
+[Stage8_HighBackground] Ep 900 | Avg Rew: 188.90 | Success: 0.72 [Prev: 7]
+[Stage8_HighBackground] Ep 1000 | Avg Rew: 193.73 | Success: 0.63 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=180.98
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=211.01
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=201.10
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=200.65
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=208.03
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=216.36
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=1.00, Return=204.86
+
+[Stage8_HighBackground] Ep 1100 | Avg Rew: 169.26 | Success: 0.59 [Prev: 7]
+[Stage8_HighBackground] Ep 1200 | Avg Rew: 189.28 | Success: 0.63 [Prev: 7]
+[Stage8_HighBackground] Ep 1300 | Avg Rew: 187.07 | Success: 0.69 [Prev: 7]
+[Stage8_HighBackground] Ep 1400 | Avg Rew: 207.42 | Success: 0.72 [Prev: 7]
+[Stage8_HighBackground] Ep 1500 | Avg Rew: 198.91 | Success: 0.67 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.44
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=209.48
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=201.37
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=208.60
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=211.06
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=222.46
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=1.00, Return=197.59
+
+[Stage8_HighBackground] Ep 1600 | Avg Rew: 187.08 | Success: 0.62 [Prev: 7]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Foundation'
+[Stage8_HighBackground] Ep 1700 | Avg Rew: 192.44 | Success: 0.72 [Prev: 7]
+[Stage8_HighBackground] Ep 1800 | Avg Rew: 204.65 | Success: 0.75 [Prev: 7]
+   🔄 Anti-forgetting: Training on previous stage 'Stage7_ExtremelyLowIntensity'
+[Stage8_HighBackground] Ep 1900 | Avg Rew: 192.48 | Success: 0.72 [Prev: 7]
+[Stage8_HighBackground] Ep 2000 | Avg Rew: 216.24 | Success: 0.83 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.25
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=209.70
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.80, Return=197.04
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=205.39
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=208.68
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=216.27
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=1.00, Return=202.63
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage8_HighBackground_ep2000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage8_HighBackground_ep2000.pth
+[Stage8_HighBackground] Ep 2100 | Avg Rew: 208.51 | Success: 0.76 [Prev: 7]
+[Stage8_HighBackground] Ep 2200 | Avg Rew: 194.08 | Success: 0.74 [Prev: 7]
+[Stage8_HighBackground] Ep 2300 | Avg Rew: 185.22 | Success: 0.66 [Prev: 7]
+[Stage8_HighBackground] Ep 2400 | Avg Rew: 201.60 | Success: 0.80 [Prev: 7]
+[Stage8_HighBackground] Ep 2500 | Avg Rew: 207.25 | Success: 0.71 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.98
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=207.90
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=208.47
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=203.02
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=208.63
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=210.16
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=1.00, Return=202.79
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage6_VeryThinAndVeryFaint'
+[Stage8_HighBackground] Ep 2600 | Avg Rew: 220.40 | Success: 0.73 [Prev: 7]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Foundation'
+[Stage8_HighBackground] Ep 2700 | Avg Rew: 206.80 | Success: 0.71 [Prev: 7]
+[Stage8_HighBackground] Ep 2800 | Avg Rew: 205.90 | Success: 0.79 [Prev: 7]
+[Stage8_HighBackground] Ep 2900 | Avg Rew: 206.17 | Success: 0.75 [Prev: 7]
+[Stage8_HighBackground] Ep 3000 | Avg Rew: 226.31 | Success: 0.80 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=184.78
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=206.37
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=200.63
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=208.21
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=210.99
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=213.11
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=193.60
+
+[Stage8_HighBackground] Ep 3100 | Avg Rew: 217.32 | Success: 0.79 [Prev: 7]
+[Stage8_HighBackground] Ep 3200 | Avg Rew: 208.66 | Success: 0.77 [Prev: 7]
+[Stage8_HighBackground] Ep 3300 | Avg Rew: 198.09 | Success: 0.77 [Prev: 7]
+[Stage8_HighBackground] Ep 3400 | Avg Rew: 224.34 | Success: 0.74 [Prev: 7]
+[Stage8_HighBackground] Ep 3500 | Avg Rew: 195.53 | Success: 0.75 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=189.38
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=204.23
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=203.77
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=211.03
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=212.01
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=218.40
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=195.39
+
+[Stage8_HighBackground] Ep 3600 | Avg Rew: 226.27 | Success: 0.85 [Prev: 7]
+[Stage8_HighBackground] Ep 3700 | Avg Rew: 196.77 | Success: 0.73 [Prev: 7]
+[Stage8_HighBackground] Ep 3800 | Avg Rew: 226.36 | Success: 0.74 [Prev: 7]
+[Stage8_HighBackground] Ep 3900 | Avg Rew: 207.56 | Success: 0.79 [Prev: 7]
+[Stage8_HighBackground] Ep 4000 | Avg Rew: 194.54 | Success: 0.75 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=188.66
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=212.72
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=199.18
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=202.97
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=207.71
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=220.98
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=196.28
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage8_HighBackground_ep4000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage8_HighBackground_ep4000.pth
+[Stage8_HighBackground] Ep 4100 | Avg Rew: 216.98 | Success: 0.79 [Prev: 7]
+[Stage8_HighBackground] Ep 4200 | Avg Rew: 206.85 | Success: 0.82 [Prev: 7]
+[Stage8_HighBackground] Ep 4300 | Avg Rew: 209.64 | Success: 0.76 [Prev: 7]
+[Stage8_HighBackground] Ep 4400 | Avg Rew: 230.93 | Success: 0.80 [Prev: 7]
+[Stage8_HighBackground] Ep 4500 | Avg Rew: 239.51 | Success: 0.86 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=189.30
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=210.61
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=204.93
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=207.08
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=0.90, Return=206.57
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=220.56
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=194.08
+
+[Stage8_HighBackground] Ep 4600 | Avg Rew: 219.81 | Success: 0.82 [Prev: 7]
+[Stage8_HighBackground] Ep 4700 | Avg Rew: 208.86 | Success: 0.76 [Prev: 7]
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Foundation'
+[Stage8_HighBackground] Ep 4800 | Avg Rew: 198.49 | Success: 0.71 [Prev: 7]
+[Stage8_HighBackground] Ep 4900 | Avg Rew: 222.95 | Success: 0.84 [Prev: 7]
+[Stage8_HighBackground] Ep 5000 | Avg Rew: 214.66 | Success: 0.81 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=186.18
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=208.86
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=200.18
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=208.10
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=0.90, Return=205.29
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=222.84
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=196.51
+
+[Stage8_HighBackground] Ep 5100 | Avg Rew: 205.30 | Success: 0.79 [Prev: 7]
+[Stage8_HighBackground] Ep 5200 | Avg Rew: 221.07 | Success: 0.83 [Prev: 7]
+[Stage8_HighBackground] Ep 5300 | Avg Rew: 208.26 | Success: 0.77 [Prev: 7]
+[Stage8_HighBackground] Ep 5400 | Avg Rew: 221.97 | Success: 0.80 [Prev: 7]
+[Stage8_HighBackground] Ep 5500 | Avg Rew: 216.61 | Success: 0.76 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=186.42
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=212.60
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=199.88
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=206.53
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=0.90, Return=211.13
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=225.90
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=194.70
+
+[Stage8_HighBackground] Ep 5600 | Avg Rew: 216.92 | Success: 0.74 [Prev: 7]
+[Stage8_HighBackground] Ep 5700 | Avg Rew: 213.95 | Success: 0.75 [Prev: 7]
+[Stage8_HighBackground] Ep 5800 | Avg Rew: 217.88 | Success: 0.83 [Prev: 7]
+[Stage8_HighBackground] Ep 5900 | Avg Rew: 217.91 | Success: 0.84 [Prev: 7]
+[Stage8_HighBackground] Ep 6000 | Avg Rew: 226.18 | Success: 0.84 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=188.28
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=211.92
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=190.38
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=212.96
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=214.88
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=221.78
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=201.19
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage8_HighBackground_ep6000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage8_HighBackground_ep6000.pth
+[Stage8_HighBackground] Ep 6100 | Avg Rew: 219.15 | Success: 0.81 [Prev: 7]
+   🔄 Anti-forgetting: Training on previous stage 'Stage6_VeryThinAndVeryFaint'
+[Stage8_HighBackground] Ep 6200 | Avg Rew: 211.21 | Success: 0.77 [Prev: 7]
+[Stage8_HighBackground] Ep 6300 | Avg Rew: 218.53 | Success: 0.80 [Prev: 7]
+[Stage8_HighBackground] Ep 6400 | Avg Rew: 213.36 | Success: 0.83 [Prev: 7]
+[Stage8_HighBackground] Ep 6500 | Avg Rew: 217.91 | Success: 0.79 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.57
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=209.81
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=204.16
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=199.98
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=0.90, Return=216.92
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=221.51
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=204.21
+
+[Stage8_HighBackground] Ep 6600 | Avg Rew: 220.39 | Success: 0.85 [Prev: 7]
+[Stage8_HighBackground] Ep 6700 | Avg Rew: 209.46 | Success: 0.77 [Prev: 7]
+[Stage8_HighBackground] Ep 6800 | Avg Rew: 209.24 | Success: 0.83 [Prev: 7]
+[Stage8_HighBackground] Ep 6900 | Avg Rew: 221.61 | Success: 0.80 [Prev: 7]
+[Stage8_HighBackground] Ep 7000 | Avg Rew: 228.21 | Success: 0.91 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=184.24
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=211.31
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.80, Return=204.66
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=206.74
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=0.90, Return=209.04
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=218.53
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=195.37
+
+[Stage8_HighBackground] Ep 7100 | Avg Rew: 234.61 | Success: 0.82 [Prev: 7]
+[Stage8_HighBackground] Ep 7200 | Avg Rew: 214.01 | Success: 0.82 [Prev: 7]
+   🔄 Anti-forgetting: Training on previous stage 'Stage4_LowIntensity'
+[Stage8_HighBackground] Ep 7300 | Avg Rew: 207.03 | Success: 0.77 [Prev: 7]
+[Stage8_HighBackground] Ep 7400 | Avg Rew: 200.10 | Success: 0.75 [Prev: 7]
+[Stage8_HighBackground] Ep 7500 | Avg Rew: 241.26 | Success: 0.87 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.97
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=215.18
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=211.36
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=209.14
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=0.90, Return=204.46
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=213.02
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=1.00, Return=202.87
+
+[Stage8_HighBackground] Ep 7600 | Avg Rew: 218.26 | Success: 0.79 [Prev: 7]
+[Stage8_HighBackground] Ep 7700 | Avg Rew: 210.68 | Success: 0.79 [Prev: 7]
+[Stage8_HighBackground] Ep 7800 | Avg Rew: 229.04 | Success: 0.81 [Prev: 7]
+[Stage8_HighBackground] Ep 7900 | Avg Rew: 207.40 | Success: 0.77 [Prev: 7]
+[Stage8_HighBackground] Ep 8000 | Avg Rew: 219.92 | Success: 0.82 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=187.76
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=205.58
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=208.75
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=206.87
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=211.32
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=219.65
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=1.00, Return=204.09
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage8_HighBackground_ep8000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage8_HighBackground_ep8000.pth
+[Stage8_HighBackground] Ep 8100 | Avg Rew: 214.56 | Success: 0.83 [Prev: 7]
+[Stage8_HighBackground] Ep 8200 | Avg Rew: 223.56 | Success: 0.83 [Prev: 7]
+[Stage8_HighBackground] Ep 8300 | Avg Rew: 205.86 | Success: 0.79 [Prev: 7]
+[Stage8_HighBackground] Ep 8400 | Avg Rew: 220.52 | Success: 0.81 [Prev: 7]
+[Stage8_HighBackground] Ep 8500 | Avg Rew: 209.25 | Success: 0.82 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=189.13
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=210.91
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=209.27
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=206.61
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=0.90, Return=210.68
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=224.40
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=201.37
+
+[Stage8_HighBackground] Ep 8600 | Avg Rew: 245.40 | Success: 0.89 [Prev: 7]
+   🔄 Anti-forgetting: Training on previous stage 'Stage7_ExtremelyLowIntensity'
+[Stage8_HighBackground] Ep 8700 | Avg Rew: 226.00 | Success: 0.85 [Prev: 7]
+[Stage8_HighBackground] Ep 8800 | Avg Rew: 231.69 | Success: 0.82 [Prev: 7]
+[Stage8_HighBackground] Ep 8900 | Avg Rew: 217.25 | Success: 0.76 [Prev: 7]
+[Stage8_HighBackground] Ep 9000 | Avg Rew: 234.89 | Success: 0.86 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=187.64
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=212.34
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=209.20
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=210.78
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=207.57
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=222.72
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=1.00, Return=196.16
+
+[Stage8_HighBackground] Ep 9100 | Avg Rew: 210.26 | Success: 0.83 [Prev: 7]
+[Stage8_HighBackground] Ep 9200 | Avg Rew: 239.84 | Success: 0.87 [Prev: 7]
+[Stage8_HighBackground] Ep 9300 | Avg Rew: 210.10 | Success: 0.84 [Prev: 7]
+[Stage8_HighBackground] Ep 9400 | Avg Rew: 234.02 | Success: 0.87 [Prev: 7]
+[Stage8_HighBackground] Ep 9500 | Avg Rew: 229.39 | Success: 0.79 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=186.97
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=212.42
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.80, Return=200.43
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=202.91
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=0.90, Return=207.75
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=225.10
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=1.00, Return=196.57
+
+[Stage8_HighBackground] Ep 9600 | Avg Rew: 221.07 | Success: 0.77 [Prev: 7]
+   🔄 Anti-forgetting: Training on previous stage 'Stage3_ThinPaths'
+[Stage8_HighBackground] Ep 9700 | Avg Rew: 237.67 | Success: 0.85 [Prev: 7]
+[Stage8_HighBackground] Ep 9800 | Avg Rew: 218.86 | Success: 0.82 [Prev: 7]
+[Stage8_HighBackground] Ep 9900 | Avg Rew: 194.31 | Success: 0.76 [Prev: 7]
+[Stage8_HighBackground] Ep 10000 | Avg Rew: 210.63 | Success: 0.82 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=189.10
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=207.15
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.80, Return=201.35
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=205.38
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=206.90
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=224.64
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=201.70
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage8_HighBackground_ep10000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage8_HighBackground_ep10000.pth
+   🔄 Anti-forgetting: Training on previous stage 'Stage4_LowIntensity'
+[Stage8_HighBackground] Ep 10100 | Avg Rew: 228.91 | Success: 0.81 [Prev: 7]
+[Stage8_HighBackground] Ep 10200 | Avg Rew: 233.79 | Success: 0.86 [Prev: 7]
+[Stage8_HighBackground] Ep 10300 | Avg Rew: 227.76 | Success: 0.85 [Prev: 7]
+[Stage8_HighBackground] Ep 10400 | Avg Rew: 234.54 | Success: 0.88 [Prev: 7]
+[Stage8_HighBackground] Ep 10500 | Avg Rew: 225.48 | Success: 0.79 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=190.00
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=209.72
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=205.73
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=212.54
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=0.90, Return=212.58
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=222.38
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=201.07
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage1_Foundation'
+[Stage8_HighBackground] Ep 10600 | Avg Rew: 234.64 | Success: 0.88 [Prev: 7]
+[Stage8_HighBackground] Ep 10700 | Avg Rew: 234.83 | Success: 0.84 [Prev: 7]
+[Stage8_HighBackground] Ep 10800 | Avg Rew: 220.21 | Success: 0.80 [Prev: 7]
+[Stage8_HighBackground] Ep 10900 | Avg Rew: 207.84 | Success: 0.84 [Prev: 7]
+[Stage8_HighBackground] Ep 11000 | Avg Rew: 228.31 | Success: 0.86 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=187.18
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=212.39
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=200.85
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=204.76
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=217.98
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=217.10
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.80, Return=191.35
+
+[Stage8_HighBackground] Ep 11100 | Avg Rew: 220.82 | Success: 0.81 [Prev: 7]
+[Stage8_HighBackground] Ep 11200 | Avg Rew: 221.01 | Success: 0.88 [Prev: 7]
+[Stage8_HighBackground] Ep 11300 | Avg Rew: 217.80 | Success: 0.82 [Prev: 7]
+[Stage8_HighBackground] Ep 11400 | Avg Rew: 215.03 | Success: 0.85 [Prev: 7]
+[Stage8_HighBackground] Ep 11500 | Avg Rew: 236.44 | Success: 0.87 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=188.99
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=212.74
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=203.81
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=208.48
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=215.88
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=221.16
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=202.08
+
+[Stage8_HighBackground] Ep 11600 | Avg Rew: 229.02 | Success: 0.81 [Prev: 7]
+[Stage8_HighBackground] Ep 11700 | Avg Rew: 231.81 | Success: 0.87 [Prev: 7]
+[Stage8_HighBackground] Ep 11800 | Avg Rew: 233.19 | Success: 0.85 [Prev: 7]
+   🔄 Anti-forgetting: Training on previous stage 'Stage4_LowIntensity'
+[Stage8_HighBackground] Ep 11900 | Avg Rew: 225.44 | Success: 0.78 [Prev: 7]
+[Stage8_HighBackground] Ep 12000 | Avg Rew: 218.28 | Success: 0.85 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=188.87
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=209.90
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=200.70
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=211.57
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=216.79
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=231.34
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=1.00, Return=195.54
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage8_HighBackground_ep12000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage8_HighBackground_ep12000.pth
+[Stage8_HighBackground] Ep 12100 | Avg Rew: 214.53 | Success: 0.79 [Prev: 7]
+[Stage8_HighBackground] Ep 12200 | Avg Rew: 225.42 | Success: 0.86 [Prev: 7]
+[Stage8_HighBackground] Ep 12300 | Avg Rew: 219.89 | Success: 0.82 [Prev: 7]
+[Stage8_HighBackground] Ep 12400 | Avg Rew: 222.30 | Success: 0.86 [Prev: 7]
+[Stage8_HighBackground] Ep 12500 | Avg Rew: 224.96 | Success: 0.83 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=189.53
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=206.94
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=203.16
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=206.01
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=211.17
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=230.59
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=1.00, Return=197.69
+
+   🔄 Anti-forgetting: Training on previous stage 'Stage6_VeryThinAndVeryFaint'
+[Stage8_HighBackground] Ep 12600 | Avg Rew: 228.37 | Success: 0.89 [Prev: 7]
+[Stage8_HighBackground] Ep 12700 | Avg Rew: 217.63 | Success: 0.82 [Prev: 7]
+[Stage8_HighBackground] Ep 12800 | Avg Rew: 213.00 | Success: 0.82 [Prev: 7]
+[Stage8_HighBackground] Ep 12900 | Avg Rew: 232.71 | Success: 0.84 [Prev: 7]
+[Stage8_HighBackground] Ep 13000 | Avg Rew: 220.83 | Success: 0.83 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=185.63
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=208.57
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.80, Return=199.30
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=212.78
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=212.38
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=0.90, Return=222.13
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=1.00, Return=198.81
+
+[Stage8_HighBackground] Ep 13100 | Avg Rew: 235.12 | Success: 0.88 [Prev: 7]
+   🔄 Anti-forgetting: Training on previous stage 'Stage2_Curvature'
+[Stage8_HighBackground] Ep 13200 | Avg Rew: 224.78 | Success: 0.78 [Prev: 7]
+   🔄 Anti-forgetting: Training on previous stage 'Stage6_VeryThinAndVeryFaint'
+[Stage8_HighBackground] Ep 13300 | Avg Rew: 233.19 | Success: 0.88 [Prev: 7]
+[Stage8_HighBackground] Ep 13400 | Avg Rew: 208.52 | Success: 0.80 [Prev: 7]
+[Stage8_HighBackground] Ep 13500 | Avg Rew: 230.05 | Success: 0.88 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=187.44
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=213.02
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=0.90, Return=203.70
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=207.93
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=1.00, Return=215.92
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=219.44
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=1.00, Return=202.43
+
+[Stage8_HighBackground] Ep 13600 | Avg Rew: 224.84 | Success: 0.87 [Prev: 7]
+[Stage8_HighBackground] Ep 13700 | Avg Rew: 221.90 | Success: 0.87 [Prev: 7]
+[Stage8_HighBackground] Ep 13800 | Avg Rew: 212.23 | Success: 0.80 [Prev: 7]
+[Stage8_HighBackground] Ep 13900 | Avg Rew: 235.58 | Success: 0.84 [Prev: 7]
+[Stage8_HighBackground] Ep 14000 | Avg Rew: 222.31 | Success: 0.87 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=187.72
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=207.42
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage3_ThinPaths: Success=1.00, Return=205.13
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage4_LowIntensity: Success=1.00, Return=207.81
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage5_ThinAndFaint: Success=0.90, Return=204.95
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage6_VeryThinAndVeryFaint: Success=1.00, Return=222.88
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage7_ExtremelyLowIntensity: Success=0.90, Return=191.02
+
+Checkpoint saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/ckpt_Stage8_HighBackground_ep14000.pth
+Actor-only weights saved: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/Experiment3_Refine/runs/20260106_123842/checkpoints/actor_Stage8_HighBackground_ep14000.pth
+[Stage8_HighBackground] Ep 14100 | Avg Rew: 231.46 | Success: 0.85 [Prev: 7]
+[Stage8_HighBackground] Ep 14200 | Avg Rew: 204.60 | Success: 0.74 [Prev: 7]
+[Stage8_HighBackground] Ep 14300 | Avg Rew: 212.84 | Success: 0.81 [Prev: 7]
+[Stage8_HighBackground] Ep 14400 | Avg Rew: 214.46 | Success: 0.87 [Prev: 7]
+[Stage8_HighBackground] Ep 14500 | Avg Rew: 231.41 | Success: 0.88 [Prev: 7]
+
+🔍 Evaluating on 7 previous stage(s) to check for forgetting...
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage1_Foundation: Success=1.00, Return=187.04
+[ENV] On-the-fly curve generation enabled (base_seed=50)
+   Stage2_Curvature: Success=1.00, Return=214.26
+[ENV] On-the-fly curve generation enabled (base_seed=50)

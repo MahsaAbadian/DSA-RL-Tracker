@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-01-05T11:46:21.958225",
+  "timestamp": "2026-01-05T13:19:07.240228",
   "device": "cuda",
   "n_actions": 9,
   "base_seed": 42,
@@ -39,7 +39,7 @@
       }
     }
   ],
-  "training_start_time": "2026-01-05T11:46:21.958291",
-  "training_end_time": "2026-01-05T12:10:54.989696",
-  "training_duration_seconds": 1473.031405
+  "training_start_time": "2026-01-05T13:19:07.240290",
+  "training_end_time": "2026-01-05T13:49:09.053828",
+  "training_duration_seconds": 1801.813538
 }
