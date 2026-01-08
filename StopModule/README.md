@@ -23,7 +23,7 @@ This will:
 3. Save the weights to `StopModule/weights/stop_detector_v1.pth`.
 
 ### 2. Integration with Fine-Tuning
-Once you have a high-accuracy `.pth` file, you can load these weights into the `finetuning/` hub to replace the weak, RL-trained stop heads.
+Once you have a high-accuracy `.pth` file, you can load these weights into the `FineTune/` hub to replace the weak, RL-trained stop heads.
 
 ---
 

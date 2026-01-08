@@ -19,9 +19,9 @@ When an experiment (like Experiment 4) finishes with high success rates, you "ba
 
 **How to run:**
 ```bash
-python finetuning/register_champion.py Experiment4_separate_stop_v2/runs/your_run_folder --name Best_Stop_Model
+python FineTune/register_champion.py Experiment4_separate_stop_v2/runs/your_run_folder --name Best_Stop_Model
 ```
-*Your model is now safely stored in `finetuning/base_weights/Best_Stop_Model/`.*
+*Your model is now safely stored in `FineTune/base_weights/Best_Stop_Model/`.*
 
 ---
 
@@ -37,17 +37,17 @@ Once a model is registered, you can run targeted experiments to improve it.
 **How to run:**
 ```bash
 # Option A: Use a dedicated experiment config (Recommended)
-python finetuning/src/finetune.py --config finetuning/configs/refine_experiment_v1.json
+python FineTune/src/finetune.py --config FineTune/configs/refine_experiment_v1.json
 
 # Option B: Quick run with command line overrides
-python finetuning/src/finetune.py --champion Best_Stop_Model --stage 11 --lr 1e-6
+python FineTune/src/finetune.py --champion Best_Stop_Model --stage 11 --lr 1e-6
 ```
 
 ---
 
 ## ⚙️ Configuration Guide
 
-### Fine-Tune JSON (`finetuning/configs/`)
+### Fine-Tune JSON (`FineTune/configs/`)
 This is where you "play" with the refinement settings.
 
 ```json
