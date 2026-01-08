@@ -1,123 +1,317 @@
 #!/usr/bin/env python3
 """
-Shared model architectures for DSA RL Experiment.
-- AsymmetricActorCritic: Full model for training (Actor + Critic)
-- ActorOnly: Lightweight model for inference (Actor only, no Critic)
+Inference script for DSA RL Experiment 3.
+Uses ActorOnly model (no critic) for efficient inference.
 """
+import argparse
+import numpy as np
 import torch
-import torch.nn as nn
+import cv2
+import os
+import sys
+import matplotlib.pyplot as plt
+from scipy.interpolate import splprep, splev
 
-# ---------- HELPERS ----------
-def gn(c): 
-    """GroupNorm helper"""
-    return nn.GroupNorm(4, c)
+# Add parent directory to path so 'src' package can be imported
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_parent_dir = os.path.dirname(_script_dir)
+if _parent_dir not in sys.path:
+    sys.path.insert(0, _parent_dir)
 
-# ---------- FULL MODEL (TRAINING) ----------
-class AsymmetricActorCritic(nn.Module):
-    """
-    Full Actor-Critic model for training.
-    Uses both actor (policy) and critic (value function) for PPO.
-    """
-    def __init__(self, n_actions=9, K=8):
-        super().__init__()
-        # Actor CNN
-        self.actor_cnn = nn.Sequential(
-            nn.Conv2d(4, 32, 3, padding=1), gn(32), nn.PReLU(),
-            nn.Conv2d(32, 32, 3, padding=2, dilation=2), gn(32), nn.PReLU(),
-            nn.Conv2d(32, 64, 3, padding=3, dilation=3), gn(64), nn.PReLU(),
-            nn.AdaptiveAvgPool2d((1,1))
-        )
-        # Actor LSTM (Stateful memory)
-        self.actor_lstm = nn.LSTM(input_size=n_actions, hidden_size=64, batch_first=True)
-        self.actor_head = nn.Sequential(nn.Linear(128, 128), nn.PReLU(), nn.Linear(128, n_actions))
+# Use absolute import - works both as module and script
+from src.models import ActorOnly
 
-        # Critic CNN (Privileged info - uses GT map)
-        self.critic_cnn = nn.Sequential(
-            nn.Conv2d(5, 32, 3, padding=1), gn(32), nn.PReLU(),
-            nn.Conv2d(32, 32, 3, padding=2, dilation=2), gn(32), nn.PReLU(),
-            nn.Conv2d(32, 64, 3, padding=3, dilation=3), gn(64), nn.PReLU(),
-            nn.AdaptiveAvgPool2d((1,1))
-        )
-        self.critic_lstm = nn.LSTM(input_size=n_actions, hidden_size=64, batch_first=True)
-        self.critic_head = nn.Sequential(nn.Linear(128, 128), nn.PReLU(), nn.Linear(128, 1))
+# Import constants and utilities
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+ACTIONS_MOVEMENT = [(-1, 0), (1, 0), (0,-1), (0, 1), (-1,-1), (-1,1), (1,-1), (1,1)]
+ACTION_STOP_IDX = 8
+N_ACTIONS = 9
+CROP = 33
+
+def clamp(v, lo, hi): 
+    return max(lo, min(v, hi))
+
+def fixed_window_history(ahist_list, K, n_actions):
+    """Create fixed-size window of action history."""
+    out = np.zeros((K, n_actions), dtype=np.float32)
+    if len(ahist_list) == 0: 
+        return out
+    tail = ahist_list[-K:]
+    out[-len(tail):] = np.stack(tail, axis=0)
+    return out
+
+# ---------- UTILITIES ----------
+def preprocess_full_image(path):
+    """Load and preprocess DSA image for inference."""
+    img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        return None
+    
+    # CLAHE for contrast enhancement
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(16, 16))
+    img = clahe.apply(img)
+    
+    # Normalize
+    img = img.astype(np.float32) / 255.0
+    
+    # Auto-invert if light background
+    if np.median(img) > 0.5:
+        print("Detected light background. Inverting image...")
+        img = 1.0 - img
+    
+    return img
+
+def crop32_inference(img: np.ndarray, cy: int, cx: int, size=CROP):
+    """Crop 33x33 patch from full image with smart padding."""
+    h, w = img.shape
+    corners = [img[0,0], img[0, w-1], img[h-1, 0], img[h-1, w-1]]
+    bg_estimate = np.median(corners)
+    pad_val = 1.0 if bg_estimate > 0.5 else 0.0
+    
+    r = size // 2
+    y0, y1 = cy - r, cy + r + 1
+    x0, x1 = cx - r, cx + r + 1
+    
+    out = np.full((size, size), pad_val, dtype=img.dtype)
+    sy0, sy1 = clamp(y0, 0, h), clamp(y1, 0, h)
+    sx0, sx1 = clamp(x0, 0, w), clamp(x1, 0, w)
+    
+    oy0 = sy0 - y0
+    ox0 = sx0 - x0
+    sh = sy1 - sy0
+    sw = sx1 - sx0
+    
+    if sh > 0 and sw > 0:
+        out[oy0:oy0+sh, ox0:ox0+sw] = img[sy0:sy1, sx0:sx1]
+    
+    return out
+
+def get_closest_action(dy, dx):
+    """Match click vector to discrete movement action (0-7)."""
+    best_idx = -1
+    max_dot = -float('inf')
+    mag = np.sqrt(dy**2 + dx**2) + 1e-6
+    uy, ux = dy/mag, dx/mag
+    
+    for i, (ay, ax) in enumerate(ACTIONS_MOVEMENT):
+        amag = np.sqrt(ay**2 + ax**2)
+        ny, nx = ay/amag, ax/amag
+        dot = uy*ny + ux*nx
+        if dot > max_dot:
+            max_dot = dot
+            best_idx = i
+    return best_idx
+
+# ---------- INFERENCE ENVIRONMENT ----------
+class InferenceEnv:
+    """Environment for inference on full-size DSA images."""
+    def __init__(self, full_img, start_pt, start_vector, max_steps=1000):
+        self.img = full_img
+        self.h, self.w = full_img.shape
+        self.max_steps = max_steps
         
-        self.apply(self._init_weights)
-
-    def _init_weights(self, m):
-        if isinstance(m, (nn.Conv2d, nn.Linear)):
-            nn.init.orthogonal_(m.weight, gain=torch.sqrt(torch.tensor(2.0)))
-            if m.bias is not None: 
-                nn.init.constant_(m.bias, 0)
-
-    def forward(self, actor_obs, critic_gt, ahist_onehot, hc_actor=None, hc_critic=None):
-        """
-        Forward pass for training.
+        # Initialize agent position
+        self.agent = tuple(start_pt)  # (y, x)
         
-        Args:
-            actor_obs: Actor observation (B, 4, 33, 33)
-            critic_gt: Ground truth map for critic (B, 1, 33, 33)
-            ahist_onehot: Action history one-hot (B, K, n_actions)
-            hc_actor: Actor LSTM hidden state (optional)
-            hc_critic: Critic LSTM hidden state (optional)
+        # Setup momentum from start vector
+        dy, dx = start_vector
+        mag = np.sqrt(dy**2 + dx**2) + 1e-6
+        dy, dx = (dy/mag) * 2.0, (dx/mag) * 2.0
         
-        Returns:
-            logits: Action logits (B, n_actions)
-            value: State value estimate (B,)
-            hc_actor: Updated actor hidden state
-            hc_critic: Updated critic hidden state
-        """
-        # Actor
-        feat_a = self.actor_cnn(actor_obs).flatten(1)
-        lstm_a, hc_actor = self.actor_lstm(ahist_onehot, hc_actor)
-        joint_a = torch.cat([feat_a, lstm_a[:, -1, :]], dim=1)
-        logits = self.actor_head(joint_a)
+        # History for momentum (3 positions)
+        p_prev1 = (self.agent[0] - dy, self.agent[1] - dx)
+        p_prev2 = (self.agent[0] - dy*2, self.agent[1] - dx*2)
+        self.history_pos = [p_prev2, p_prev1, self.agent]
+        
+        self.path_points = [self.agent]
+        self.steps = 0
+        self.path_mask = np.zeros_like(full_img, dtype=np.float32)
+        self.path_mask[int(self.agent[0]), int(self.agent[1])] = 1.0
+        self.visited = set()
+        self.visited.add((int(self.agent[0]), int(self.agent[1])))
 
-        # Critic
-        critic_input = torch.cat([actor_obs, critic_gt], dim=1)
-        feat_c = self.critic_cnn(critic_input).flatten(1)
-        lstm_c, hc_critic = self.critic_lstm(ahist_onehot, hc_critic)
-        joint_c = torch.cat([feat_c, lstm_c[:, -1, :]], dim=1)
-        value = self.critic_head(joint_c).squeeze(-1)
+    def obs(self):
+        """Get observation for current position."""
+        curr = self.history_pos[-1]
+        p1 = self.history_pos[-2]
+        p2 = self.history_pos[-3]
         
-        return logits, value, hc_actor, hc_critic
+        ch0 = crop32_inference(self.img, int(curr[0]), int(curr[1]))
+        ch1 = crop32_inference(self.img, int(p1[0]), int(p1[1]))
+        ch2 = crop32_inference(self.img, int(p2[0]), int(p2[1]))
+        ch3 = crop32_inference(self.path_mask, int(curr[0]), int(curr[1]))
+        
+        actor_obs = np.stack([ch0, ch1, ch2, ch3], axis=0).astype(np.float32)
+        return actor_obs
 
-# ---------- ACTOR-ONLY MODEL (INFERENCE) ----------
-class ActorOnly(nn.Module):
-    """
-    Lightweight Actor-only model for inference.
-    Only contains the policy network, no critic.
-    ~50% smaller than full model.
-    """
-    def __init__(self, n_actions=9, K=8):
-        super().__init__()
-        # Actor CNN (same as AsymmetricActorCritic)
-        self.actor_cnn = nn.Sequential(
-            nn.Conv2d(4, 32, 3, padding=1), gn(32), nn.PReLU(),
-            nn.Conv2d(32, 32, 3, padding=2, dilation=2), gn(32), nn.PReLU(),
-            nn.Conv2d(32, 64, 3, padding=3, dilation=3), gn(64), nn.PReLU(),
-            nn.AdaptiveAvgPool2d((1,1))
-        )
-        # Actor LSTM
-        self.actor_lstm = nn.LSTM(input_size=n_actions, hidden_size=64, batch_first=True)
-        self.actor_head = nn.Sequential(nn.Linear(128, 128), nn.PReLU(), nn.Linear(128, n_actions))
+    def step(self, a_idx):
+        """Execute action and return (done, reason)."""
+        self.steps += 1
+        
+        # Handle STOP action
+        if a_idx == ACTION_STOP_IDX:
+            return True, "Stopped by Agent"
+        
+        # Movement action
+        dy, dx = ACTIONS_MOVEMENT[a_idx]
+        STEP_ALPHA = 2.0
+        ny = self.agent[0] + dy * STEP_ALPHA
+        nx = self.agent[1] + dx * STEP_ALPHA
+        
+        # Check boundaries
+        if not (0 <= ny < self.h and 0 <= nx < self.w):
+            return True, "Hit Image Border"
+        
+        iy, ix = int(ny), int(nx)
+        
+        # Loop detection
+        if (iy, ix) in self.visited and self.steps > 20:
+            return True, "Loop Detected"
+        self.visited.add((iy, ix))
+        
+        # Update state
+        self.agent = (ny, nx)
+        self.history_pos.append(self.agent)
+        self.path_points.append(self.agent)
+        self.path_mask[iy, ix] = 1.0
+        
+        if self.steps >= self.max_steps:
+            return True, "Max Steps Reached"
+        
+        return False, "Running"
 
-    def forward(self, actor_obs, ahist_onehot, hc_actor=None):
-        """
-        Forward pass for inference.
+# ---------- INTERACTIVE CLICK HANDLER ----------
+coords = []
+def onclick(event):
+    """Handle mouse clicks for start and direction selection."""
+    global coords
+    if event.xdata and event.ydata:
+        ix, iy = int(event.xdata), int(event.ydata)
+        coords.append((ix, iy))
         
-        Args:
-            actor_obs: Actor observation (B, 4, 33, 33)
-            ahist_onehot: Action history one-hot (B, K, n_actions)
-            hc_actor: Actor LSTM hidden state (optional)
+        plt.plot(ix, iy, 'ro', markersize=5)
+        if len(coords) > 1:
+            plt.plot([coords[-2][0], coords[-1][0]], 
+                    [coords[-2][1], coords[-1][1]], 'r-', linewidth=2)
+        plt.draw()
         
-        Returns:
-            logits: Action logits (B, n_actions)
-            hc_actor: Updated actor hidden state
-        """
-        feat_a = self.actor_cnn(actor_obs).flatten(1)
-        lstm_a, hc_actor = self.actor_lstm(ahist_onehot, hc_actor)
-        joint_a = torch.cat([feat_a, lstm_a[:, -1, :]], dim=1)
-        logits = self.actor_head(joint_a)
-        
-        return logits, hc_actor
+        if len(coords) == 2:
+            print("Direction set. Starting tracking...")
+            plt.pause(0.5)
+            plt.close()
 
+# ---------- MAIN ----------
+def main():
+    parser = argparse.ArgumentParser(description="DSA RL Inference - Track curves in real DSA images")
+    parser.add_argument("--image_path", type=str, required=True,
+                        help="Path to DSA image file")
+    parser.add_argument("--actor_weights", type=str, required=True,
+                        help="Path to actor-only weights (e.g., actor_Stage3_Realism_FINAL.pth)")
+    parser.add_argument("--max_steps", type=int, default=1000,
+                        help="Maximum steps before stopping")
+    args = parser.parse_args()
+    
+    # 1. Load and preprocess image
+    raw_img = cv2.imread(args.image_path, cv2.IMREAD_GRAYSCALE)
+    if raw_img is None:
+        print(f"Error: Could not load image from {args.image_path}")
+        return
+    
+    processed_img = preprocess_full_image(args.image_path)
+    
+    # 2. Load ActorOnly model
+    K = 8
+    model = ActorOnly(n_actions=N_ACTIONS, K=K).to(DEVICE)
+    
+    try:
+        actor_weights = torch.load(args.actor_weights, map_location=DEVICE)
+        model.load_state_dict(actor_weights)
+        print(f"✓ Loaded actor weights from: {args.actor_weights}")
+    except Exception as e:
+        print(f"Error loading weights: {e}")
+        print("\nMake sure you're using actor-only weights (actor_*.pth), not full model weights.")
+        print("Actor weights are automatically saved during training.")
+        return
+    
+    model.eval()
+    
+    # 3. Get start point and direction from user clicks
+    print("\n--- INSTRUCTIONS ---")
+    print("1. Click START point")
+    print("2. Click DIRECTION point")
+    print("--------------------\n")
+    
+    plt.figure(figsize=(12, 12))
+    plt.imshow(raw_img, cmap='gray')
+    plt.title("Select Start & Direction")
+    plt.connect('button_press_event', onclick)
+    plt.show()
+    
+    if len(coords) < 2:
+        print("Error: Need 2 clicks (start and direction)")
+        return
+    
+    # Convert matplotlib (x,y) to numpy (y,x)
+    p1_x, p1_y = coords[0]
+    p2_x, p2_y = coords[1]
+    vec_y = p2_y - p1_y
+    vec_x = p2_x - p1_x
+    
+    # 4. Initialize inference environment
+    env = InferenceEnv(processed_img, start_pt=(p1_y, p1_x), 
+                       start_vector=(vec_y, vec_x), max_steps=args.max_steps)
+    
+    # 5. Prime action history
+    start_action = get_closest_action(vec_y, vec_x)
+    a_onehot = np.zeros(N_ACTIONS)
+    a_onehot[start_action] = 1.0
+    ahist = [a_onehot] * K
+    
+    # 6. Run inference
+    done = False
+    print(f"Tracking started... (Max steps: {args.max_steps})")
+    
+    while not done:
+        obs = env.obs()
+        obs_t = torch.tensor(obs[None], dtype=torch.float32, device=DEVICE)
+        A = fixed_window_history(ahist, K, N_ACTIONS)[None, ...]
+        A_t = torch.tensor(A, dtype=torch.float32, device=DEVICE)
+        
+        with torch.no_grad():
+            logits, _ = model(obs_t, A_t)
+            probs = torch.softmax(logits, dim=1)
+            action = torch.argmax(probs, dim=1).item()
+        
+        done, reason = env.step(action)
+        
+        # Update history
+        new_onehot = np.zeros(N_ACTIONS)
+        new_onehot[action] = 1.0
+        ahist.append(new_onehot)
+    
+    print(f"Finished: {reason} ({env.steps} steps)")
+    
+    # 7. Visualize result
+    path = env.path_points
+    try:
+        y = [p[0] for p in path]
+        x = [p[1] for p in path]
+        tck, u = splprep([y, x], s=20.0)
+        new = splev(np.linspace(0, 1, len(path)*3), tck)
+        sy, sx = new[0], new[1]
+    except:
+        sy, sx = [p[0] for p in path], [p[1] for p in path]
+    
+    plt.figure(figsize=(12, 12))
+    plt.imshow(raw_img, cmap='gray')
+    plt.plot(sx, sy, 'cyan', linewidth=2, label='Tracked Path')
+    plt.plot(p1_x, p1_y, 'go', markersize=8, label='Start')
+    if "Stopped" in reason:
+        plt.plot(path[-1][1], path[-1][0], 'rx', markersize=10, 
+                markeredgewidth=3, label='Stop')
+    plt.legend()
+    plt.title(f"Result: {reason}")
+    plt.show()
+
+if __name__ == "__main__":
+    main()

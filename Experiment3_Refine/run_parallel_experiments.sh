@@ -63,7 +63,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Build command
-CMD="python3 run_parallel_experiments.py"
+CMD="python run_parallel_experiments.py"
 CMD="$CMD --experiment_name \"$EXPERIMENT_NAME\""
 CMD="$CMD --base_seed $BASE_SEED"
 
