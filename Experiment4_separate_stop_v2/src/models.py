@@ -37,16 +37,16 @@ class DecoupledStopBackboneActorCritic(nn.Module):
             nn.Linear(128, n_movement_actions)
         )
         
-        # 2. Stop Backbone (Dedicated Vision): Smaller CNN
-        # Only looks at the CURRENT crop (1 channel)
+        # 2. Stop Backbone (Dedicated Vision): Deepened with Dilation
+        # Takes 2 channels: [current_crop, path_mask]
         self.stop_cnn = nn.Sequential(
-            nn.Conv2d(1, 16, 3, padding=1), gn(16), nn.PReLU(),
-            nn.Conv2d(16, 32, 3, padding=1), gn(32), nn.PReLU(),
-            nn.Conv2d(32, 64, 3, padding=1), gn(64), nn.PReLU(),
+            nn.Conv2d(2, 32, 3, padding=1), gn(32), nn.PReLU(),
+            nn.Conv2d(32, 32, 3, padding=2, dilation=2), gn(32), nn.PReLU(),
+            nn.Conv2d(32, 64, 3, padding=3, dilation=3), gn(64), nn.PReLU(),
             nn.AdaptiveAvgPool2d((1,1))
         )
         self.stop_head = nn.Sequential(
-            nn.Linear(64, 64), nn.PReLU(),
+            nn.Linear(128, 64), nn.PReLU(), # 64 (CNN) + 64 (LSTM) = 128
             nn.Linear(64, 1)
         )
 
@@ -75,11 +75,13 @@ class DecoupledStopBackboneActorCritic(nn.Module):
         joint_a = torch.cat([feat_a, lstm_a[:, -1, :]], dim=1)
         movement_logits = self.actor_head(joint_a)
         
-        # Stop Path (Independent)
-        # Only use the first channel of the observation (the current crop)
-        current_crop = actor_obs[:, 0:1, :, :] 
-        feat_stop = self.stop_cnn(current_crop).flatten(1)
-        stop_logit = self.stop_head(feat_stop).squeeze(-1)
+        # Stop Path (Improved)
+        # Use Channel 0 (image) and Channel 3 (path mask)
+        stop_input = torch.cat([actor_obs[:, 0:1, :, :], actor_obs[:, 3:4, :, :]], dim=1)
+        feat_stop = self.stop_cnn(stop_input).flatten(1)
+        # Combine vision with movement history
+        joint_stop = torch.cat([feat_stop, lstm_a[:, -1, :]], dim=1)
+        stop_logit = self.stop_head(joint_stop).squeeze(-1)
 
         # Critic Path
         critic_input = torch.cat([actor_obs, critic_gt], dim=1)
@@ -110,13 +112,13 @@ class DecoupledStopActorOnly(nn.Module):
         )
         
         self.stop_cnn = nn.Sequential(
-            nn.Conv2d(1, 16, 3, padding=1), gn(16), nn.PReLU(),
-            nn.Conv2d(16, 32, 3, padding=1), gn(32), nn.PReLU(),
-            nn.Conv2d(32, 64, 3, padding=1), gn(64), nn.PReLU(),
+            nn.Conv2d(2, 32, 3, padding=1), gn(32), nn.PReLU(),
+            nn.Conv2d(32, 32, 3, padding=2, dilation=2), gn(32), nn.PReLU(),
+            nn.Conv2d(32, 64, 3, padding=3, dilation=3), gn(64), nn.PReLU(),
             nn.AdaptiveAvgPool2d((1,1))
         )
         self.stop_head = nn.Sequential(
-            nn.Linear(64, 64), nn.PReLU(),
+            nn.Linear(128, 64), nn.PReLU(),
             nn.Linear(64, 1)
         )
 
@@ -126,8 +128,10 @@ class DecoupledStopActorOnly(nn.Module):
         joint_a = torch.cat([feat_a, lstm_a[:, -1, :]], dim=1)
         movement_logits = self.actor_head(joint_a)
         
-        current_crop = actor_obs[:, 0:1, :, :]
-        feat_stop = self.stop_cnn(current_crop).flatten(1)
-        stop_logit = self.stop_head(feat_stop).squeeze(-1)
+        # Use Channel 0 (image) and Channel 3 (path mask)
+        stop_input = torch.cat([actor_obs[:, 0:1, :, :], actor_obs[:, 3:4, :, :]], dim=1)
+        feat_stop = self.stop_cnn(stop_input).flatten(1)
+        joint_stop = torch.cat([feat_stop, lstm_a[:, -1, :]], dim=1)
+        stop_logit = self.stop_head(joint_stop).squeeze(-1)
         
         return movement_logits, stop_logit, hc_actor

@@ -776,7 +776,7 @@ class CurveEnvUnified:
 from src.models import DecoupledStopBackboneActorCritic
 
 # ---------- PPO UPDATE ----------
-def update_ppo(ppo_opt, model, buf_list, clip=0.2, epochs=4, minibatch=32, lambda_stop=1.0):
+def update_ppo(ppo_opt, model, buf_list, clip=0.2, epochs=4, minibatch=32, lambda_stop=5.0):
     obs_a = torch.tensor(np.concatenate([x['obs']['actor'] for x in buf_list]), dtype=torch.float32, device=DEVICE)
     obs_c = torch.tensor(np.concatenate([x['obs']['critic_gt'] for x in buf_list]), dtype=torch.float32, device=DEVICE)
     ahist = torch.tensor(np.concatenate([x['ahist'] for x in buf_list]), dtype=torch.float32, device=DEVICE)
