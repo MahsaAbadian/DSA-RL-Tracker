@@ -56,7 +56,7 @@ class HybridFinetuneModel(nn.Module):
             
         return m_logits, stop_logit, val, h_a, h_c
 
-def run_finetuning(config_path=None, **kwargs):
+def run_finetune(config_path=None, **kwargs):
     # 1. Load Configuration
     config = {}
     if config_path and os.path.exists(config_path):
@@ -104,7 +104,7 @@ def run_finetuning(config_path=None, **kwargs):
     batch_buffer = []
     ep_returns, ep_successes = [], []
     
-    print(f"🚀 Fine-Tuning session: {run_dir}")
+    print(f"🚀 Fine-Tune session: {run_dir}")
     
     for ep in range(1, episodes + 1):
         obs_dict = env.reset()
@@ -172,14 +172,14 @@ def run_finetuning(config_path=None, **kwargs):
 
     # Save final model
     torch.save(model.state_dict(), os.path.join(run_dir, "weights", "finetuned_hybrid_FINAL.pth"))
-    print(f"✅ Hybrid Fine-tuning complete. Saved to: {run_dir}")
+    print(f"✅ Hybrid Fine-tune complete. Saved to: {run_dir}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str, help="Path to fine-tuning JSON config")
+    parser.add_argument("--config", type=str, help="Path to fine-tune JSON config")
     parser.add_argument("--champion", type=str, help="Champion name override")
     parser.add_argument("--stop_weights", type=str, help="Path to standalone stop weights (.pth)")
     parser.add_argument("--stage", type=int, help="Stage ID override")
     args = parser.parse_args()
     
-    run_finetuning(config_path=args.config, champion=args.champion, stop_weights=args.stop_weights, stage=args.stage)
+    run_finetune(config_path=args.config, champion=args.champion, stop_weights=args.stop_weights, stage=args.stage)
