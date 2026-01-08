@@ -873,33 +873,32 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
             # Fallback: assume checkpoint is in run_dir/checkpoints/
             run_dir = os.path.dirname(checkpoint_dir)
         
-        # Load config to determine stage and seed (optional - may not exist in older runs)
-        config_file = os.path.join(run_dir, "config.json")
+        # Load config to determine stage and seed
+        config_file = os.path.join(run_dir, "curve_config.json")
         saved_config = {}
         if os.path.exists(config_file):
             with open(config_file, 'r') as f:
                 saved_config = json.load(f)
+            print(f"✓ Loaded existing configuration from: {config_file}")
         else:
-            print(f"⚠️  Config file not found: {config_file}")
-            print("   Using defaults and curve_config.json from run directory")
+            # Fallback to old name if it exists
+            old_config_file = os.path.join(run_dir, "config.json")
+            if os.path.exists(old_config_file):
+                with open(old_config_file, 'r') as f:
+                    saved_config = json.load(f)
+                print(f"✓ Loaded existing configuration from: {old_config_file}")
+            else:
+                print(f"⚠️  Config file not found in run directory")
+                print("   Using defaults and command line arguments")
         
         # Get base_seed from config or use default
         base_seed = saved_config.get('base_seed', BASE_SEED)
         
-        # Load curve config - try run directory first, then saved path
-        # Override the curve_config loaded earlier with the one from the run directory
-        saved_curve_config_path = saved_config.get('curve_config_path', None)
-        curve_config_in_run = os.path.join(run_dir, "curve_config.json")
-        
-        if os.path.exists(curve_config_in_run):
-            curve_config, actual_config_path = load_curve_config(curve_config_in_run)
-            print(f"✓ Loaded curve config from run directory: {actual_config_path}")
-        elif saved_curve_config_path and os.path.exists(saved_curve_config_path):
-            curve_config, actual_config_path = load_curve_config(saved_curve_config_path)
-            print(f"✓ Loaded curve config from saved path: {actual_config_path}")
+        # If config.json exists and has stages, we can use them directly
+        if saved_config and 'stages' in saved_config and len(saved_config['stages']) > 0:
+            print("✓ Will use training stages defined in config.json")
         else:
-            print(f"⚠️  Using curve config from command line/default")
-            # Keep the curve_config loaded earlier
+            print("⚠️  No stages found in config.json, using provided curve_config")
         
         img_cfg = curve_config.get('image', {})
         img_h = img_cfg.get('height', 128)
@@ -997,36 +996,18 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     # Create log file
     log_file = os.path.join(logs_dir, "training.log")
     
-    # Copy curve configuration file to run directory for reproducibility
-    run_curve_config_path = os.path.join(run_dir, "curve_config.json")
+    # Determine curve config source for metadata
     if resume_from is None:
-        # New run - copy config file
-        if actual_config_path and os.path.exists(actual_config_path):
-            shutil.copy2(actual_config_path, run_curve_config_path)
-            print(f"✓ Copied curve configuration to: {run_curve_config_path}")
-            stored_config_path = "curve_config.json"
-        else:
-            stored_config_path = curve_config_path if curve_config_path else None
+        stored_config_path = actual_config_path if actual_config_path else curve_config_path
     else:
-        # Resuming - config should already be in run directory
-        if os.path.exists(run_curve_config_path):
-            print(f"✓ Using curve configuration from run directory: {run_curve_config_path}")
-            stored_config_path = "curve_config.json"
+        # Use saved path if available
+        if saved_config:
+            stored_config_path = saved_config.get('curve_config_path', None)
         else:
-            # Fallback: try to copy from original location
-            if actual_config_path and os.path.exists(actual_config_path):
-                shutil.copy2(actual_config_path, run_curve_config_path)
-                print(f"✓ Copied curve configuration to: {run_curve_config_path}")
-                stored_config_path = "curve_config.json"
-            else:
-                # Use saved config path if available
-                if saved_config:
-                    stored_config_path = saved_config.get('curve_config_path', None)
-                else:
-                    stored_config_path = None
+            stored_config_path = actual_config_path if actual_config_path else curve_config_path
     
     # Save training configuration
-    config_file = os.path.join(run_dir, "config.json")
+    config_file = os.path.join(run_dir, "curve_config.json")
     training_config = {
         "timestamp": datetime.now().isoformat(),
         "device": DEVICE,
