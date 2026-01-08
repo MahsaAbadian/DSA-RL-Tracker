@@ -21,21 +21,24 @@ self.stop_cnn = nn.Sequential(...)  # Takes 1 channel (Only Current Crop)
 
 ### Why this is better:
 
-1.  **Specialization**: The `stop_cnn` only has one job: recognize the visual signature of an endpoint. It doesn't care about movement history or where the agent has already been.
-2.  **Robustness**: If the Actor is spinning in circles because it's lost, the Stop Head can still look at the current patch and say: _"I don't see an endpoint here, keep trying."_
-3.  **Efficiency**: The `stop_cnn` is smaller and faster. It focuses on high-level spatial patterns rather than temporal movement.
+1.  **Specialization**: The `stop_cnn` only has one job: recognize the visual signature of an endpoint.
+2.  **Robustness**: By seeing the **Path Mask**, the Stop Head can confirm it has reached a dead end (vessel ahead is background, but there is a trail behind it).
+3.  **Context**: Integrating the **Actor LSTM** output means the Stop Head knows its recent movement (velocity/direction), which helps it realize it has exhausted the vessel track.
 
 ## 3. How the Data Flows Now
 
 When the agent takes a step:
 
 1.  The **Observation** (4 channels) is fed into the `actor_cnn`.
-2.  **Channel 0** (the current visual crop) is isolated and fed into the `stop_cnn`.
-3.  The results are combined at the very end to decide whether to move or stop.
+2.  **Channel 0** (Current Crop) and **Channel 3** (Path Mask) are isolated and fed into the `stop_cnn`.
+3.  The **Actor LSTM** output is concatenated with the stop vision features.
+4.  The results are combined at the very end to decide whether to move or stop.
 
 ## 4. Addressing Rare Labels
 
-Even with a better backbone, correct stops are still rare. In v2, the `stop_cnn` helps because it turns the problem into a pure **Feature Detection** task. It is much easier for a dedicated CNN to learn "Endpoint vs. Not Endpoint" than it is for a shared CNN to learn "Move Left AND Stop if you see this."
+Correct stops are rare (label imbalance). In v2, we mitigate this in two ways:
+1.  **Feature Detection**: The dedicated backbone makes it easier to learn "Endpoint vs. Not Endpoint".
+2.  **Loss Weighting**: We increase the `lambda_stop` loss weight to **5.0**, forcing the model to pay attention to the few stop signals it receives.
 
 ---
 
