@@ -43,3 +43,8 @@ Even with a better backbone, correct stops are still rare. In v2, the `stop_cnn`
 
 In AI, we often start with "Multi-Task" models (one backbone for everything) because they are efficient. But when tasks are very different—like **Navigation** (moving) and **Classification** (is this an endpoint?)—giving each task its own "brain branch" usually leads to much higher accuracy.
 
+
+
+<!-- Git push test at 2026-01-08 09:09:55 -->
+
+<!-- Git push test at 2026-01-08 09:10:26 -->
