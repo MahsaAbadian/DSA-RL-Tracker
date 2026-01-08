@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Central Fine-Tuning Engine (Gold Standard: Experiment 4 - Decoupled Stop).
-Supports configuration files for running multiple refinement experiments.
+Supports loading standalone supervised Stop Modules as an option.
 """
 import argparse
 import os
@@ -10,7 +10,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import json
-import shutil
 import numpy as np
 from datetime import datetime
 from torch.distributions import Categorical
@@ -20,7 +19,7 @@ project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-# Import shared logic from Experiment 4 (Gold Standard: Decoupled Stop)
+# Import shared logic from Experiment 4 and StopModule
 try:
     from Experiment4_separate_stop_v2.src.train import (
         CurveEnvUnified, update_ppo, load_curve_config, 
@@ -28,9 +27,34 @@ try:
         fixed_window_history
     )
     from Experiment4_separate_stop_v2.src.models import DecoupledStopBackboneActorCritic
-except ImportError:
-    print("❌ Error: Could not import training logic from Experiment4_separate_stop_v2.")
+    from StopModule.src.models import StandaloneStopDetector
+except ImportError as e:
+    print(f"❌ Error: {e}")
     sys.exit(1)
+
+class HybridFinetuneModel(nn.Module):
+    """
+    A wrapper that allows swapping the RL stop head with a Standalone Supervised one.
+    """
+    def __init__(self, base_model, standalone_stop=None):
+        super().__init__()
+        self.base = base_model
+        self.standalone_stop = standalone_stop # StandaloneStopDetector instance
+
+    def forward(self, actor_obs, critic_gt, ahist_onehot, hc_actor=None, hc_critic=None):
+        # 1. Standard Movement and Critic pass from Experiment 4
+        # movement_logits, stop_logit, value, hc_actor, hc_critic
+        m_logits, base_stop_logit, val, h_a, h_c = self.base(actor_obs, critic_gt, ahist_onehot, hc_actor, hc_critic)
+        
+        # 2. If standalone stop is provided, override the logit
+        if self.standalone_stop is not None:
+            # Standalone takes [image, path_mask] which are channels 0 and 3 of actor_obs
+            stop_input = torch.cat([actor_obs[:, 0:1, :, :], actor_obs[:, 3:4, :, :]], dim=1)
+            stop_logit = self.standalone_stop(stop_input)
+        else:
+            stop_logit = base_stop_logit
+            
+        return m_logits, stop_logit, val, h_a, h_c
 
 def run_finetuning(config_path=None, **kwargs):
     # 1. Load Configuration
@@ -38,10 +62,9 @@ def run_finetuning(config_path=None, **kwargs):
     if config_path and os.path.exists(config_path):
         with open(config_path, 'r') as f:
             config = json.load(f)
-        print(f"✅ Loaded fine-tuning config: {config_path}")
     
-    # Merge with command line overrides
     champion_name = config.get("base_champion", kwargs.get("champion"))
+    stop_weights = config.get("standalone_stop_weights", kwargs.get("stop_weights"))
     stage_id = config.get("target_stage_id", kwargs.get("stage", 11))
     episodes = config.get("episodes", kwargs.get("episodes", 5000))
     exp_name_base = config.get("experiment_name", kwargs.get("name", "finetune"))
@@ -49,55 +72,39 @@ def run_finetuning(config_path=None, **kwargs):
     hp = config.get("hyperparameters", {})
     lr = hp.get("learning_rate", kwargs.get("lr", 1e-5))
     lambda_stop = hp.get("lambda_stop", kwargs.get("lambda_stop", 5.0))
-    ppo_clip = hp.get("ppo_clip", 0.2)
-    entropy_coef = hp.get("entropy_coef", 0.01)
-    minibatch = hp.get("minibatch_size", 32)
 
-    # 2. Setup Paths
+    # 2. Setup Paths and Model
     finetune_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     champion_dir = os.path.join(finetune_dir, "base_weights", champion_name)
     
-    if not os.path.exists(champion_dir):
-        print(f"❌ Champion '{champion_name}' not found in {champion_dir}")
-        return
-
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    run_dir = os.path.join(project_root, "runs", f"FT_{exp_name_base}_{timestamp}")
+    run_dir = os.path.join(project_root, "runs", f"FT_Hybrid_{exp_name_base}_{timestamp}")
     os.makedirs(os.path.join(run_dir, "weights"), exist_ok=True)
-    os.makedirs(os.path.join(run_dir, "logs"), exist_ok=True)
     
-    # Save a copy of the config for recording
-    with open(os.path.join(run_dir, "finetune_config.json"), 'w') as f:
-        json.dump(config, f, indent=2)
+    # Initialize Hybrid Model
+    base_model = DecoupledStopBackboneActorCritic(n_movement_actions=N_MOVEMENT_ACTIONS).to(DEVICE)
+    if os.path.exists(os.path.join(champion_dir, "weights.pth")):
+        base_model.load_state_dict(torch.load(os.path.join(champion_dir, "weights.pth"), map_location=DEVICE))
+        print(f"📥 Loaded Movement Champion: {champion_name}")
 
-    print(f"🚀 Fine-Tuning session: {run_dir}")
+    standalone_stop = None
+    if stop_weights:
+        standalone_stop = StandaloneStopDetector().to(DEVICE)
+        standalone_stop.load_state_dict(torch.load(stop_weights, map_location=DEVICE))
+        print(f"🛑 Loaded Standalone Stop Module: {stop_weights}")
+    
+    model = HybridFinetuneModel(base_model, standalone_stop).to(DEVICE)
 
-    # 3. Initialize Model and Load Weights
-    model = DecoupledStopBackboneActorCritic(n_movement_actions=N_MOVEMENT_ACTIONS).to(DEVICE)
-    weights_path = os.path.join(champion_dir, "weights.pth")
-    model.load_state_dict(torch.load(weights_path, map_location=DEVICE))
-
-    # 4. Setup Environment
+    # 3. Setup Environment
     curve_config, _ = load_curve_config()
     env = CurveEnvUnified(h=128, w=128, stage_id=stage_id, curve_config=curve_config)
     
-    # Apply Stage Overrides
-    stages_cfg = curve_config.get('training_stages', [])
-    target_stage = next((s for s in stages_cfg if s['stage_id'] == stage_id), None)
-    stage_settings = target_stage.get('training', {}).copy() if target_stage else {}
-    
-    overrides = config.get("stage_overrides", {})
-    if overrides:
-        print(f"🛠️  Applying Stage Overrides: {overrides}")
-        stage_settings.update(overrides)
-    
-    env.set_stage(stage_settings)
-
-    # 5. Training Loop
+    # 4. Training Loop (Standard PPO loop adjusted for Hybrid model)
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     batch_buffer = []
     ep_returns, ep_successes = [], []
-    all_metrics = {"config": config, "stages": [{"name": f"FT_Stage{stage_id}", "rewards": [], "success_rates": []}]}
+    
+    print(f"🚀 Fine-Tuning session: {run_dir}")
     
     for ep in range(1, episodes + 1):
         obs_dict = env.reset()
@@ -156,27 +163,23 @@ def run_finetuning(config_path=None, **kwargs):
             ep_successes.append(1 if info.get('stopped_correctly') or info.get('reached_end') else 0)
 
         if len(batch_buffer) >= 32:
-            update_ppo(opt, model, batch_buffer, clip=ppo_clip, minibatch=minibatch, lambda_stop=lambda_stop)
+            update_ppo(opt, model, batch_buffer, lambda_stop=lambda_stop)
             batch_buffer = []
 
         if ep % 100 == 0:
             avg_r, succ = np.mean(ep_returns[-100:]), np.mean(ep_successes[-100:])
-            print(f"[FT] Ep {ep} | Rew: {avg_r:.2f} | Succ: {succ:.2f} | LR: {lr}")
-            all_metrics["stages"][0]["rewards"].append(float(avg_r))
-            all_metrics["stages"][0]["success_rates"].append(float(succ))
+            print(f"[FT-Hybrid] Ep {ep} | Rew: {avg_r:.2f} | Succ: {succ:.2f}")
 
-    # 6. Save results
-    final_path = os.path.join(run_dir, "weights", "finetuned_FINAL.pth")
-    torch.save(model.state_dict(), final_path)
-    with open(os.path.join(run_dir, "metrics.json"), 'w') as f:
-        json.dump(all_metrics, f, indent=2)
-    print(f"✅ Finished. Results in: {run_dir}")
+    # Save final model
+    torch.save(model.state_dict(), os.path.join(run_dir, "weights", "finetuned_hybrid_FINAL.pth"))
+    print(f"✅ Hybrid Fine-tuning complete. Saved to: {run_dir}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", type=str, help="Path to fine-tuning JSON config")
     parser.add_argument("--champion", type=str, help="Champion name override")
+    parser.add_argument("--stop_weights", type=str, help="Path to standalone stop weights (.pth)")
     parser.add_argument("--stage", type=int, help="Stage ID override")
     args = parser.parse_args()
     
-    run_finetuning(config_path=args.config, champion=args.champion, stage=args.stage)
+    run_finetuning(config_path=args.config, champion=args.champion, stop_weights=args.stop_weights, stage=args.stage)
