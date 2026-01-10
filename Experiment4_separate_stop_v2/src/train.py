@@ -1363,7 +1363,9 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                 ep_traj["logp"].append(logp)
                 ep_traj["val"].append(val)
                 ep_traj["rew"].append(r)
-                stop_label = 1 if (info.get('stopped_correctly') or info.get('reached_end')) else 0
+                # Only label as stop when agent actually stops correctly, not just when close to end
+                # This prevents the model from learning to stop too early
+                stop_label = 1 if info.get('stopped_correctly') else 0
                 ep_traj["stop_label"].append(stop_label)
                 
                 a_onehot = np.zeros(N_MOVEMENT_ACTIONS)

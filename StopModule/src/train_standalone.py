@@ -6,6 +6,7 @@ Includes validation split and per-class metrics.
 """
 import os
 import sys
+import argparse
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -27,7 +28,13 @@ except ImportError:
     from src.train import CurveMakerFlexible, crop32, load_curve_config
 
 class StopDataset(Dataset):
-    def __init__(self, samples_per_class=5000, config=None):
+    def __init__(self, samples_per_class=5000, config=None, vessel_realism=True):
+        """
+        Args:
+            samples_per_class: Number of positive/negative samples per class
+            config: Optional curve config dict
+            vessel_realism: If True, generates vessel-like curves with tapering and fading
+        """
         self.samples = []
         self.labels = []
         
@@ -35,17 +42,48 @@ class StopDataset(Dataset):
         maker = CurveMakerFlexible(h=128, w=128, config=cfg)
         
         print(f"🏗️  Generating {samples_per_class * 2} supervised samples...")
+        if vessel_realism:
+            print("   Using vessel-realistic features: tapering (wide→narrow) and fading (bright→dim)")
         
         for _ in tqdm(range(samples_per_class)):
             # Generate a random curve with varied parameters
-            w_range = np.random.choice([(1, 3), (3, 5), (1, 5)])
+            w_range = np.random.choice([(1, 3), (3, 5), (1, 5), (2, 6)])
             curvature = np.random.uniform(0.3, 1.5)
+            
+            # For vessel realism: use tapering and fading
+            if vessel_realism:
+                # Vessel-like: wide at start, narrow at end (like real vessels)
+                width_variation = "wide_to_narrow"
+                # Vessel-like: bright at start, dim/faded at end
+                intensity_variation = "bright_to_dim"
+                
+                # Ensure end is narrow (1-2 pixels) for realistic vessel termination
+                start_width = np.random.randint(w_range[1], w_range[1] + 3)  # Wide start
+                end_width = np.random.randint(1, max(2, w_range[0]))  # Narrow end (1-2 pixels)
+                
+                # Ensure end fades significantly
+                start_intensity = np.random.uniform(0.7, 1.0)  # Bright start
+                end_intensity = np.random.uniform(0.2, 0.5)  # Dim end
+            else:
+                # Original uniform behavior
+                width_variation = "none"
+                intensity_variation = "none"
+                start_width = None
+                end_width = None
+                start_intensity = None
+                end_intensity = None
             
             img, mask, pts_all = maker.sample_curve(
                 width_range=w_range, 
                 curvature_factor=curvature,
                 noise_prob=0.3,
-                invert_prob=0.5
+                invert_prob=0.5,
+                width_variation=width_variation,
+                start_width=start_width,
+                end_width=end_width,
+                intensity_variation=intensity_variation,
+                start_intensity=start_intensity,
+                end_intensity=end_intensity
             )
             pts = pts_all[0]
             
@@ -96,12 +134,18 @@ def plot_samples(dataset, num_samples=4):
     plt.tight_layout()
     plt.show()
 
-def train_stop_detector(epochs=15, batch_size=64, samples=5000):
+def train_stop_detector(epochs=15, batch_size=64, samples=5000, learning_rate=1e-4, output_path=None, config_path=None, vessel_realism=True):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     from StopModule.src.models import StandaloneStopDetector
     
+    # Load config if provided
+    config = None
+    if config_path:
+        from Experiment5_reward_config.src.train import load_curve_config
+        config = load_curve_config(config_path)[0]
+    
     # 1. Prepare Data
-    full_dataset = StopDataset(samples_per_class=samples)
+    full_dataset = StopDataset(samples_per_class=samples, config=config, vessel_realism=vessel_realism)
     train_size = int(0.8 * len(full_dataset))
     val_size = len(full_dataset) - train_size
     train_db, val_db = random_split(full_dataset, [train_size, val_size])
@@ -111,11 +155,11 @@ def train_stop_detector(epochs=15, batch_size=64, samples=5000):
     
     # 2. Setup Model
     model = StandaloneStopDetector().to(device)
-    optimizer = optim.Adam(model.parameters(), lr=1e-4)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     criterion = nn.BCEWithLogitsLoss()
     
     best_val_acc = 0.0
-    save_path = "StopModule/weights/stop_detector_v1.pth"
+    save_path = output_path or "StopModule/weights/stop_detector_v1.pth"
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
     print(f"🚀 Training on {device}...")
@@ -180,4 +224,37 @@ def train_stop_detector(epochs=15, batch_size=64, samples=5000):
     print(f"✅ Training complete. Best Val Accuracy: {best_val_acc:.2%}")
 
 if __name__ == "__main__":
-    train_stop_detector()
+    parser = argparse.ArgumentParser(description="Train Standalone Stop Detector")
+    parser.add_argument("--epochs", type=int, default=15, help="Number of training epochs (default: 15)")
+    parser.add_argument("--batch_size", type=int, default=64, help="Batch size (default: 64)")
+    parser.add_argument("--samples", type=int, default=5000, help="Samples per class (default: 5000)")
+    parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate (default: 1e-4)")
+    parser.add_argument("--output", type=str, default=None, help="Output path for weights (default: StopModule/weights/stop_detector_v1.pth)")
+    parser.add_argument("--config", type=str, default=None, help="Path to curve config JSON (optional)")
+    parser.add_argument("--no_vessel_realism", action="store_true", help="Disable vessel-realistic features (tapering/fading)")
+    
+    args = parser.parse_args()
+    
+    print("=" * 60)
+    print("🛑 Standalone Stop Detector Training")
+    print("=" * 60)
+    print(f"Epochs: {args.epochs}")
+    print(f"Batch Size: {args.batch_size}")
+    print(f"Samples per Class: {args.samples}")
+    print(f"Learning Rate: {args.lr}")
+    print(f"Output Path: {args.output or 'StopModule/weights/stop_detector_v1.pth'}")
+    print(f"Vessel Realism: {not args.no_vessel_realism} (tapering & fading)")
+    if args.config:
+        print(f"Config Path: {args.config}")
+    print("=" * 60)
+    print()
+    
+    train_stop_detector(
+        epochs=args.epochs,
+        batch_size=args.batch_size,
+        samples=args.samples,
+        learning_rate=args.lr,
+        output_path=args.output,
+        config_path=args.config,
+        vessel_realism=not args.no_vessel_realism
+    )
