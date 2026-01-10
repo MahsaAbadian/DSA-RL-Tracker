@@ -1,6 +1,5 @@
 #!/bin/bash
 # Bash script to run training
-# Curves are generated on-the-fly during training (no pre-generation needed)
 
 # Get the directory where this script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -53,8 +52,6 @@ echo "=========================================="
 echo "Starting DSA RL Training"
 echo "Script directory: $SCRIPT_DIR"
 echo "Timestamp: $(date)"
-echo ""
-echo "Curve Generation: On-The-Fly (no pre-generation needed)"
 echo "=========================================="
 echo ""
 

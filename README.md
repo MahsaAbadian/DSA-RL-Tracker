@@ -8,25 +8,59 @@ A reinforcement learning project for training an agent to follow curves in image
 
 ```
 DSA-RL-Tracker/
-├── Experiment1/              # Main experiment directory
-│   ├── src/                  # Source code
-│   │   ├── train.py         # Training script
-│   │   ├── models.py        # Neural network architectures
-│   │   ├── inference.py     # Inference/testing script
-│   │   └── curve_generator.py  # Curve generation utilities
-│   ├── docs/                 # Experiment documentation
-│   ├── run_train.sh          # Training script wrapper
-│   └── requirements.txt      # Python dependencies
-├── scripts/                  # Shared, experiment-agnostic scripts
+├── CurveGeneratorModule/    # Central curve generation module (shared)
+│   ├── generator.py         # Base curve generator (4-point Bezier)
+│   ├── generator_multisegment.py  # Multi-segment curve generator
+│   ├── generator_sixpoint.py # Six-point curve generator (degree-5 Bezier)
+│   ├── config_loader.py     # Configuration loading utilities
+│   ├── ExampleConfigs/      # Example curve configurations
+│   └── generate.sh          # Script to generate curve grids
+├── StopModule/              # Central stop detection module (shared)
+│   ├── src/                 # Stop detection utilities
+│   └── README.md            # Stop module documentation
+├── FineTune/                # Fine-tuning utilities (shared)
+│   ├── src/                 # Fine-tuning scripts
+│   └── README.md            # Fine-tuning documentation
+├── Experiment1/             # Experiment 1 directory
+│   ├── src/                 # Source code
+│   ├── docs/                # Experiment documentation
+│   └── run_train.sh         # Training script wrapper
+├── Experiment4_separate_stop_v2/  # Experiment 4 (uses central modules)
+│   ├── src/                 # Source code
+│   ├── config/              # Experiment-specific config
+│   └── run_train.sh         # Training script wrapper
+├── scripts/                 # Shared, experiment-agnostic scripts
 │   ├── setup_conda_env.sh   # Conda environment setup
 │   ├── check_gpu_setup.py   # GPU verification
-│   ├── check_cuda_compatibility.sh  # CUDA compatibility check
-│   └── install_for_cuda12.sh  # CUDA 12.x installation helper
-├── environment.yml          # Conda environment configuration (root level)
-├── colab_training.ipynb     # Google Colab training notebook
-├── COLAB_SETUP.md           # Colab setup guide
+│   └── ...
+├── environment.yml          # Conda environment configuration
 └── README.md                # This file
 ```
+
+### Shared Modules
+
+The project now includes several **centralized, reusable modules**:
+
+1. **CurveGeneratorModule** (`CurveGeneratorModule/`)
+
+   - Centralized curve generation for all experiments
+   - Supports multiple curve types: single-segment (4-point), multi-segment (2+ segments), and six-point (degree-5 Bezier)
+   - Currently used by: **Experiment 4**
+   - Provides configurable curve generation with JSON-based configuration
+
+2. **StopModule** (`StopModule/`)
+
+   - Centralized stop detection utilities
+   - Can be used across experiments for consistent stop detection logic
+
+3. **FineTune** (`FineTune/`)
+   - Fine-tuning utilities and scripts
+   - Can be used to fine-tune models from any experiment
+
+### Module Usage
+
+- **CurveGeneratorModule**: Currently integrated into Experiment 4, which uses the six-point generator with the `strong_foundation` configuration
+- Other experiments (1, 2, 3, 5) maintain their own curve generation implementations for now
 
 ## Quick Start
 
@@ -92,6 +126,7 @@ See [`environment.yml`](environment.yml) for full dependency list.
 ## Training
 
 Training runs through 3 curriculum stages:
+
 1. **Stage 1: Bootstrap** (8k episodes) - Simple curves, clean images
 2. **Stage 2: Robustness** (12k episodes) - Added noise, wider curves
 3. **Stage 3: Realism** (15k episodes) - Maximum difficulty with tissue artifacts
