@@ -1,7 +1,7 @@
 {
   "image": {
-    "height": 128,
-    "width": 128
+    "height": 256,
+    "width": 256
   },
   "bezier": {
     "n_samples": 1000,
