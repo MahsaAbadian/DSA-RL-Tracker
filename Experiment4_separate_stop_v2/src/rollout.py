@@ -282,8 +282,9 @@ def main():
         with torch.no_grad():
             movement_logits, stop_logit, _ = model(obs_t, A_t)
             stop_prob = torch.sigmoid(stop_logit).view(-1)
-            # Greedy stop decision
-            if stop_prob.item() > 0.5:
+            # More conservative stop threshold to prevent premature stopping
+            # Require higher confidence before stopping (0.7 instead of 0.5)
+            if stop_prob.item() > 0.7:
                 action = ACTION_STOP_IDX
             else:
                 action = torch.argmax(movement_logits, dim=1).item()

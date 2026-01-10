@@ -16,22 +16,19 @@ echo "Found latest run: $LATEST_RUN"
 WEIGHTS_DIR="$LATEST_RUN/weights"
 ACTOR_WEIGHTS=""
 
-if [ -f "$WEIGHTS_DIR/actor_Stage3_Realism_FINAL.pth" ]; then
-    ACTOR_WEIGHTS="$WEIGHTS_DIR/actor_Stage3_Realism_FINAL.pth"
-    echo "Using Stage 3 (Realism) weights - Best model"
-elif [ -f "$WEIGHTS_DIR/actor_Stage2_Robustness_FINAL.pth" ]; then
-    ACTOR_WEIGHTS="$WEIGHTS_DIR/actor_Stage2_Robustness_FINAL.pth"
-    echo "Using Stage 2 (Robustness) weights"
-elif [ -f "$WEIGHTS_DIR/actor_Stage1_Bootstrap_FINAL.pth" ]; then
-    ACTOR_WEIGHTS="$WEIGHTS_DIR/actor_Stage1_Bootstrap_FINAL.pth"
-    echo "Using Stage 1 (Bootstrap) weights"
+# Find the highest stage number available
+ACTOR_WEIGHTS=$(ls -v "$WEIGHTS_DIR"/actor_Stage*_FINAL.pth 2>/dev/null | tail -n 1)
+
+if [ -n "$ACTOR_WEIGHTS" ]; then
+    STAGE_NAME=$(basename "$ACTOR_WEIGHTS" | sed 's/actor_//; s/_FINAL.pth//')
+    echo "Using latest available weights: $STAGE_NAME"
 else
     echo "ERROR: No final weights found in $WEIGHTS_DIR"
     echo "Available files:"
     ls -lh "$WEIGHTS_DIR" 2>/dev/null || echo "  (weights directory is empty)"
     echo ""
     echo "You can also use checkpoints:"
-    echo "  python3 src/inference.py --image_path <image> --actor_weights $LATEST_RUN/checkpoints/actor_Stage*_ep*.pth"
+    echo "  python src/rollout.py --image_path <image> --actor_weights $LATEST_RUN/checkpoints/actor_Stage*_ep*.pth"
     exit 1
 fi
 
@@ -61,7 +58,7 @@ fi
 echo "Running inference on: $IMAGE_PATH"
 echo "Max steps: $MAX_STEPS"
 echo ""
-python3 src/rollout.py \
+KMP_DUPLICATE_LIB_OK=TRUE python src/rollout.py \
     --image_path "$IMAGE_PATH" \
     --actor_weights "$ACTOR_WEIGHTS" \
     --max_steps "$MAX_STEPS"

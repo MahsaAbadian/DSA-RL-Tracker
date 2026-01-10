@@ -9,7 +9,6 @@ import sys
 import numpy as np
 import torch
 import cv2
-import os
 import matplotlib.pyplot as plt
 from scipy.interpolate import splprep, splev
 
