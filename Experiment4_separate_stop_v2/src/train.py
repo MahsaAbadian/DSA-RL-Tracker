@@ -33,7 +33,7 @@ if _project_root not in sys.path:
     sys.path.insert(0, _project_root)
 
 # Import central curve generator module
-from CurveGeneratorModule import load_curve_config, CurveMakerSixPoint
+from CurveGeneratorModule import load_curve_config, CenterlineMask5PointsGenerator
 
 # ---------- GLOBALS ----------
 # Auto-detect device: use GPU if available, otherwise CPU
@@ -121,7 +121,7 @@ def load_curve_config(config_path=None):
         return {}, None
 
 # ---------- CURVE GENERATION (On-The-Fly) ----------
-# Using central CurveGeneratorModule with CurveMakerSixPoint
+# Using central CurveGeneratorModule with CenterlineMask5PointsGenerator
 # Config loaded from strong_foundation_config.json
 
 # Load strong_foundation config from central module
@@ -269,11 +269,11 @@ class CurveEnvUnified:
         # This ensures reproducibility: same episode number = same curve
         episode_seed = self.base_seed + self.current_episode
         
-        # Create curve generator using central CurveGeneratorModule with six-point generator
+        # Create curve generator using central CurveGeneratorModule with 5-point centerline generator
         # Use strong_foundation config merged with experiment-specific config
         merged_config = STRONG_FOUNDATION_CONFIG.copy() if STRONG_FOUNDATION_CONFIG else {}
         merged_config.update(self.curve_config)
-        curve_maker = CurveMakerSixPoint(h=self.h, w=self.w, seed=episode_seed, config=merged_config)
+        curve_maker = CenterlineMask5PointsGenerator(h=self.h, w=self.w, seed=episode_seed, config=merged_config)
         
         # Generate curve with stage-specific parameters
         img, mask, pts_all = curve_maker.sample_curve(
@@ -750,6 +750,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         "has_stop_head": True,
         "base_seed": base_seed,
         "curve_generation": "on_the_fly",
+        "generator_type": "CenterlineMask5PointsGenerator",
         "curve_config_path": stored_config_path,
         "image_height": img_h,
         "image_width": img_w,
@@ -840,7 +841,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     print(f"Number of Stages: {num_stages}")
     print(f"Device: {DEVICE} | Movement Actions: {N_MOVEMENT_ACTIONS} (+ separate STOP head)")
     print(f"Base Seed: {base_seed} (for reproducibility)")
-    print(f"Curve Generation: On-The-Fly")
+    print(f"Curve Generation: On-The-Fly (CenterlineMask5PointsGenerator)")
     print(f"Run Directory: {run_dir}")
     print(f"Checkpoints: {checkpoint_dir}")
     print(f"Weights: {weights_dir}")

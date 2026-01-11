@@ -47,12 +47,12 @@ The scripts will automatically check for dependencies and provide helpful error 
 
 **Experiment 4 uses the central CurveGeneratorModule** for all curve generation:
 
-- **Generator**: `CurveMakerSixPoint` - Creates smooth curves using a single degree-5 Bezier curve (6 control points)
+- **Generator**: `CenterlineMask5PointsGenerator` - Creates smooth 5-point Bezier curves with a mandatory 1-pixel centerline mask.
 - **Config**: `strong_foundation_config.json` from `CurveGeneratorModule/ExampleConfigs/`
 - **Benefits**:
   - Centralized, maintainable curve generation code
   - Consistent curve generation across experiments
-  - Access to advanced curve types (single-segment, multi-segment, six-point)
+  - **1-pixel Centerline Masks**: Forces the agent to learn high-precision tracking by using 1px masks regardless of visual vessel width.
 
 The curve configuration is loaded from the central module and merged with experiment-specific settings. Stage-specific parameters (width, intensity, curvature, etc.) are still controlled via the training config, but the underlying curve generation uses the shared module.
 

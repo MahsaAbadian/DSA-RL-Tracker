@@ -18,7 +18,13 @@ module_dir = script_dir  # Script is in CurveGeneratorModule directory
 # Add parent to import CurveGeneratorModule as a package
 sys.path.insert(0, os.path.dirname(module_dir))
 
-from CurveGeneratorModule import load_curve_config, CurveMakerFlexible, CurveMakerMultiSegment, CurveMakerSixPoint
+from CurveGeneratorModule import (
+    load_curve_config, 
+    CurveMakerFlexible, 
+    CurveMakerMultiSegment, 
+    CurveMakerSixPoint,
+    CenterlineMask5PointsGenerator
+)
 
 
 def create_grid(images, cols=7, rows=7):
@@ -37,7 +43,10 @@ def create_grid(images, cols=7, rows=7):
     return grid
 
 
-def generate_stage_grids(config_path, output_dir, grid_size=7, seed=42, use_multi_segment=False, use_six_point=False, num_segments=None, segment_length_factor=1.0):
+def generate_stage_grids(config_path, output_dir, grid_size=7, seed=42, 
+                         use_multi_segment=False, use_six_point=False, 
+                         use_centerline_5point=False,
+                         num_segments=None, segment_length_factor=1.0):
     """Generate 7x7 grids for each stage in the config.
     
     Args:
@@ -94,6 +103,8 @@ def generate_stage_grids(config_path, output_dir, grid_size=7, seed=42, use_mult
             generator = CurveMakerSixPoint(h=h, w=w, seed=seed + int(stage_id) * 1000, config=config)
         elif use_multi_segment:
             generator = CurveMakerMultiSegment(h=h, w=w, seed=seed + int(stage_id) * 1000, config=config)
+        elif use_centerline_5point:
+            generator = CenterlineMask5PointsGenerator(h=h, w=w, seed=seed + int(stage_id) * 1000, config=config)
         else:
             generator = CurveMakerFlexible(h=h, w=w, seed=seed + int(stage_id) * 1000, config=config)
         
@@ -147,6 +158,13 @@ def generate_stage_grids(config_path, output_dir, grid_size=7, seed=42, use_mult
             cv2.imwrite(mask_grid_path, (mask_grid * 255).astype(np.uint8))
             print(f"  ✓ Saved mask grid to: {mask_grid_path}")
         
+        # Create comparison grid (side-by-side)
+        if grid is not None and mask_grid is not None:
+            comparison_grid = np.hstack([grid, mask_grid])
+            comp_path = os.path.join(stage_dir, "comparison_7x7.png")
+            cv2.imwrite(comp_path, (comparison_grid * 255).astype(np.uint8))
+            print(f"  ✓ Saved comparison grid to: {comp_path}")
+        
         # Save stage info
         stage_info = {
             "stage_id": stage_id,
@@ -177,6 +195,8 @@ def main():
                         help="Use multi-segment Bezier curve generator (longer curves)")
     parser.add_argument("--six-point", action="store_true",
                         help="Use six-point curve generator (more complex curves through 6 points)")
+    parser.add_argument("--centerline-5point", action="store_true",
+                        help="Use 5-point Bezier generator with mandatory 1px centerline mask")
     parser.add_argument("--num-segments", type=int, default=None,
                         help="Number of segments for multi-segment curves (default: random from config or 2-4)")
     parser.add_argument("--segment-length-factor", type=float, default=1.0,
@@ -197,6 +217,7 @@ def main():
         seed=args.seed,
         use_multi_segment=args.multi_segment,
         use_six_point=args.six_point,
+        use_centerline_5point=args.centerline_5point,
         num_segments=args.num_segments,
         segment_length_factor=args.segment_length_factor
     )

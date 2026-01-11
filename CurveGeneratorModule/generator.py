@@ -389,7 +389,8 @@ class CurveMakerFlexible:
                      end_intensity=None,
                      background_intensity=None,
                      allow_self_cross=False,
-                     self_cross_prob=0.0):       
+                     self_cross_prob=0.0,
+                     centerline_mask=False):       
         """Generate a curve with specified parameters.
         
         Args:
@@ -409,6 +410,7 @@ class CurveMakerFlexible:
             background_intensity: Background intensity (0.0-1.0). If None, uses 0.0 (black)
             allow_self_cross: Whether to allow self-crossing curves
             self_cross_prob: Probability of self-crossing (if allow_self_cross is True)
+            centerline_mask: If True, the mask will only be 1 pixel thick regardless of curve width.
         
         Returns:
             tuple: (img, mask, pts_all)
@@ -473,7 +475,14 @@ class CurveMakerFlexible:
         )
         self._draw_aa_curve(img, pts_main, thickness, intensity, width_variation, start_w, end_w,
                            intensity_variation, start_i, end_i)
-        self._draw_aa_curve(mask, pts_main, thickness, 1.0, width_variation, start_w, end_w)
+        
+        # Draw mask (use 1.0 thickness if centerline_mask is requested)
+        mask_thickness = 1.0 if centerline_mask else thickness
+        mask_start_w = 1.0 if centerline_mask else start_w
+        mask_end_w = 1.0 if centerline_mask else end_w
+        mask_variation = "none" if centerline_mask else width_variation
+        
+        self._draw_aa_curve(mask, pts_main, mask_thickness, 1.0, mask_variation, mask_start_w, mask_end_w)
         pts_all = [pts_main]
 
         if branches:
@@ -487,10 +496,18 @@ class CurveMakerFlexible:
                 b_thick = max(1, int(thickness * self.branch_thickness_factor))
                 b_start_w = max(1, int(start_w * self.branch_thickness_factor)) if width_variation != "none" else b_thick
                 b_end_w = max(1, int(end_w * self.branch_thickness_factor)) if width_variation != "none" else b_thick
-                # Branches use same intensity variation pattern
+                
+                # Draw branch on image
                 self._draw_aa_curve(img, pts_branch, b_thick, intensity, width_variation, b_start_w, b_end_w,
                                    intensity_variation, start_i, end_i)
-                self._draw_aa_curve(mask, pts_branch, b_thick, 1.0, width_variation, b_start_w, b_end_w)
+                
+                # Draw branch on mask
+                b_mask_thick = 1.0 if centerline_mask else b_thick
+                b_mask_start_w = 1.0 if centerline_mask else b_start_w
+                b_mask_end_w = 1.0 if centerline_mask else b_end_w
+                b_mask_variation = "none" if centerline_mask else width_variation
+                
+                self._draw_aa_curve(mask, pts_branch, b_mask_thick, 1.0, b_mask_variation, b_mask_start_w, b_mask_end_w)
                 pts_all.append(pts_branch)
 
         if self.rng.random() < noise_prob:
@@ -525,4 +542,16 @@ class CurveMakerFlexible:
         if self.rng.random() < self.noise_gaussian_blur_prob:
             sigma = self.rng.uniform(self.noise_gaussian_blur_sigma_range[0], self.noise_gaussian_blur_sigma_range[1])
             img[:] = scipy.ndimage.gaussian_filter(img, sigma=sigma)
+
+
+class CurveMakerCenterline(CurveMakerFlexible):
+    """Specialized generator that always produces a 1-pixel thick centerline mask.
+    
+    This class is a convenience wrapper around CurveMakerFlexible that forces
+    centerline_mask=True in the sample_curve method.
+    """
+    def sample_curve(self, *args, **kwargs):
+        """Generate a curve with a 1-pixel thick centerline mask."""
+        kwargs['centerline_mask'] = True
+        return super().sample_curve(*args, **kwargs)
 

@@ -1,17 +1,20 @@
 #!/bin/bash
 # Generate 7x7 grids for curve configs
-# Usage: ./generate.sh [config_name] [--num-segments N] [--segment-length-factor F]
+# Usage: ./generate.sh [config_name] [--num-segments N] [--segment-length-factor F] [--centerline-5point]
 #   - If config_name is provided: generates grids for that config only
 #   - If no argument: generates grids for all configs
-#   - Generates BOTH single-segment and multi-segment curves
-#   - Results go to separate folders: outputs/<config>/single_segment/ and outputs/<config>/multi_segment/
+#   - Generates single-segment, multi-segment, six-point, and centerline-5point curves
+#   - Results go to separate folders under outputs/<config>/
 #   - --num-segments N: Number of segments (for multi-segment, default: random)
 #   - --segment-length-factor F: Segment length factor (default: 1.0)
+#   - --centerline-5point: Also generate 5-point curves with centerline mask
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Use virtual environment Python if available, otherwise use system Python
-if [ -f "$SCRIPT_DIR/venv/bin/python3" ]; then
+# Use conda environment 'rl' if available, otherwise virtual environment, otherwise system Python
+if [ -d "/Users/mahsaabadian/miniconda3/envs/rl" ]; then
+    PYTHON_CMD="/Users/mahsaabadian/miniconda3/envs/rl/bin/python3"
+elif [ -f "$SCRIPT_DIR/venv/bin/python3" ]; then
     PYTHON_CMD="$SCRIPT_DIR/venv/bin/python3"
 elif [ -f "$SCRIPT_DIR/venv/bin/python" ]; then
     PYTHON_CMD="$SCRIPT_DIR/venv/bin/python"
@@ -50,6 +53,7 @@ fi
 CONFIG_NAME=""
 NUM_SEGMENTS_FLAG="--num-segments 2"  # Default to 2 segments
 SEGMENT_LENGTH_FACTOR_FLAG=""
+CENTERLINE_5POINT_ENABLED=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -60,6 +64,10 @@ while [[ $# -gt 0 ]]; do
         --segment-length-factor)
             SEGMENT_LENGTH_FACTOR_FLAG="--segment-length-factor $2"
             shift 2
+            ;;
+        --centerline-5point)
+            CENTERLINE_5POINT_ENABLED=true
+            shift
             ;;
         *)
             if [ -z "$CONFIG_NAME" ]; then
@@ -96,6 +104,7 @@ if [ -n "$CONFIG_NAME" ]; then
     OUTPUT_DIR_SINGLE="$OUTPUT_BASE/$OUTPUT_BASE_NAME/single_segment"
     OUTPUT_DIR_MULTI="$OUTPUT_BASE/$OUTPUT_BASE_NAME/multi_segment"
     OUTPUT_DIR_SIXPOINT="$OUTPUT_BASE/$OUTPUT_BASE_NAME/six_point"
+    OUTPUT_DIR_CENTERLINE="$OUTPUT_BASE/$OUTPUT_BASE_NAME/centerline_5point"
     
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "📊 Generating grids for: $OUTPUT_BASE_NAME"
@@ -142,12 +151,30 @@ if [ -n "$CONFIG_NAME" ]; then
     
     SIXPOINT_EXIT_CODE=$?
     
-    if [ $SINGLE_EXIT_CODE -eq 0 ] && [ $MULTI_EXIT_CODE -eq 0 ] && [ $SIXPOINT_EXIT_CODE -eq 0 ]; then
+    # Generate centerline-5point curves if enabled
+    CENTERLINE_EXIT_CODE=0
+    if [ "$CENTERLINE_5POINT_ENABLED" = true ]; then
+        echo ""
+        echo "📐 Generating CENTERLINE-5POINT curves..."
+        echo "   Output: $OUTPUT_DIR_CENTERLINE"
+        $PYTHON_CMD "$SCRIPT_DIR/generate_stage_grids.py" \
+            --config "$CONFIG_FILE" \
+            --output "$OUTPUT_DIR_CENTERLINE" \
+            --grid-size 7 \
+            --seed 42 \
+            --centerline-5point
+        CENTERLINE_EXIT_CODE=$?
+    fi
+    
+    if [ $SINGLE_EXIT_CODE -eq 0 ] && [ $MULTI_EXIT_CODE -eq 0 ] && [ $SIXPOINT_EXIT_CODE -eq 0 ] && [ $CENTERLINE_EXIT_CODE -eq 0 ]; then
         echo ""
         echo "✅ Successfully generated grids for $OUTPUT_BASE_NAME"
         echo "   Single-segment: $OUTPUT_DIR_SINGLE"
         echo "   Multi-segment:  $OUTPUT_DIR_MULTI"
         echo "   Six-point:      $OUTPUT_DIR_SIXPOINT"
+        if [ "$CENTERLINE_5POINT_ENABLED" = true ]; then
+            echo "   Centerline-5pt: $OUTPUT_DIR_CENTERLINE"
+        fi
     else
         echo ""
         if [ $SINGLE_EXIT_CODE -ne 0 ]; then
@@ -158,6 +185,9 @@ if [ -n "$CONFIG_NAME" ]; then
         fi
         if [ $SIXPOINT_EXIT_CODE -ne 0 ]; then
             echo "❌ Failed to generate six-point grids"
+        fi
+        if [ $CENTERLINE_EXIT_CODE -ne 0 ]; then
+            echo "❌ Failed to generate centerline-5point grids"
         fi
         exit 1
     fi
@@ -174,6 +204,7 @@ else
         output_dir_single="$OUTPUT_BASE/$base_name/single_segment"
         output_dir_multi="$OUTPUT_BASE/$base_name/multi_segment"
         output_dir_sixpoint="$OUTPUT_BASE/$base_name/six_point"
+        output_dir_centerline="$OUTPUT_BASE/$base_name/centerline_5point"
         
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo "📊 Processing: $base_name"
@@ -217,11 +248,28 @@ else
         
         SIXPOINT_EXIT=$?
         
-        if [ $SINGLE_EXIT -eq 0 ] && [ $MULTI_EXIT -eq 0 ] && [ $SIXPOINT_EXIT -eq 0 ]; then
+        # Generate centerline-5point curves if enabled
+        CENTERLINE_EXIT=0
+        if [ "$CENTERLINE_5POINT_ENABLED" = true ]; then
+            echo ""
+            echo "📐 Generating CENTERLINE-5POINT curves..."
+            $PYTHON_CMD "$SCRIPT_DIR/generate_stage_grids.py" \
+                --config "$config_file" \
+                --output "$output_dir_centerline" \
+                --grid-size 7 \
+                --seed 42 \
+                --centerline-5point
+            CENTERLINE_EXIT=$?
+        fi
+        
+        if [ $SINGLE_EXIT -eq 0 ] && [ $MULTI_EXIT -eq 0 ] && [ $SIXPOINT_EXIT -eq 0 ] && [ $CENTERLINE_EXIT -eq 0 ]; then
             echo "✅ Successfully generated grids for $base_name"
             echo "   Single-segment: $output_dir_single"
             echo "   Multi-segment:  $output_dir_multi"
             echo "   Six-point:      $output_dir_sixpoint"
+            if [ "$CENTERLINE_5POINT_ENABLED" = true ]; then
+                echo "   Centerline-5pt: $output_dir_centerline"
+            fi
         else
             if [ $SINGLE_EXIT -ne 0 ]; then
                 echo "❌ Failed to generate single-segment grids for $base_name"
@@ -231,6 +279,9 @@ else
             fi
             if [ $SIXPOINT_EXIT -ne 0 ]; then
                 echo "❌ Failed to generate six-point grids for $base_name"
+            fi
+            if [ $CENTERLINE_EXIT -ne 0 ]; then
+                echo "❌ Failed to generate centerline-5point grids for $base_name"
             fi
         fi
         echo ""

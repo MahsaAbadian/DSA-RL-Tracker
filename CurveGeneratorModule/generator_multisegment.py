@@ -132,13 +132,15 @@ class CurveMakerMultiSegment(CurveMakerFlexible):
                      allow_self_cross=False,
                      self_cross_prob=0.0,
                      num_segments=None,
-                     segment_length_factor=1.0):
+                     segment_length_factor=1.0,
+                     centerline_mask=False):
         """Generate a multi-segment curve with specified parameters.
         
         Args:
             All parameters same as CurveMakerFlexible.sample_curve(), plus:
             num_segments: Number of Bezier segments to chain (if None, random from config)
             segment_length_factor: Factor to control average segment length (1.0 = normal, >1.0 = longer)
+            centerline_mask: If True, the mask will only be 1 pixel thick regardless of curve width.
         
         Returns:
             tuple: (img, mask, pts_all)
@@ -194,16 +196,40 @@ class CurveMakerMultiSegment(CurveMakerFlexible):
         
         pts_all = [pts_main]
         
-        # Draw main curve
+        # Draw main curve on image
         self._draw_aa_curve(img, pts_main, thickness, intensity,
                            width_variation, start_width, end_width,
-                           intensity_variation, start_intensity, end_intensity)
+                           "none", None, None) # Intensity handled below
+        
+        # Re-draw with correct intensity logic if needed
+        # (This replicates generator.py logic which was missing here)
+        # Determine intensity variation parameters
+        if intensity_variation == "bright_to_dim":
+            start_i = start_intensity if start_intensity is not None else max_i
+            end_i = end_intensity if end_intensity is not None else min_intensity
+        elif intensity_variation == "dim_to_bright":
+            start_i = start_intensity if start_intensity is not None else min_intensity
+            end_i = end_intensity if end_intensity is not None else max_i
+        elif intensity_variation == "custom":
+            start_i = start_intensity if start_intensity is not None else intensity
+            end_i = end_intensity if end_intensity is not None else intensity
+        else:
+            start_i = end_i = intensity
+
+        # Clear and redraw with correct parameters
+        img.fill(bg_intensity)
+        self._draw_aa_curve(img, pts_main, thickness, intensity,
+                           width_variation, start_w, end_w,
+                           intensity_variation, start_i, end_i)
         
         # Create mask
-        pts_xy = pts_main[:, ::-1] * 16
-        pts_int = pts_xy.astype(np.int32).reshape((-1, 1, 2))
-        cv2.polylines(mask, [pts_int], isClosed=False, color=255,
-                     thickness=max(1, int(thickness)), lineType=cv2.LINE_AA, shift=4)
+        m_thick = 1.0 if centerline_mask else thickness
+        m_start_w = 1.0 if centerline_mask else start_w
+        m_end_w = 1.0 if centerline_mask else end_w
+        m_variation = "none" if centerline_mask else width_variation
+        
+        self._draw_aa_curve(mask, pts_main, m_thick, 1.0, 
+                           m_variation, m_start_w, m_end_w)
         
         # Add branches if requested
         if branches:
@@ -224,6 +250,10 @@ class CurveMakerMultiSegment(CurveMakerFlexible):
                 branch_thickness = max(1, int(thickness * thickness_factor))
                 branch_intensity = intensity * 0.8
                 
+                # Branches use same width/intensity variation pattern but scaled
+                b_start_w = max(1, int(start_w * thickness_factor)) if width_variation != "none" else branch_thickness
+                b_end_w = max(1, int(end_w * thickness_factor)) if width_variation != "none" else branch_thickness
+                
                 branch_pts = self._generate_bezier_points(
                     p0=branch_start,
                     curvature_factor=curvature_factor * 0.7,
@@ -233,15 +263,19 @@ class CurveMakerMultiSegment(CurveMakerFlexible):
                 
                 pts_all.append(branch_pts)
                 
-                # Draw branch
+                # Draw branch on image
                 self._draw_aa_curve(img, branch_pts, branch_thickness, branch_intensity,
-                                   "none", None, None, "none", None, None)
+                                   width_variation, b_start_w, b_end_w,
+                                   intensity_variation, start_i, end_i)
                 
-                # Update mask
-                branch_pts_xy = branch_pts[:, ::-1] * 16
-                branch_pts_int = branch_pts_xy.astype(np.int32).reshape((-1, 1, 2))
-                cv2.polylines(mask, [branch_pts_int], isClosed=False, color=255,
-                             thickness=max(1, int(branch_thickness)), lineType=cv2.LINE_AA, shift=4)
+                # Draw branch on mask
+                bm_thick = 1.0 if centerline_mask else branch_thickness
+                bm_start_w = 1.0 if centerline_mask else b_start_w
+                bm_end_w = 1.0 if centerline_mask else b_end_w
+                bm_variation = "none" if centerline_mask else width_variation
+                
+                self._draw_aa_curve(mask, branch_pts, bm_thick, 1.0, 
+                                   bm_variation, bm_start_w, bm_end_w)
         
         # Add noise if requested
         if noise_prob > 0.0 and self.rng.random() < noise_prob:

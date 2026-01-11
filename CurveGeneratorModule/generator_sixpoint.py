@@ -200,11 +200,13 @@ class CurveMakerSixPoint(CurveMakerFlexible):
                      end_intensity=None,
                      background_intensity=None,
                      allow_self_cross=False,
-                     self_cross_prob=0.0):
-        """Generate a six-point curve with specified parameters.
+                     self_cross_prob=0.0,
+                     centerline_mask=False):
+        """Generate a six-point degree-5 Bezier curve with specified parameters.
         
         Args:
-            All parameters same as CurveMakerFlexible.sample_curve()
+            All parameters same as CurveMakerFlexible.sample_curve().
+            centerline_mask: If True, the mask will only be 1 pixel thick regardless of curve width.
         
         Returns:
             tuple: (img, mask, pts_all)
@@ -278,8 +280,13 @@ class CurveMakerSixPoint(CurveMakerFlexible):
                            intensity_variation, start_i, end_i)
         
         # Create mask
-        self._draw_aa_curve(mask, pts_main, thickness, 1.0, 
-                           width_variation, start_w, end_w)
+        m_thick = 1.0 if centerline_mask else thickness
+        m_start_w = 1.0 if centerline_mask else start_w
+        m_end_w = 1.0 if centerline_mask else end_w
+        m_variation = "none" if centerline_mask else width_variation
+        
+        self._draw_aa_curve(mask, pts_main, m_thick, 1.0, 
+                           m_variation, m_start_w, m_end_w)
         
         # Add branches if requested
         if branches:
@@ -319,8 +326,13 @@ class CurveMakerSixPoint(CurveMakerFlexible):
                                    intensity_variation, start_i, end_i)
                 
                 # Update mask
-                self._draw_aa_curve(mask, branch_pts, branch_thickness, 1.0, 
-                                   width_variation, b_start_w, b_end_w)
+                bm_thick = 1.0 if centerline_mask else branch_thickness
+                bm_start_w = 1.0 if centerline_mask else b_start_w
+                bm_end_w = 1.0 if centerline_mask else b_end_w
+                bm_variation = "none" if centerline_mask else width_variation
+                
+                self._draw_aa_curve(mask, branch_pts, bm_thick, 1.0, 
+                                   bm_variation, bm_start_w, bm_end_w)
         
         # Add noise if requested
         if noise_prob > 0.0 and self.rng.random() < noise_prob:
@@ -334,4 +346,12 @@ class CurveMakerSixPoint(CurveMakerFlexible):
         mask = (mask > 0.1).astype(np.uint8)
         
         return img, mask, pts_all
+
+
+class CurveMakerSixPointCenterline(CurveMakerSixPoint):
+    """Specialized Six-Point generator that always produces a 1-pixel thick centerline mask."""
+    def sample_curve(self, *args, **kwargs):
+        """Generate a six-point curve with a 1-pixel thick centerline mask."""
+        kwargs['centerline_mask'] = True
+        return super().sample_curve(*args, **kwargs)
 
