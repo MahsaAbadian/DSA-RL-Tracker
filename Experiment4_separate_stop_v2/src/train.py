@@ -1160,16 +1160,8 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                 reached_rate = np.mean(ep_reached_end[-100:]) if ep_reached_end else 0.0
                 stopped_rate = np.mean(ep_stopped_correctly[-100:]) if ep_stopped_correctly else 0.0
                 
-                # Success rate depends on stage config
-                if stage['config']['strict_stop']:
-                    succ_rate = stopped_rate
-                    success_type = "StopSucc"
-                else:
-                    succ_rate = reached_rate
-                    success_type = "ReachEnd"
-
                 prev_stage_info = f" [Prev: {sum(1 for _ in previous_stages)}]" if previous_stages else ""
-                print(f"[{stage['name']}] Ep {ep} | Avg Rew: {avg_r:.2f} | {success_type}: {succ_rate:.2f} (RE: {reached_rate:.2f}, SC: {stopped_rate:.2f}){prev_stage_info}")
+                print(f"[{stage['name']}] Ep {ep} | Avg Rew: {avg_r:.2f} | Reached End: {reached_rate:.2f} | Stopped Correctly: {stopped_rate:.2f}{prev_stage_info}")
                 
                 # Save metrics
                 stage_metrics["episodes"].append(ep)
@@ -1185,8 +1177,8 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                         eval_result = evaluate_on_stage(model, prev_stage_config, prev_stage_name, 
                                                        num_episodes=10, base_seed=base_seed)
                         eval_results.append(eval_result)
-                        print(f"   {prev_stage_name}: RE={eval_result['reached_end_rate']:.2f}, "
-                              f"SC={eval_result['stop_success_rate']:.2f}, Return={eval_result['avg_return']:.2f}")
+                        print(f"   {prev_stage_name}: Reached End={eval_result['reached_end_rate']:.2f}, "
+                              f"Stopped Correctly={eval_result['stop_success_rate']:.2f}, Return={eval_result['avg_return']:.2f}")
                     
                     # Store evaluation results in metrics
                     if "previous_stage_evaluations" not in stage_metrics:
