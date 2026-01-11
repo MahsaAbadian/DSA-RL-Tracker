@@ -120,14 +120,23 @@ fi
 # Run training
 eval $TRAIN_CMD
 
-# Print completion information
-echo ""
-echo "=========================================="
-echo "Training completed"
-if [ -n "$OUTPUT_PATH" ]; then
-    echo "Weights saved to: $OUTPUT_PATH"
+# Check if training succeeded
+if [ $? -eq 0 ]; then
+    # Print completion information
+    echo ""
+    echo "=========================================="
+    echo "✅ Training completed successfully"
+    if [ -n "$OUTPUT_PATH" ]; then
+        echo "Weights saved to: $OUTPUT_PATH"
+    else
+        echo "Weights saved to: StopModule/weights/stop_detector_v1.pth"
+    fi
+    echo "=========================================="
 else
-    echo "Weights saved to: StopModule/weights/stop_detector_v1.pth"
+    echo ""
+    echo "=========================================="
+    echo "❌ Training failed. Please check the error messages above."
+    echo "=========================================="
+    exit 1
 fi
-echo "=========================================="
 

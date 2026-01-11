@@ -47,7 +47,9 @@ class StopDataset(Dataset):
         
         for _ in tqdm(range(samples_per_class)):
             # Generate a random curve with varied parameters
-            w_range = np.random.choice([(1, 3), (3, 5), (1, 5), (2, 6)])
+            # Fix: np.random.choice requires 1D array, using simple list indexing instead
+            w_ranges = [(1, 3), (3, 5), (1, 5), (2, 6)]
+            w_range = w_ranges[np.random.randint(len(w_ranges))]
             curvature = np.random.uniform(0.3, 1.5)
             
             # For vessel realism: use tapering and fading
@@ -90,10 +92,13 @@ class StopDataset(Dataset):
             # 1. POSITIVE SAMPLE: The end of the curve
             end_pt = pts[-1]
             path_mask = np.zeros_like(img)
-            for p in pts: path_mask[int(p[0]), int(p[1])] = 1.0
+            # Clip points to ensure they stay within 128x128 bounds
+            for p in pts:
+                py, px = int(np.clip(p[0], 0, 127)), int(np.clip(p[1], 0, 127))
+                path_mask[py, px] = 1.0
             
-            crop_img = crop32(img, int(end_pt[0]), int(end_pt[1]))
-            crop_path = crop32(path_mask, int(end_pt[0]), int(end_pt[1]))
+            crop_img = crop32(img, int(np.clip(end_pt[0], 0, 127)), int(np.clip(end_pt[1], 0, 127)))
+            crop_path = crop32(path_mask, int(np.clip(end_pt[0], 0, 127)), int(np.clip(end_pt[1], 0, 127)))
             
             self.samples.append(np.stack([crop_img, crop_path], axis=0))
             self.labels.append(1.0)
@@ -104,10 +109,12 @@ class StopDataset(Dataset):
             mid_pt = pts[mid_idx]
             
             path_mask_mid = np.zeros_like(img)
-            for p in pts[:mid_idx+1]: path_mask_mid[int(p[0]), int(p[1])] = 1.0
+            for p in pts[:mid_idx+1]:
+                py, px = int(np.clip(p[0], 0, 127)), int(np.clip(p[1], 0, 127))
+                path_mask_mid[py, px] = 1.0
             
-            crop_img_mid = crop32(img, int(mid_pt[0]), int(mid_pt[1]))
-            crop_path_mid = crop32(path_mask_mid, int(mid_pt[0]), int(mid_pt[1]))
+            crop_img_mid = crop32(img, int(np.clip(mid_pt[0], 0, 127)), int(np.clip(mid_pt[1], 0, 127)))
+            crop_path_mid = crop32(path_mask_mid, int(np.clip(mid_pt[0], 0, 127)), int(np.clip(mid_pt[1], 0, 127)))
             
             self.samples.append(np.stack([crop_img_mid, crop_path_mid], axis=0))
             self.labels.append(0.0)
