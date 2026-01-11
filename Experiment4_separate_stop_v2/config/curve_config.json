@@ -114,7 +114,7 @@
       "training": {
         "noise": 0.0,
         "tissue": false,
-        "strict_stop": true,
+        "strict_stop": false,
         "mixed_start": true
       }
     },
@@ -144,7 +144,7 @@
       "training": {
         "noise": 0.0,
         "tissue": false,
-        "strict_stop": true,
+        "strict_stop": false,
         "mixed_start": true
       }
     },
@@ -174,7 +174,7 @@
       "training": {
         "noise": 0.1,
         "tissue": false,
-        "strict_stop": true,
+        "strict_stop": false,
         "mixed_start": true
       }
     },

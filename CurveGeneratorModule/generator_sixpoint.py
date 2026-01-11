@@ -215,7 +215,7 @@ class CurveMakerSixPoint(CurveMakerFlexible):
         # Set background intensity
         bg_intensity = background_intensity if background_intensity is not None else 0.0
         img = np.full((self.h, self.w), bg_intensity, dtype=np.float32)
-        mask = np.zeros_like(img) 
+        mask = np.zeros((self.h, self.w), dtype=np.float32) 
         
         # Determine base thickness
         if width_variation == "none":
@@ -243,7 +243,8 @@ class CurveMakerSixPoint(CurveMakerFlexible):
             end_w = end_width if end_width is not None else width_range[1]
             thickness = (start_w + end_w) // 2
         else:
-            start_w = end_w = thickness = width_range[0]
+            thickness = self.rng.integers(width_range[0], width_range[1] + 1)
+            start_w = end_w = thickness
         
         # Determine intensity
         max_i = max_intensity if max_intensity is not None else 1.0
@@ -273,14 +274,12 @@ class CurveMakerSixPoint(CurveMakerFlexible):
         
         # Draw main curve
         self._draw_aa_curve(img, pts_main, thickness, intensity,
-                           width_variation, start_width, end_width,
-                           intensity_variation, start_intensity, end_intensity)
+                           width_variation, start_w, end_w,
+                           intensity_variation, start_i, end_i)
         
         # Create mask
-        pts_xy = pts_main[:, ::-1] * 16
-        pts_int = pts_xy.astype(np.int32).reshape((-1, 1, 2))
-        cv2.polylines(mask, [pts_int], isClosed=False, color=255,
-                     thickness=max(1, int(thickness)), lineType=cv2.LINE_AA, shift=4)
+        self._draw_aa_curve(mask, pts_main, thickness, 1.0, 
+                           width_variation, start_w, end_w)
         
         # Add branches if requested
         if branches:
@@ -301,6 +300,10 @@ class CurveMakerSixPoint(CurveMakerFlexible):
                 branch_thickness = max(1, int(thickness * thickness_factor))
                 branch_intensity = intensity * 0.8
                 
+                # Branches use same width/intensity variation pattern but scaled
+                b_start_w = max(1, int(start_w * thickness_factor)) if width_variation != "none" else branch_thickness
+                b_end_w = max(1, int(end_w * thickness_factor)) if width_variation != "none" else branch_thickness
+                
                 branch_pts = self._generate_bezier_points(
                     p0=branch_start,
                     curvature_factor=curvature_factor * 0.7,
@@ -312,13 +315,12 @@ class CurveMakerSixPoint(CurveMakerFlexible):
                 
                 # Draw branch
                 self._draw_aa_curve(img, branch_pts, branch_thickness, branch_intensity,
-                                   "none", None, None, "none", None, None)
+                                   width_variation, b_start_w, b_end_w,
+                                   intensity_variation, start_i, end_i)
                 
                 # Update mask
-                branch_pts_xy = branch_pts[:, ::-1] * 16
-                branch_pts_int = branch_pts_xy.astype(np.int32).reshape((-1, 1, 2))
-                cv2.polylines(mask, [branch_pts_int], isClosed=False, color=255,
-                             thickness=max(1, int(branch_thickness)), lineType=cv2.LINE_AA, shift=4)
+                self._draw_aa_curve(mask, branch_pts, branch_thickness, 1.0, 
+                                   width_variation, b_start_w, b_end_w)
         
         # Add noise if requested
         if noise_prob > 0.0 and self.rng.random() < noise_prob:

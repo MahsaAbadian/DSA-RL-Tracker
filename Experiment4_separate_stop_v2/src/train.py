@@ -62,8 +62,8 @@ def load_curve_config(config_path=None):
     
     Looks for config in the following order:
     1. Explicit path provided (if config_path is given)
-    2. config/curve_config.json (relative to Experiment1 directory)
-    3. curve_config.json (relative to Experiment1 directory, for backward compatibility)
+    2. config/curve_config.json (relative to Experiment4_separate_stop_v2 directory)
+    3. curve_config.json (relative to Experiment4_separate_stop_v2 directory)
     
     Returns:
         tuple: (config_dict, actual_config_path)
@@ -71,14 +71,14 @@ def load_curve_config(config_path=None):
         - actual_config_path: The path that was actually used (or None if not found)
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    parent_dir = os.path.dirname(script_dir)  # Experiment1 directory
-    config_dir = os.path.join(parent_dir, "config")  # Experiment1/config/
+    experiment_dir = os.path.dirname(script_dir)  # Experiment4_separate_stop_v2 directory
+    config_dir = os.path.join(experiment_dir, "config")  # Experiment4_separate_stop_v2/config/
     
     if config_path is None:
-        # Default: look in config/ directory first, then parent directory for backward compatibility
+        # Default: look in config/ directory first, then experiment directory for backward compatibility
         default_paths = [
             os.path.join(config_dir, "curve_config.json"),
-            os.path.join(parent_dir, "curve_config.json")
+            os.path.join(experiment_dir, "curve_config.json")
         ]
         for path in default_paths:
             if os.path.exists(path):
@@ -94,8 +94,8 @@ def load_curve_config(config_path=None):
         if os.path.exists(test_path):
             config_path = test_path
         else:
-            # Try relative to parent directory
-            test_path = os.path.join(parent_dir, config_path)
+            # Try relative to experiment directory
+            test_path = os.path.join(experiment_dir, config_path)
             if os.path.exists(test_path):
                 config_path = test_path
             else:
@@ -110,13 +110,13 @@ def load_curve_config(config_path=None):
     if os.path.exists(config_path):
         with open(config_path, 'r') as f:
             config = json.load(f)
-        print(f"✓ Loaded curve configuration from: {config_path}")
+        print(f"✓ Loaded experiment configuration from: {config_path}")
         return config, config_path
     else:
         print(f"⚠️  Config file not found: {config_path}")
         print(f"   Expected locations:")
         print(f"     - {os.path.join(config_dir, 'curve_config.json')}")
-        print(f"     - {os.path.join(parent_dir, 'curve_config.json')}")
+        print(f"     - {os.path.join(experiment_dir, 'curve_config.json')}")
         print("   Using default configuration")
         return {}, None
 
@@ -349,7 +349,7 @@ class CurveEnvUnified:
         self.L_prev = get_distance_to_poly(self.agent, self.ep.gt_poly)
         
         # Track if we're at the very beginning (for bootstrap rewards)
-        self.is_at_start = (self.prev_idx == 0)
+        self.is_at_start = (self.prev_idx <= 5)
         self.initial_steps = 0  # Count first few steps for bootstrap rewards
         
         # Increment episode counter for next reset
@@ -909,7 +909,8 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                                    stage_id=stage_config['stage_id'], curve_config=curve_config)
         eval_env.set_stage(stage_config)
         
-        successes = []
+        reached_ends = []
+        stopped_correctly = []
         returns = []
         
         for eval_ep in range(num_episodes):
@@ -945,15 +946,13 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                 obs_dict = next_obs
             
             returns.append(ep_return)
-            if stage_config['strict_stop']:
-                success = 1 if info.get('stopped_correctly') else 0
-            else:
-                success = 1 if info.get('reached_end') else 0
-            successes.append(success)
+            reached_ends.append(1 if info.get('reached_end') else 0)
+            stopped_correctly.append(1 if info.get('stopped_correctly') else 0)
         
         return {
             'avg_return': float(np.mean(returns)),
-            'success_rate': float(np.mean(successes)),
+            'reached_end_rate': float(np.mean(reached_ends)),
+            'stop_success_rate': float(np.mean(stopped_correctly)),
             'stage_name': stage_name
         }
 
@@ -988,8 +987,11 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
             "name": stage['name'],
             "episodes": [],
             "rewards": [],
-            "success_rates": [],
-            "avg_rewards": []
+            "reached_end": [],
+            "stopped_correctly": [],
+            "avg_rewards": [],
+            "reached_end_rates": [],
+            "stop_success_rates": []
         }
         print(f"\n=============================================")
         print(f"STARTING {stage['name']}")
@@ -1004,38 +1006,27 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         
         batch_buffer = []
         ep_returns = []
-        ep_successes = []
+        ep_reached_end = []
+        ep_stopped_correctly = []
         
         # Load existing metrics for this stage if resuming
-        stage_metrics = None
         if resume_from is not None and len(all_metrics.get("stages", [])) > stage_idx:
             stage_metrics = all_metrics["stages"][stage_idx].copy()  # Make a copy to avoid modifying original
             # Restore episode returns and successes from metrics if available
             if "rewards" in stage_metrics and len(stage_metrics["rewards"]) > 0:
                 ep_returns = stage_metrics["rewards"][:start_episode-1]
-            if "successes" in stage_metrics and len(stage_metrics["successes"]) > 0:
-                ep_successes = stage_metrics["successes"][:start_episode-1]
+            if "reached_end" in stage_metrics and len(stage_metrics["reached_end"]) > 0:
+                ep_reached_end = stage_metrics["reached_end"][:start_episode-1]
+            if "stopped_correctly" in stage_metrics and len(stage_metrics["stopped_correctly"]) > 0:
+                ep_stopped_correctly = stage_metrics["stopped_correctly"][:start_episode-1]
+            
             # Ensure lists exist for appending
-            if "rewards" not in stage_metrics:
-                stage_metrics["rewards"] = []
-            if "successes" not in stage_metrics:
-                stage_metrics["successes"] = []
-            if "episodes" not in stage_metrics:
-                stage_metrics["episodes"] = []
-            if "avg_rewards" not in stage_metrics:
-                stage_metrics["avg_rewards"] = []
-            if "success_rates" not in stage_metrics:
-                stage_metrics["success_rates"] = []
+            for k in ["rewards", "reached_end", "stopped_correctly", "episodes", "avg_rewards", "reached_end_rates", "stop_success_rates"]:
+                if k not in stage_metrics:
+                    stage_metrics[k] = []
         else:
-            # Initialize stage metrics
-            stage_metrics = {
-                "name": stage['name'],
-                "episodes": [],
-                "rewards": [],
-                "successes": [],
-                "success_rates": [],
-                "avg_rewards": []
-            }
+            # Already initialized stage_metrics above
+            pass
         
         for ep in range(start_episode, stage['episodes'] + 1):
             # Calculate global episode number for seed
@@ -1098,9 +1089,9 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                 ep_traj["logp"].append(logp)
                 ep_traj["val"].append(val)
                 ep_traj["rew"].append(r)
-                # Only label as stop when agent actually stops correctly, not just when close to end
-                # This prevents the model from learning to stop too early
-                stop_label = 1 if info.get('stopped_correctly') else 0
+                # Label as stop whenever the agent IS near the end, regardless of whether it stopped
+                # This provides necessary supervision for the stop head to learn
+                stop_label = 1 if info.get('reached_end') else 0
                 ep_traj["stop_label"].append(stop_label)
                 
                 a_onehot = np.zeros(N_MOVEMENT_ACTIONS)
@@ -1136,12 +1127,10 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                 ep_return = sum(rews)
                 ep_returns.append(ep_return)
                 
-                success_val = 0
-                if stage['config']['strict_stop']:
-                    success_val = 1 if info.get('stopped_correctly') else 0
-                else:
-                    success_val = 1 if info.get('reached_end') else 0
-                ep_successes.append(success_val)
+                reached_end_val = 1 if info.get('reached_end') else 0
+                stopped_correctly_val = 1 if info.get('stopped_correctly') else 0
+                ep_reached_end.append(reached_end_val)
+                ep_stopped_correctly.append(stopped_correctly_val)
 
                 # Save image, mask, and path for the last 5 episodes of this stage
                 if ep >= stage['episodes'] - 4:
@@ -1159,7 +1148,8 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                 
                 # Update metrics
                 stage_metrics["rewards"].append(float(ep_return))
-                stage_metrics["successes"].append(success_val)
+                stage_metrics["reached_end"].append(reached_end_val)
+                stage_metrics["stopped_correctly"].append(stopped_correctly_val)
 
             if len(batch_buffer) >= 32:
                 update_ppo(opt, model, batch_buffer)
@@ -1167,14 +1157,25 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
 
             if ep % 100 == 0:
                 avg_r = np.mean(ep_returns[-100:])
-                succ_rate = np.mean(ep_successes[-100:]) if ep_successes else 0.0
+                reached_rate = np.mean(ep_reached_end[-100:]) if ep_reached_end else 0.0
+                stopped_rate = np.mean(ep_stopped_correctly[-100:]) if ep_stopped_correctly else 0.0
+                
+                # Success rate depends on stage config
+                if stage['config']['strict_stop']:
+                    succ_rate = stopped_rate
+                    success_type = "StopSucc"
+                else:
+                    succ_rate = reached_rate
+                    success_type = "ReachEnd"
+
                 prev_stage_info = f" [Prev: {sum(1 for _ in previous_stages)}]" if previous_stages else ""
-                print(f"[{stage['name']}] Ep {ep} | Avg Rew: {avg_r:.2f} | Success: {succ_rate:.2f}{prev_stage_info}")
+                print(f"[{stage['name']}] Ep {ep} | Avg Rew: {avg_r:.2f} | {success_type}: {succ_rate:.2f} (RE: {reached_rate:.2f}, SC: {stopped_rate:.2f}){prev_stage_info}")
                 
                 # Save metrics
                 stage_metrics["episodes"].append(ep)
                 stage_metrics["avg_rewards"].append(float(avg_r))
-                stage_metrics["success_rates"].append(float(succ_rate))
+                stage_metrics["reached_end_rates"].append(float(reached_rate))
+                stage_metrics["stop_success_rates"].append(float(stopped_rate))
                 
                 # Anti-forgetting: Evaluate on previous stages periodically
                 if previous_stages and ep % eval_previous_every == 0:
@@ -1184,8 +1185,8 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                         eval_result = evaluate_on_stage(model, prev_stage_config, prev_stage_name, 
                                                        num_episodes=10, base_seed=base_seed)
                         eval_results.append(eval_result)
-                        print(f"   {prev_stage_name}: Success={eval_result['success_rate']:.2f}, "
-                              f"Return={eval_result['avg_return']:.2f}")
+                        print(f"   {prev_stage_name}: RE={eval_result['reached_end_rate']:.2f}, "
+                              f"SC={eval_result['stop_success_rate']:.2f}, Return={eval_result['avg_return']:.2f}")
                     
                     # Store evaluation results in metrics
                     if "previous_stage_evaluations" not in stage_metrics:
@@ -1231,14 +1232,13 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         previous_stages.append((stage['config'].copy(), stage['name']))
         print(f"✅ Added {stage['name']} to previous stages pool (total: {len(previous_stages)} stages)")
         
-        # Update global episode offset for next stage
-        global_episode_offset += stage['episodes']
         print(f"Actor-only weights saved: {actor_final_path}")
         
         # Add final metrics
         if ep_returns:
             stage_metrics["final_avg_reward"] = float(np.mean(ep_returns))
-            stage_metrics["final_success_rate"] = float(np.mean(ep_successes)) if ep_successes else 0.0
+            stage_metrics["final_reached_end_rate"] = float(np.mean(ep_reached_end)) if ep_reached_end else 0.0
+            stage_metrics["final_stop_success_rate"] = float(np.mean(ep_stopped_correctly)) if ep_stopped_correctly else 0.0
             stage_metrics["total_episodes"] = len(ep_returns)
         
         # Update or append stage metrics
