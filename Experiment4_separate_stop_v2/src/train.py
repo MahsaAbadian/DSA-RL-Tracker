@@ -33,7 +33,7 @@ if _project_root not in sys.path:
     sys.path.insert(0, _project_root)
 
 # Import central curve generator module
-from CurveGeneratorModule import load_curve_config, CenterlineMask5PointsGenerator
+from CurveGeneratorModule import load_curve_config, CurveMaker
 
 # ---------- GLOBALS ----------
 # Auto-detect device: use GPU if available, otherwise CPU
@@ -57,68 +57,7 @@ EPSILON = 1e-6
 BASE_SEED = 42
 
 # ---------- CONFIG LOADING ----------
-def load_curve_config(config_path=None):
-    """Load curve generation configuration from JSON file.
-    
-    Looks for config in the following order:
-    1. Explicit path provided (if config_path is given)
-    2. config/curve_config.json (relative to Experiment4_separate_stop_v2 directory)
-    3. curve_config.json (relative to Experiment4_separate_stop_v2 directory)
-    
-    Returns:
-        tuple: (config_dict, actual_config_path)
-        - config_dict: The loaded configuration dictionary (or empty dict if not found)
-        - actual_config_path: The path that was actually used (or None if not found)
-    """
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    experiment_dir = os.path.dirname(script_dir)  # Experiment4_separate_stop_v2 directory
-    config_dir = os.path.join(experiment_dir, "config")  # Experiment4_separate_stop_v2/config/
-    
-    if config_path is None:
-        # Default: look in config/ directory first, then experiment directory for backward compatibility
-        default_paths = [
-            os.path.join(config_dir, "curve_config.json"),
-            os.path.join(experiment_dir, "curve_config.json")
-        ]
-        for path in default_paths:
-            if os.path.exists(path):
-                config_path = path
-                break
-        else:
-            config_path = default_paths[0]  # Use config/ path even if doesn't exist (for error message)
-    
-    # Convert to absolute path if relative
-    if not os.path.isabs(config_path):
-        # Try relative to config directory first
-        test_path = os.path.join(config_dir, config_path)
-        if os.path.exists(test_path):
-            config_path = test_path
-        else:
-            # Try relative to experiment directory
-            test_path = os.path.join(experiment_dir, config_path)
-            if os.path.exists(test_path):
-                config_path = test_path
-            else:
-                # Try relative to script directory (for backward compatibility)
-                test_path = os.path.join(script_dir, config_path)
-                if os.path.exists(test_path):
-                    config_path = test_path
-                else:
-                    # Use the original path (will show error if not found)
-                    config_path = os.path.join(config_dir, config_path) if not os.path.isabs(config_path) else config_path
-    
-    if os.path.exists(config_path):
-        with open(config_path, 'r') as f:
-            config = json.load(f)
-        print(f"✓ Loaded experiment configuration from: {config_path}")
-        return config, config_path
-    else:
-        print(f"⚠️  Config file not found: {config_path}")
-        print(f"   Expected locations:")
-        print(f"     - {os.path.join(config_dir, 'curve_config.json')}")
-        print(f"     - {os.path.join(experiment_dir, 'curve_config.json')}")
-        print("   Using default configuration")
-        return {}, None
+# Unified loader from CurveGeneratorModule is used
 
 # ---------- CURVE GENERATION (On-The-Fly) ----------
 # Using central CurveGeneratorModule with CenterlineMask5PointsGenerator
@@ -191,6 +130,7 @@ class CurveEnvUnified:
             'noise': 0.0,
             'invert': 0.5,
             'tissue': False,
+            'tissue_noise_prob': 0.0,
             'strict_stop': False,
             'mixed_start': False,
             'curvature_factor': 0.5,
@@ -203,7 +143,9 @@ class CurveEnvUnified:
             'intensity_variation': 'none',
             'start_intensity': None,
             'end_intensity': None,
-            'background_intensity': None
+            'background_intensity': None,
+            'num_control_points': 5,
+            'num_segments': 1
         }
         
         print(f"[ENV] On-the-fly curve generation enabled (base_seed={base_seed})")
@@ -243,18 +185,14 @@ class CurveEnvUnified:
                 self.stage_config['end_intensity'] = stage_curve_cfg['end_intensity']
             if 'background_intensity' in stage_curve_cfg:
                 self.stage_config['background_intensity'] = stage_curve_cfg['background_intensity']
+            if 'num_control_points' in stage_curve_cfg:
+                self.stage_config['num_control_points'] = stage_curve_cfg['num_control_points']
+            if 'num_segments' in stage_curve_cfg:
+                self.stage_config['num_segments'] = stage_curve_cfg['num_segments']
+            if 'tissue_noise_prob' in stage_curve_cfg:
+                self.stage_config['tissue_noise_prob'] = stage_curve_cfg['tissue_noise_prob']
         
         # Config update logging removed (as requested)
-
-    def generate_tissue_noise(self):
-        tissue_cfg = self.curve_config.get('tissue_noise', {})
-        sigma_range = tuple(tissue_cfg.get('sigma_range', [2.0, 5.0]))
-        intensity_range = tuple(tissue_cfg.get('intensity_range', [0.2, 0.4]))
-        
-        noise = np.random.randn(self.h, self.w)
-        tissue = gaussian_filter(noise, sigma=np.random.uniform(sigma_range[0], sigma_range[1]))
-        tissue = (tissue - tissue.min()) / (tissue.max() - tissue.min())
-        return tissue * np.random.uniform(intensity_range[0], intensity_range[1])
 
     def reset(self, episode_number=None):
         """Reset environment and generate a new curve on-the-fly.
@@ -266,19 +204,18 @@ class CurveEnvUnified:
             self.current_episode = episode_number
         
         # Calculate seed for this episode: base_seed + episode_number
-        # This ensures reproducibility: same episode number = same curve
         episode_seed = self.base_seed + self.current_episode
         
-        # Create curve generator using central CurveGeneratorModule with 5-point centerline generator
-        # Use strong_foundation config merged with experiment-specific config
+        # Create curve generator
         merged_config = STRONG_FOUNDATION_CONFIG.copy() if STRONG_FOUNDATION_CONFIG else {}
         merged_config.update(self.curve_config)
-        curve_maker = CenterlineMask5PointsGenerator(h=self.h, w=self.w, seed=episode_seed, config=merged_config)
+        curve_maker = CurveMaker(h=self.h, w=self.w, seed=episode_seed, config=merged_config)
         
         # Generate curve with stage-specific parameters
         img, mask, pts_all = curve_maker.sample_curve(
             width_range=self.stage_config['width'],
-            noise_prob=0.0,  # Noise applied during training, not generation
+            noise_prob=0.0,  # Noise applied during training update if needed, or by generator
+            tissue_noise_prob=self.stage_config['tissue_noise_prob'],
             invert_prob=self.stage_config['invert'],
             min_intensity=self.stage_config['min_intensity'],
             max_intensity=self.stage_config.get('max_intensity', None),
@@ -292,24 +229,15 @@ class CurveEnvUnified:
             intensity_variation=self.stage_config.get('intensity_variation', 'none'),
             start_intensity=self.stage_config.get('start_intensity', None),
             end_intensity=self.stage_config.get('end_intensity', None),
-            background_intensity=self.stage_config.get('background_intensity', None)
+            background_intensity=self.stage_config.get('background_intensity', None),
+            num_control_points=self.stage_config.get('num_control_points'),
+            num_segments=self.stage_config.get('num_segments'),
+            centerline_mask=True  # Force centerline mask for Experiment 4
         )
         
         # Extract main curve points
         gt_poly = pts_all[0].astype(np.float32)
         
-        # Apply tissue noise if enabled
-        if self.stage_config['tissue']:
-            # Use a deterministic seed for tissue noise based on episode
-            np.random.seed(episode_seed + 10000)  # Offset to avoid conflicts
-            tissue = self.generate_tissue_noise()
-            is_white_bg = np.mean([img[0,0], img[0,-1]]) > 0.5
-            if is_white_bg:
-                img = np.clip(img - tissue, 0.0, 1.0)
-            else:
-                img = np.clip(img + tissue, 0.0, 1.0)
-            np.random.seed()  # Reset to random state
-
         # Create ground truth map
         self.gt_map = np.zeros_like(img)
         for pt in gt_poly:
@@ -750,7 +678,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         "has_stop_head": True,
         "base_seed": base_seed,
         "curve_generation": "on_the_fly",
-        "generator_type": "CenterlineMask5PointsGenerator",
+        "generator_type": "Unified CurveMaker",
         "curve_config_path": stored_config_path,
         "image_height": img_h,
         "image_width": img_w,
@@ -778,6 +706,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                     'width': tuple(curve_gen.get('width_range', [2, 4])),
                     'noise': training.get('noise', 0.0),
                     'tissue': training.get('tissue', False),
+                    'tissue_noise_prob': curve_gen.get('tissue_noise_prob', 0.0),
                     'strict_stop': training.get('strict_stop', False),
                     'mixed_start': training.get('mixed_start', False),
                     'invert': curve_gen.get('invert_prob', 0.5),
@@ -793,7 +722,9 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                     'intensity_variation': curve_gen.get('intensity_variation', 'none'),
                     'start_intensity': curve_gen.get('start_intensity', None),
                     'end_intensity': curve_gen.get('end_intensity', None),
-                    'background_intensity': curve_gen.get('background_intensity', None)
+                    'background_intensity': curve_gen.get('background_intensity', None),
+                    'num_control_points': curve_gen.get('num_control_points', 5),
+                    'num_segments': curve_gen.get('num_segments', 1)
                 }
             }
             stages.append(stage)
@@ -841,7 +772,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
     print(f"Number of Stages: {num_stages}")
     print(f"Device: {DEVICE} | Movement Actions: {N_MOVEMENT_ACTIONS} (+ separate STOP head)")
     print(f"Base Seed: {base_seed} (for reproducibility)")
-    print(f"Curve Generation: On-The-Fly (CenterlineMask5PointsGenerator)")
+    print(f"Curve Generation: On-The-Fly (Unified CurveMaker)")
     print(f"Run Directory: {run_dir}")
     print(f"Checkpoints: {checkpoint_dir}")
     print(f"Weights: {weights_dir}")
