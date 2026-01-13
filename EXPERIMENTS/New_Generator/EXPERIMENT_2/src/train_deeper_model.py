@@ -128,23 +128,35 @@ class CurveEnvUnified:
         self.current_episode = 0
         self.curve_config = curve_config or {}
         
-        # Default config
+        # FIX: Provide comprehensive defaults so reset() doesn't fail on missing keys
         self.stage_config = {
             'stage_id': stage_id,
             'width': (2, 4),
             'noise_prob': 0.0,
+            'tissue_noise_prob': 0.0,
+            'invert_prob': 0.0,
             'curvature_factor': 0.5,
             'branches': False,
             'strict_stop': False,
-            'mixed_start': False
+            'mixed_start': False,
+            'min_intensity': 0.5,
+            'max_intensity': 1.0,
+            'background_intensity': 0.0,
+            'topology': 'random',
+            'num_control_points': 4,
+            'num_segments': 1,
+            'centerline_mask': True,
+            'width_variation': 'none',
+            'intensity_variation': 'none',
+            'allow_self_cross': False,
+            'self_cross_prob': 0.0
         }
         self.reset()
 
     def set_stage(self, config):
         """
         Updates the stage configuration.
-        Crucial Fix: Updates ALL keys so that _range parameters (e.g. curvature_range)
-        are properly passed to reset() sampling logic.
+        Updates ALL keys so that _range parameters are properly passed.
         """
         self.stage_config.update(config)
         
@@ -162,8 +174,7 @@ class CurveEnvUnified:
             if 'width_range' in stage_curve_cfg: 
                 self.stage_config['width'] = tuple(stage_curve_cfg['width_range'])
             
-            # Update EVERYTHING else directly. 
-            # This ensures keys like 'curvature_range', 'noise_range' are not lost.
+            # Update EVERYTHING else directly.
             self.stage_config.update(stage_curve_cfg)
 
     def reset(self, episode_number=None):
@@ -173,7 +184,7 @@ class CurveEnvUnified:
         episode_seed = self.base_seed + self.current_episode
         curve_maker = CurveMaker(h=self.h, w=self.w, seed=episode_seed, config=self.curve_config)
         
-        # Sample ranges (now works because set_stage preserves keys)
+        # Sample ranges
         curv = self._sample_range('curvature_range', 'curvature_factor')
         noise_p = self._sample_range('noise_range', 'noise_prob')
         bg_i = self._sample_range('background_intensity_range', 'background_intensity')
@@ -343,7 +354,7 @@ class CurveEnvUnified:
         # Wiggly Penalty (Reduced for sharp turn stages)
         if self.prev_action != -1 and self.prev_action != a_idx:
             # If sharp turns are expected, penalize less
-            if self.stage_config.get('topology') in ['zigzag', 'ribbon']:
+            if self.stage_config.get('topology') in ['zigzag', 'ribbon', 'hairpin']:
                 r -= 0.02
             else:
                 r -= 0.05
