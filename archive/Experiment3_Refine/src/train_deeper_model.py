@@ -192,6 +192,11 @@ class CurveMakerFlexible:
         ts = np.linspace(0, 1, n_samples, dtype=np.float32)
         pts = np.stack([_cubic_bezier(p0, p1, p2, p3, t) for t in ts], axis=0)
         
+        # Clip all points to stay within image bounds (with margin)
+        margin = self.bezier_margin
+        pts[:, 0] = np.clip(pts[:, 0], margin, self.h - margin - 1)
+        pts[:, 1] = np.clip(pts[:, 1], margin, self.w - margin - 1)
+        
         return pts
 
     def _draw_aa_curve(self, img, pts, thickness, intensity, width_variation="none", start_width=None, end_width=None,
@@ -540,15 +545,60 @@ class CurveEnvUnified:
         # Create curve generator with episode-specific seed and config
         curve_maker = CurveMakerFlexible(h=self.h, w=self.w, seed=episode_seed, config=self.curve_config)
         
+        # Sample curvature from range if provided, otherwise use fixed value
+        if 'curvature_range' in self.stage_config:
+            curv_min, curv_max = self.stage_config['curvature_range']
+            curvature = np.random.uniform(curv_min, curv_max)
+        else:
+            curvature = self.stage_config.get('curvature_factor', 1.0)
+        
+        # Sample noise_prob from range if provided
+        if 'noise_range' in self.stage_config:
+            noise_min, noise_max = self.stage_config['noise_range']
+            noise_prob = np.random.uniform(noise_min, noise_max)
+        else:
+            noise_prob = self.stage_config.get('noise_prob', 0.0)
+        
+        # Sample background_intensity from range if provided
+        if 'background_intensity_range' in self.stage_config:
+            bg_min, bg_max = self.stage_config['background_intensity_range']
+            background_intensity = np.random.uniform(bg_min, bg_max)
+        else:
+            background_intensity = self.stage_config.get('background_intensity', None)
+        
+        # Sample min_intensity from range if provided
+        if 'min_intensity_range' in self.stage_config:
+            mi_min, mi_max = self.stage_config['min_intensity_range']
+            min_intensity = np.random.uniform(mi_min, mi_max)
+        else:
+            min_intensity = self.stage_config['min_intensity']
+        
+        # Sample max_intensity from range if provided
+        if 'max_intensity_range' in self.stage_config:
+            mx_min, mx_max = self.stage_config['max_intensity_range']
+            max_intensity = np.random.uniform(mx_min, mx_max)
+            # Ensure max >= min
+            max_intensity = max(max_intensity, min_intensity + 0.05)
+        else:
+            max_intensity = self.stage_config.get('max_intensity', None)
+        
+        # Ensure intensity > background_intensity (curve must be visible)
+        bg_val = background_intensity if background_intensity is not None else 0.0
+        min_visible = bg_val + 0.05  # Curve must be at least 0.05 brighter than background
+        if min_intensity < min_visible:
+            min_intensity = min_visible
+        if max_intensity is not None and max_intensity < min_visible:
+            max_intensity = min_visible + 0.1
+        
         # Generate curve with stage-specific parameters
         img, mask, pts_all = curve_maker.sample_curve(
             width_range=self.stage_config['width'],
-            noise_prob=0.0,  # Noise applied during training, not generation
+            noise_prob=noise_prob,
             invert_prob=self.stage_config['invert'],
-            min_intensity=self.stage_config['min_intensity'],
-            max_intensity=self.stage_config.get('max_intensity', None),
+            min_intensity=min_intensity,
+            max_intensity=max_intensity,
             branches=self.stage_config['branches'],
-            curvature_factor=self.stage_config['curvature_factor'],
+            curvature_factor=curvature,
             allow_self_cross=self.stage_config.get('allow_self_cross', False),
             self_cross_prob=self.stage_config.get('self_cross_prob', 0.0),
             width_variation=self.stage_config.get('width_variation', 'none'),
@@ -557,7 +607,7 @@ class CurveEnvUnified:
             intensity_variation=self.stage_config.get('intensity_variation', 'none'),
             start_intensity=self.stage_config.get('start_intensity', None),
             end_intensity=self.stage_config.get('end_intensity', None),
-            background_intensity=self.stage_config.get('background_intensity', None)
+            background_intensity=background_intensity
         )
         
         # Extract main curve points
@@ -1050,7 +1100,15 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                     'intensity_variation': curve_gen.get('intensity_variation', 'none'),
                     'start_intensity': curve_gen.get('start_intensity', None),
                     'end_intensity': curve_gen.get('end_intensity', None),
-                    'background_intensity': curve_gen.get('background_intensity', None)
+                    'background_intensity': curve_gen.get('background_intensity', None),
+                    # Range parameters for sampling variety
+                    'curvature_range': curve_gen.get('curvature_range', None),
+                    'noise_range': curve_gen.get('noise_range', None),
+                    'background_intensity_range': curve_gen.get('background_intensity_range', None),
+                    'min_intensity_range': curve_gen.get('min_intensity_range', None),
+                    'max_intensity_range': curve_gen.get('max_intensity_range', None),
+                    # Training noise range (separate from curve generation noise)
+                    'training_noise_range': training.get('noise_range', None)
                 }
             }
             stages.append(stage)

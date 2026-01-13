@@ -286,7 +286,7 @@ def main():
             action = torch.argmax(probs, dim=1).item()
         
         done, reason = env.step(action)
-
+        
         # Update history
         new_onehot = np.zeros(N_ACTIONS)
         new_onehot[action] = 1.0
