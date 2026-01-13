@@ -145,7 +145,63 @@ class CurveMaker(object):
 
                 # Small jitter without leaving bounds
                 pts = np.array([self._clip_point(pt + self.rng.normal(0, 2, 2), m) for pt in pts])
-                control_points = []  # Parametric recipe; no discrete cps
+                control_points = [] 
+            elif topology == "hairpin":
+                start = p0 if p0 is not None else self._random_point(m)
+
+                # choose forward direction
+                theta = self.rng.uniform(0, 2*np.pi)
+                d = np.array([np.cos(theta), np.sin(theta)])
+
+                # forward then reverse
+                p1 = start + d * self.rng.uniform(30, 60)
+                p2 = p1 + self.rng.normal(0, 1, 2) * 20
+                p3 = start + self.rng.normal(0, 1, 2) * 10  # return near start
+
+                control_points = np.array([
+                    self._clip_point(start, m),
+                    self._clip_point(p1, m),
+                    self._clip_point(p2, m),
+                    self._clip_point(p3, m)
+                ])
+
+                pts = _general_bezier(control_points, self.n_samples)
+            
+            elif topology == "zigzag":
+                # Forces a sharp "S" or "Z" shape by pulling CPs in opposite directions
+                start = p0 if p0 is not None else self._random_point(m)
+                
+                # Pick end point reasonably far away
+                for _ in range(20):
+                    candidate = self._random_point(m)
+                    dist = np.linalg.norm(start - candidate)
+                    if dist > self.min_dist and dist < min(self.h, self.w) * 0.8:
+                        end = candidate
+                        break
+                else:
+                    end = self._clip_point(np.array([self.h - start[0], self.w - start[1]]), m)
+                
+                # Vector from start to end
+                vec = end - start
+                dist = np.linalg.norm(vec)
+                normal = np.array([-vec[1], vec[0]]) / (dist + 1e-8)
+                
+                # Amplitude of the zig-zag (sharpness)
+                amp = dist * self.rng.uniform(0.4, 0.8) * curvature_factor
+                
+                # P1 pulls left, P2 pulls right (or vice versa)
+                p1 = start + vec * 0.33 + normal * amp
+                p2 = start + vec * 0.66 - normal * amp
+                
+                control_points = np.array([
+                    self._clip_point(start, m),
+                    self._clip_point(p1, m),
+                    self._clip_point(p2, m),
+                    self._clip_point(end, m)
+                ])
+                
+                pts = _general_bezier(control_points, self.n_samples)
+            # Parametric recipe; no discrete cps
             else:
                 # Default "random" topology
                 start = p0 if p0 is not None else self._random_point(m)
@@ -201,6 +257,15 @@ class CurveMaker(object):
             start_i, end_i = (start_intensity or intensity*1.5), (end_intensity or intensity*0.5)
         elif intensity_variation == "dim_to_bright":
             start_i, end_i = (start_intensity or intensity*0.5), (end_intensity or intensity*1.5)
+        elif intensity_variation == "random":
+            # Randomly choose a gradient direction
+            if self.rng.random() < 0.5:
+                # Bright to Dim
+                start_i, end_i = (start_intensity or intensity*1.5), (end_intensity or intensity*0.5)
+            else:
+                # Dim to Bright
+                start_i, end_i = (start_intensity or intensity*0.5), (end_intensity or intensity*1.5)
+
         else:
             start_i, end_i = (start_intensity or intensity), (end_intensity or intensity)
 
@@ -217,6 +282,12 @@ class CurveMaker(object):
                 sw, ew = (start_width or thickness*2.0), (end_width or thickness)
             elif width_variation == "narrow_to_wide":
                 sw, ew = (start_width or thickness), (end_width or thickness*2.0)
+            
+            elif width_variation == "random":
+                if self.rng.random() < 0.5:
+                     sw, ew = (start_width or thickness*2.0), (end_width or thickness)
+                else:
+                     sw, ew = (start_width or thickness), (end_width or thickness*2.0)
             else:
                 sw, ew = (start_width or thickness), (end_width or thickness)
             self._draw_segmented(img, pts, thickness, start_i, end_i, sw, ew)
@@ -264,7 +335,16 @@ class CurveMaker(object):
         # 3. Resolve Topology
         topol = topology or self.config.get('bezier', {}).get('topology', 'random')
         if topol == "multi":
-            topol = self.rng.choice(["random", "ribbon"])
+        # 50% Random (General), 20% Zigzag (Sharp), 15% Ribbon (Loops), 15% Hairpin (U-turns)
+            r_val = self.rng.random()
+            if r_val < 0.50:
+                topol = "random"
+            elif r_val < 0.70:
+                topol = "zigzag"
+            elif r_val < 0.85:
+                topol = "ribbon"
+            else:
+                topol = "hairpin"
 
         # 4. Resolve centerline_mask
         c_mask = centerline_mask if centerline_mask is not None else self.default_centerline_mask
