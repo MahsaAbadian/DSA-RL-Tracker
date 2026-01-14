@@ -154,28 +154,77 @@ class CurveEnvUnified:
         self.reset()
 
     def set_stage(self, config):
-        """
-        Updates the stage configuration.
-        Updates ALL keys so that _range parameters are properly passed.
-        """
         self.stage_config.update(config)
-        
+            
+        # Load stage-specific parameters from curve_config if available
         stages_cfg = self.curve_config.get('training_stages', [])
         stage_id = self.stage_config['stage_id']
 
+        # Find the stage config by stage_id
         stage_curve_cfg = None
         for stage in stages_cfg:
             if stage.get('stage_id') == stage_id:
                 stage_curve_cfg = stage.get('curve_generation', {})
                 break
-        
-        if stage_curve_cfg:
-            # Handle the one key that needs translation
-            if 'width_range' in stage_curve_cfg: 
-                self.stage_config['width'] = tuple(stage_curve_cfg['width_range'])
-            
-            # Update EVERYTHING else directly.
-            self.stage_config.update(stage_curve_cfg)
+
+        # ✅ SAFETY GUARD
+        if stage_curve_cfg is None:
+            print(f"[WARN] No curve_generation found for stage_id={stage_id}")
+            return
+
+        # ✅ Now safely update from config
+        if 'width_range' in stage_curve_cfg:
+            self.stage_config['width'] = tuple(stage_curve_cfg['width_range'])
+
+        if 'curvature_factor' in stage_curve_cfg:
+            self.stage_config['curvature_factor'] = stage_curve_cfg['curvature_factor']
+
+        if 'curvature_range' in stage_curve_cfg:
+            self.stage_config['curvature_range'] = tuple(stage_curve_cfg['curvature_range'])
+
+        if 'min_intensity' in stage_curve_cfg:
+            self.stage_config['min_intensity'] = stage_curve_cfg['min_intensity']
+
+        if 'min_intensity_range' in stage_curve_cfg:
+            self.stage_config['min_intensity_range'] = tuple(stage_curve_cfg['min_intensity_range'])
+
+        if 'max_intensity' in stage_curve_cfg:
+            self.stage_config['max_intensity'] = stage_curve_cfg['max_intensity']
+
+        if 'max_intensity_range' in stage_curve_cfg:
+            self.stage_config['max_intensity_range'] = tuple(stage_curve_cfg['max_intensity_range'])
+
+        if 'branches' in stage_curve_cfg:
+            self.stage_config['branches'] = stage_curve_cfg['branches']
+
+        if 'noise_prob' in stage_curve_cfg:
+            self.stage_config['noise_prob'] = stage_curve_cfg['noise_prob']
+
+        if 'noise_range' in stage_curve_cfg:
+            self.stage_config['noise_range'] = tuple(stage_curve_cfg['noise_range'])
+
+        if 'tissue_noise_prob' in stage_curve_cfg:
+            self.stage_config['tissue_noise_prob'] = stage_curve_cfg['tissue_noise_prob']
+
+        if 'invert_prob' in stage_curve_cfg:
+            self.stage_config['invert_prob'] = stage_curve_cfg['invert_prob']
+
+        if 'num_control_points' in stage_curve_cfg:
+            self.stage_config['num_control_points'] = stage_curve_cfg['num_control_points']
+
+        if 'num_segments' in stage_curve_cfg:
+            self.stage_config['num_segments'] = stage_curve_cfg['num_segments']
+
+        if 'topology' in stage_curve_cfg:
+            self.stage_config['topology'] = stage_curve_cfg['topology']
+
+        if 'centerline_mask' in stage_curve_cfg:
+            self.stage_config['centerline_mask'] = stage_curve_cfg['centerline_mask']
+
+        if 'background_intensity_range' in stage_curve_cfg:
+            self.stage_config['background_intensity_range'] = tuple(
+                stage_curve_cfg['background_intensity_range']
+            )
 
     def reset(self, episode_number=None):
         if episode_number is not None:

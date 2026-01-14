@@ -128,7 +128,6 @@ class CurveEnvUnified:
         self.current_episode = 0
         self.curve_config = curve_config or {}
         
-        # FIX: Provide comprehensive defaults so reset() doesn't fail on missing keys
         self.stage_config = {
             'stage_id': stage_id,
             'width': (2, 4),
@@ -170,11 +169,8 @@ class CurveEnvUnified:
                 break
         
         if stage_curve_cfg:
-            # Handle the one key that needs translation
             if 'width_range' in stage_curve_cfg: 
                 self.stage_config['width'] = tuple(stage_curve_cfg['width_range'])
-            
-            # Update EVERYTHING else directly.
             self.stage_config.update(stage_curve_cfg)
 
     def reset(self, episode_number=None):
@@ -324,7 +320,8 @@ class CurveEnvUnified:
             norm = np.linalg.norm(curve_dir) + 1e-8
             curve_dir /= norm
             
-            act_dir = np.array([dy, dx])
+            # --- FIX: Explicitly use float32 to prevent casting errors ---
+            act_dir = np.array([dy, dx], dtype=np.float32)
             act_dir /= (np.linalg.norm(act_dir) + 1e-8)
             
             alignment = np.dot(curve_dir, act_dir)
@@ -483,6 +480,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
 
         batch_buffer = []
         ep_returns = []
+        ep_successes = [] # Track success rate
         
         for ep in range(1, stage['episodes'] + 1):
             global_ep = global_episode_offset + ep
@@ -518,7 +516,7 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                     logp = dist.log_prob(torch.tensor(action, device=DEVICE)).item()
                     val = value.item()
 
-                next_obs, r, done, _ = env.step(action)
+                next_obs, r, done, info = env.step(action)
                 
                 ep_traj['obs']['actor'].append(obs_dict['actor'])
                 ep_traj['obs']['critic_gt'].append(obs_dict['critic_gt'])
@@ -532,6 +530,13 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                 ahist.append(a_oh)
                 obs_dict = next_obs
             
+            # Calculate Success
+            if env.stage_config['strict_stop']:
+                succ = 1.0 if info.get('stopped_correctly') else 0.0
+            else:
+                succ = 1.0 if info.get('reached_end') else 0.0
+            ep_successes.append(succ)
+
             # GAE Calculation
             rews = np.array(ep_traj['rew'])
             vals = np.array(ep_traj['val'] + [0.0])
@@ -556,8 +561,11 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
                 update_ppo(opt, model, batch_buffer)
                 batch_buffer = []
 
-            if ep % 100 == 0:
-                print(f"[{stage['name']}] Ep {ep} | Avg Rew: {np.mean(ep_returns[-100:]):.2f}")
+            # Print every 20 episodes with Success Rate
+            if ep % 20 == 0:
+                avg_r = np.mean(ep_returns[-20:]) if ep_returns else 0.0
+                avg_s = np.mean(ep_successes[-20:]) if ep_successes else 0.0
+                print(f"[{stage['name']}] Ep {ep} | Avg Rew: {avg_r:.2f} | Success: {avg_s*100:.1f}%")
 
             if ep % 2000 == 0:
                 torch.save(model.state_dict(), os.path.join(run_dir, "checkpoints", f"ckpt_{stage['name']}_ep{ep}.pth"))
