@@ -162,37 +162,73 @@ class CurveMakerFlexible:
         """Generates a list of (y,x) points forming a smooth bezier curve."""
         n_samples = n_samples if n_samples is not None else self.bezier_n_samples
         
+        # 1. Select Start Point (p0)
         if p0 is None:
             p0 = self._random_point()
         
-        # Ensure p3 is far enough from p0 (prevents blobs)
+        # 2. Select End Point (p3)
+        # For Straight lines (low curvature), p3 can be anywhere.
+        # For U-turns (high curvature), we ideally want p3 closer to p0 to allow the loop to fit.
         for _ in range(20): 
             p3 = self._random_point()
             dist = np.linalg.norm(p0 - p3)
-            if dist > self.bezier_min_distance: 
-                break
+            if curvature_factor < 0.3:
+                # Bin 1: Ensure line is long enough
+                if dist > 60.0: break
+            elif curvature_factor > 1.2:
+                # Bin 3: Ensure points aren't too far apart, so the loop fits in image
+                if 20.0 < dist < 80.0: break
+            else:
+                # Bin 2: Standard
+                if dist > self.bezier_min_distance: break
         else:
             p3 = np.array([self.h - p0[0], self.w - p0[1]], dtype=np.float32)
 
-        # Control points - curvature_factor affects how much control points deviate
+        # 3. Calculate Control Points (p1, p2)
         center = (p0 + p3) / 2.0
-        spread = np.array([self.h, self.w], dtype=np.float32) * self.bezier_spread * curvature_factor
+        
+        # BIN 1: STRAIGHT LINES
+        if curvature_factor < 0.3:
+            # Place control points ON the line segment between p0 and p3
+            # This creates a mathematically straight line via Bezier
+            p1 = p0 + (p3 - p0) * 0.33 + self.rng.normal(0, 1, 2) * curvature_factor * 2.0
+            p2 = p0 + (p3 - p0) * 0.66 + self.rng.normal(0, 1, 2) * curvature_factor * 2.0
+            
+        # BIN 3: COMPLEX LOOPS / U-TURNS
+        elif curvature_factor > 1.2:
+            # Force control points far perpendicular to the path to create loops
+            vec = p3 - p0
+            norm = np.linalg.norm(vec) + 1e-8
+            perp = np.array([-vec[1], vec[0]]) / norm # Perpendicular vector
+            
+            # Push p1 and p2 far out to the sides
+            spread_mag = self.h * 0.6 * self.rng.uniform(0.8, 1.2)
+            
+            if allow_self_cross and self.rng.random() < self_cross_prob:
+                # Figure-8 or Intersection: Push p1 and p2 in opposite directions
+                p1 = center + perp * spread_mag
+                p2 = center - perp * spread_mag
+            else:
+                # U-Turn / C-Shape: Push both in same random direction
+                direction = 1 if self.rng.random() < 0.5 else -1
+                p1 = center + perp * spread_mag * direction
+                p2 = center + perp * spread_mag * direction
+                
+                # Add some randomness to p1/p2 relative positions
+                p1 += self.rng.normal(0, 10, 2)
+                p2 += self.rng.normal(0, 10, 2)
 
-        if allow_self_cross and self.rng.random() < self_cross_prob:
-            # Force control points to opposite sides of the center to encourage a self-cross
-            dir_vec = self.rng.normal(0, 1, 2)
-            norm = np.linalg.norm(dir_vec) + 1e-8
-            dir_unit = dir_vec / norm
-            p1 = center + dir_unit * spread * self.bezier_factor
-            p2 = center - dir_unit * spread * self.bezier_factor
+        # BIN 2 & 4: WAVY / MIXED (Standard logic)
         else:
+            spread = np.array([self.h, self.w], dtype=np.float32) * self.bezier_spread * curvature_factor
             p1 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
             p2 = center + self.rng.normal(0, 1, 2) * spread * self.bezier_factor
         
+        # Calculate curve
         ts = np.linspace(0, 1, n_samples, dtype=np.float32)
         pts = np.stack([_cubic_bezier(p0, p1, p2, p3, t) for t in ts], axis=0)
         
-        # Clip all points to stay within image bounds (with margin)
+        # Clip
         margin = self.bezier_margin
         pts[:, 0] = np.clip(pts[:, 0], margin, self.h - margin - 1)
         pts[:, 1] = np.clip(pts[:, 1], margin, self.w - margin - 1)
