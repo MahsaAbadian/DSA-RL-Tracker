@@ -17,7 +17,7 @@
         "branches": false,
         "allow_self_cross": false
       },
-      "training": { "strict_stop": true }
+      "training": { "strict_stop": false }
     },
     {
       "stage_id": 2,
@@ -32,7 +32,7 @@
         "branches": false,
         "allow_self_cross": false
       },
-      "training": { "strict_stop": true }
+      "training": { "strict_stop": false }
     },
     {
       "stage_id": 3,
@@ -48,7 +48,7 @@
         "allow_self_cross": true,
         "self_cross_prob": 0.8
       },
-      "training": { "strict_stop": true }
+      "training": { "strict_stop": false }
     },
     {
       "stage_id": 4,
@@ -65,7 +65,7 @@
         "allow_self_cross": true,
         "self_cross_prob": 0.3
       },
-      "training": { "strict_stop": true }
+      "training": { "strict_stop": false }
     }
   ]
 }
