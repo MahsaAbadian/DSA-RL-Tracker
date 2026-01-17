@@ -1,0 +1,2 @@
+/var/spool/slurm/d/job672473/slurm_script: line 30: cd: New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/src/: No such file or directory
+python: can't open file '/home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/src/python': [Errno 2] No such file or directory
