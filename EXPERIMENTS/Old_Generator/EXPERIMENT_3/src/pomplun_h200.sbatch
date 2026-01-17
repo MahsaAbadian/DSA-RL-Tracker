@@ -27,5 +27,7 @@ echo "======================"
 
 source ~/.bashrc
 conda activate RL
-cd New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/src/
-python python train_deeper_model.py --resume_from ../runs/20260116_030245/weights/model_Bin4_Mixed_Random_FINAL.pth
+cd New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3
+python src/train_deeper_model.py \
+  --resume_from runs/20260116_030245/weights/model_Bin4_Mixed_Random_FINAL.pth \
+  --curve_config config/curve_config.json

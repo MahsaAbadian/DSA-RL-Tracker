@@ -1015,64 +1015,79 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         # Get base_seed from config or use default
         base_seed = saved_config.get('base_seed', BASE_SEED)
         
-        # Load curve config - try run directory first, then saved path
-        # Override the curve_config loaded earlier with the one from the run directory
+        # Load curve config - prioritize explicitly provided config, then run directory, then saved path
+        # If curve_config_path was explicitly provided, use it; otherwise use run directory's config
         saved_curve_config_path = saved_config.get('curve_config_path', None)
         curve_config_in_run = os.path.join(run_dir, "curve_config.json")
         
-        if os.path.exists(curve_config_in_run):
+        if curve_config_path is not None:
+            # User explicitly provided --curve_config, use that
+            curve_config, actual_config_path = load_curve_config(curve_config_path)
+            print(f"✓ Using explicitly provided curve config: {actual_config_path}")
+        elif os.path.exists(curve_config_in_run):
+            # Use run directory's config (default behavior when resuming)
             curve_config, actual_config_path = load_curve_config(curve_config_in_run)
             print(f"✓ Loaded curve config from run directory: {actual_config_path}")
         elif saved_curve_config_path and os.path.exists(saved_curve_config_path):
-                curve_config, actual_config_path = load_curve_config(saved_curve_config_path)
-                print(f"✓ Loaded curve config from saved path: {actual_config_path}")
+            # Fallback to saved config path
+            curve_config, actual_config_path = load_curve_config(saved_curve_config_path)
+            print(f"✓ Loaded curve config from saved path: {actual_config_path}")
         else:
             print(f"⚠️  Using curve config from command line/default")
             # Keep the curve_config loaded earlier
         
-            img_cfg = curve_config.get('image', {})
-            img_h = img_cfg.get('height', 128)
-            img_w = img_cfg.get('width', 128)
+        # Update image dimensions after loading config
+        img_cfg = curve_config.get('image', {})
+        img_h = img_cfg.get('height', 128)
+        img_w = img_cfg.get('width', 128)
         
         # Extract stage name and episode from checkpoint filename
         checkpoint_name = os.path.basename(resume_path)
         resume_episode = None
         
         # Handle both "ckpt_StageName_epXXXX.pth" and "model_StageName_FINAL.pth" formats
+        # Also handle "actor_BinName_FINAL.pth" and "model_BinName_FINAL.pth" formats
         if "_ep" in checkpoint_name:
             parts = checkpoint_name.replace("ckpt_", "").replace(".pth", "").split("_ep")
             stage_name = parts[0]
             resume_episode = int(parts[1])
         elif "FINAL" in checkpoint_name:
-            # Extract stage name from FINAL checkpoint (e.g., "model_Stage2_Curvature_FINAL.pth")
-            parts = checkpoint_name.replace("model_", "").replace("_FINAL.pth", "").split("_")
-            # Reconstruct stage name (e.g., "Stage2_Curvature")
+            # Extract stage name from FINAL checkpoint (e.g., "model_Stage2_Curvature_FINAL.pth" or "model_Bin4_Mixed_Random_FINAL.pth")
+            # Remove common prefixes: "model_", "actor_", then remove "_FINAL.pth"
+            clean_name = checkpoint_name.replace("model_", "").replace("actor_", "").replace("_FINAL.pth", "").replace(".pth", "")
+            parts = clean_name.split("_")
+            # Reconstruct stage name (e.g., "Stage2_Curvature" or "Bin4_Mixed_Random")
             if len(parts) >= 2:
-                stage_name = "_".join(parts)  # "Stage2_Curvature"
+                stage_name = "_".join(parts)  # "Stage2_Curvature" or "Bin4_Mixed_Random"
             else:
                 stage_name = parts[0] if parts else "Unknown"
             # For FINAL checkpoints, resume from the next stage (episode 0 means start of next stage)
             resume_episode = None  # Will start from beginning of next stage
         
         # Extract stage number from stage name (e.g., "Stage2_Curvature" -> stage_num=2)
+        # Also handle "Bin" naming (e.g., "Bin4_Mixed_Random" -> stage_num=4)
         # Stage numbers in names are 1-indexed, but resume_stage_idx is 0-indexed
         import re
         stage_num_match = re.search(r'Stage(\d+)_', stage_name)
+        if not stage_num_match:
+            # Try "Bin" naming pattern (e.g., "Bin4_Mixed_Random")
+            stage_num_match = re.search(r'Bin(\d+)_', stage_name)
         if stage_num_match:
-            stage_num = int(stage_num_match.group(1))  # 1-indexed (Stage2 -> 2)
+            stage_num = int(stage_num_match.group(1))  # 1-indexed (Stage2 -> 2, Bin4 -> 4)
             if "FINAL" in checkpoint_name:
                 # FINAL checkpoint means this stage is complete, so resume from NEXT stage
-                resume_stage_idx = stage_num  # Stage2_FINAL -> resume from Stage3 (index 2)
+                resume_stage_idx = stage_num  # Stage2_FINAL -> resume from Stage3 (index 2), Bin4_FINAL -> resume from stage 5 (index 4)
                 resume_episode = None  # Start from beginning of next stage
             else:
                 # Regular checkpoint: resume from same stage, next episode
-                resume_stage_idx = stage_num - 1  # Stage2 -> index 1 (0-indexed)
+                resume_stage_idx = stage_num - 1  # Stage2 -> index 1 (0-indexed), Bin4 -> index 3
         else:
             # Fallback: try to map known stage names
             stage_name_mapping = {
-                'Stage1_Bootstrap': 0, 'Stage1_Foundation': 0,
-                'Stage2_Robustness': 1, 'Stage2_Curvature': 1,
-                'Stage3_Realism': 2, 'Stage3_ThinPaths': 2
+                'Stage1_Bootstrap': 0, 'Stage1_Foundation': 0, 'Bin1_Straight': 0,
+                'Stage2_Robustness': 1, 'Stage2_Curvature': 1, 'Bin2_Wavy': 1,
+                'Stage3_Realism': 2, 'Stage3_ThinPaths': 2, 'Bin3_Complex_Loops': 2,
+                'Bin4_Mixed_Random': 3
             }
             if stage_name in stage_name_mapping:
                 resume_stage_idx = stage_name_mapping[stage_name]

@@ -125521,7 +125521,7 @@
       "total_episodes": 30000
     }
   ],
-  "training_start_time": "2026-01-16T03:02:45.251196",
-  "training_end_time": "2026-01-16T09:47:28.232181",
-  "training_duration_seconds": 24282.980985
+  "training_start_time": "2026-01-17T18:49:16.069534",
+  "training_end_time": "2026-01-17T18:49:16.115859",
+  "training_duration_seconds": 0.046325
 }

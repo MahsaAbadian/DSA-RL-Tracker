@@ -1,10 +1,18 @@
-Loading checkpoint: ../runs/20260116_030245/weights/model_Bin4_Mixed_Random_FINAL.pth
+Loading checkpoint: runs/20260116_030245/weights/model_Bin4_Mixed_Random_FINAL.pth
 ✅ Checkpoint loaded successfully
 ✅ Loaded existing metrics
 
+⏭️  Skipping Bin1_Straight (already completed)
+
+⏭️  Skipping Bin2_Wavy (already completed)
+
+⏭️  Skipping Bin3_Complex_Loops (already completed)
+
+⏭️  Skipping Bin4_Mixed_Random (already completed)
+
 =============================================
-STARTING Bin1_Straight
-Episodes: 10000 | LR: 0.0001
-Global Episode Offset: 0
+STARTING Bin5_Advanced_Random
+Episodes: 50000 | LR: 5e-05
+Global Episode Offset: 60000
 =============================================
 [ENV] On-the-fly curve generation enabled (base_seed=50)

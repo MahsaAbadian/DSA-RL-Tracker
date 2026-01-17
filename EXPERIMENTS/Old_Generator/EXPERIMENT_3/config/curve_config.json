@@ -86,8 +86,8 @@
       "training": { "strict_stop": false }
     },
     {
-      "stage_id": 5,
-      "name": "Bin5_Advanced_Random",
+      "stage_id": 6,
+      "name": "Bin6_Advanced_Random",
       "episodes": 50000,
       "learning_rate": 5e-5,
       "curve_generation": {
