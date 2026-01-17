@@ -67,5 +67,40 @@
       },
       "training": { "strict_stop": false }
     }
+,
+    {
+      "stage_id": 5,
+      "name": "Bin5_Advanced_Random",
+      "episodes": 50000,
+      "learning_rate": 5e-5,
+      "curve_generation": {
+        "width_range": [0.1, 6],
+        "curvature_factor": 5.0,
+        "curvature_range": [0.0, 1.8],
+        "noise_prob": 0.7,
+        "noise_range": [0.0, 0.5],
+        "branches": false,
+        "allow_self_cross": true,
+        "self_cross_prob": 0.3
+      },
+      "training": { "strict_stop": false }
+    },
+    {
+      "stage_id": 5,
+      "name": "Bin5_Advanced_Random",
+      "episodes": 50000,
+      "learning_rate": 5e-5,
+      "curve_generation": {
+        "width_range": [0.1, 6],
+        "curvature_factor": 5.0,
+        "curvature_range": [0.0, 1.8],
+        "noise_prob": 0.7,
+        "noise_range": [0.0, 0.5],
+        "branches": true,
+        "allow_self_cross": true,
+        "self_cross_prob": 0.3
+      },
+      "training": { "strict_stop": false }
+    }
   ]
 }
