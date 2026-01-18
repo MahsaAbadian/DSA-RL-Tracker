@@ -1,0 +1,95 @@
+===== JOB INFO =====
+JobID:   672540
+Node:    chimera21
+Tasks:   4
+GPUs:    
+Account: cs_funda.durupinarbabur
+====================
+
+===== NVIDIA-SMI =====
+Sat Jan 17 19:08:53 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.95.05              Driver Version: 580.95.05      CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H200                    On  |   00000000:1B:00.0 Off |                    0 |
+| N/A   23C    P0             75W /  700W |       0MiB / 143771MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+======================
+Current directory: /var/spool/slurm/d
+Running training from: /var/spool/slurm/d
+✅ GPU detected: NVIDIA H200
+   CUDA Version: 12.1
+✓ Loaded curve configuration from: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/config/curve_config.json
+✓ Loaded curve configuration from: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/curve_config.json
+✓ Loaded curve config from run directory: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/curve_config.json
+
+🔄 RESUMING TRAINING FROM CHECKPOINT
+   Checkpoint: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/weights/model_Bin4_Mixed_Random_FINAL.pth
+   Run Directory: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245
+   Base Seed: 50
+   Resuming from Stage 5 (start of stage)
+
+✓ Using curve configuration from run directory: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/curve_config.json
+✓ Loaded 4 training stages from config
+=== STARTING UNIFIED RL TRAINING ===
+Number of Stages: 4
+Device: cuda | Actions: 8 (Inc. STOP)
+Base Seed: 50 (for reproducibility)
+Curve Generation: On-The-Fly
+Run Directory: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245
+Checkpoints: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/checkpoints
+Weights: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/weights
+Logs: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/logs/training.log
+Training Start Time: 2026-01-17 19:08:58
+
+🛡️  Anti-Forgetting Mechanisms Enabled:
+   - Mixed Curriculum: 15% chance to sample from previous stages
+   - Periodic Evaluation: Every 500 episodes on previous stages
+   - This prevents catastrophic forgetting during curriculum learning
+Loading checkpoint: runs/20260116_030245/weights/model_Bin4_Mixed_Random_FINAL.pth
+✅ Checkpoint loaded successfully
+✅ Loaded existing metrics
+
+⏭️  Skipping Bin1_Straight (already completed)
+
+⏭️  Skipping Bin2_Wavy (already completed)
+
+⏭️  Skipping Bin3_Complex_Loops (already completed)
+
+⏭️  Skipping Bin4_Mixed_Random (already completed)
+
+=== TRAINING COMPLETE ===
+Training Start Time: 2026-01-17 19:08:58
+Training End Time: 2026-01-17 19:08:58
+Total Training Time: 0h 0m 0s (0.5 seconds)
+All results saved to: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245
+  - Checkpoints: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/checkpoints
+  - Final weights: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/weights
+  - Training log: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/logs/training.log
+  - Configuration: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/config.json
+  - Metrics: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/metrics.json
+🧹 Cleaning up checkpoints directory: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/checkpoints
+
+=== TRAINING COMPLETE ===
+Training Start Time: 2026-01-17 19:08:58
+Training End Time: 2026-01-17 19:08:58
+Total Training Time: 0h 0m 0s (0.5 seconds)
+All results saved to: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245
+  - Checkpoints: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/checkpoints
+  - Final weights: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/weights
+  - Training log: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/logs/training.log
+  - Configuration: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/config.json
+  - Metrics: /home/mahsa.geshvadi001/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/runs/20260116_030245/metrics.json
