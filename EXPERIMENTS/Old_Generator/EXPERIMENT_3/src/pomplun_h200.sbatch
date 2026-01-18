@@ -37,7 +37,7 @@ cd "$PROJECT_DIR"
 echo "Current directory: $(pwd)"
 echo "Running training from: $PROJECT_DIR"
 
-cd New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/
+cd ~/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_3/
 
 python src/train_deeper_model.py \
   --resume_from runs/20260116_030245/weights/model_Bin4_Mixed_Random_FINAL.pth \
