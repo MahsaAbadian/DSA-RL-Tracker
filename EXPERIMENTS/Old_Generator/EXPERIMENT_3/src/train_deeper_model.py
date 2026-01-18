@@ -1015,31 +1015,24 @@ def run_unified_training(run_dir, base_seed=BASE_SEED, clean_previous=False, exp
         # Get base_seed from config or use default
         base_seed = saved_config.get('base_seed', BASE_SEED)
         
-        # Load curve config - prioritize explicitly provided config, then run directory, then saved path
-        # If curve_config_path was explicitly provided, use it; otherwise use run directory's config
+        # Load curve config - try run directory first, then saved path
+        # Override the curve_config loaded earlier with the one from the run directory
         saved_curve_config_path = saved_config.get('curve_config_path', None)
         curve_config_in_run = os.path.join(run_dir, "curve_config.json")
         
-        if curve_config_path is not None:
-            # User explicitly provided --curve_config, use that
-            curve_config, actual_config_path = load_curve_config(curve_config_path)
-            print(f"✓ Using explicitly provided curve config: {actual_config_path}")
-        elif os.path.exists(curve_config_in_run):
-            # Use run directory's config (default behavior when resuming)
+        if os.path.exists(curve_config_in_run):
             curve_config, actual_config_path = load_curve_config(curve_config_in_run)
             print(f"✓ Loaded curve config from run directory: {actual_config_path}")
         elif saved_curve_config_path and os.path.exists(saved_curve_config_path):
-            # Fallback to saved config path
-            curve_config, actual_config_path = load_curve_config(saved_curve_config_path)
-            print(f"✓ Loaded curve config from saved path: {actual_config_path}")
+                curve_config, actual_config_path = load_curve_config(saved_curve_config_path)
+                print(f"✓ Loaded curve config from saved path: {actual_config_path}")
         else:
             print(f"⚠️  Using curve config from command line/default")
             # Keep the curve_config loaded earlier
         
-        # Update image dimensions after loading config
-        img_cfg = curve_config.get('image', {})
-        img_h = img_cfg.get('height', 128)
-        img_w = img_cfg.get('width', 128)
+            img_cfg = curve_config.get('image', {})
+            img_h = img_cfg.get('height', 128)
+            img_w = img_cfg.get('width', 128)
         
         # Extract stage name and episode from checkpoint filename
         checkpoint_name = os.path.basename(resume_path)
