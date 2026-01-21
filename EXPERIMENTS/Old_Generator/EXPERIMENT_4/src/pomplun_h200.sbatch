@@ -40,5 +40,4 @@ echo "Running training from: $PROJECT_DIR"
 cd ~/New_Projects/DSA-RL-Tracker/EXPERIMENTS/Old_Generator/EXPERIMENT_4/
 
 python src/train_deeper_model.py \
-  --resume_from runs/20260116_030245/weights/model_Bin4_Mixed_Random_FINAL.pth \
   --curve_config config/curve_config.json
