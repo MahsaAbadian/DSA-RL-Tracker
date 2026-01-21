@@ -12,10 +12,10 @@
       "curve_generation": {
         "width_range": [3, 5],
         "curvature_factor": 0.1,
+        "curvature_range": [0.0, 0.2],
         "min_intensity": 6.0,
         "max_intensity": 1.0,
         "intensity_variation": "none",
-        "curvature_range": [0.0, 0.2],
         "noise_prob": 0.0,
         "branches": false,
         "allow_self_cross": false
@@ -48,7 +48,7 @@
         "curvature_range": [1.2, 2.0],
         "noise_prob": 0.0,
         "branches": false,
-        "allow_self_cross": true,
+        "allow_self_cross": false,
         "self_cross_prob": 0.8
       },
       "training": { "strict_stop": false }
@@ -60,12 +60,11 @@
       "learning_rate": 5e-5,
       "curve_generation": {
         "width_range": [2, 6],
-        "curvature_factor": 1.0,
-        "curvature_range": [0.0, 1.8],
+        "curvature_range": [0.0, 2.2],
         "noise_prob": 0.3,
         "noise_range": [0.0, 0.5],
         "branches": false,
-        "allow_self_cross": true,
+        "allow_self_cross": false,
         "self_cross_prob": 0.3
       },
       "training": { "strict_stop": false }
@@ -73,17 +72,19 @@
 ,
     {
       "stage_id": 5,
-      "name": "Bin5_Advanced_Random",
-      "episodes": 50000,
+      "name": "Bin5_smaller_with_less_intensity",
+      "episodes": 10000,
       "learning_rate": 5e-5,
       "curve_generation": {
         "width_range": [0.1, 6],
-        "curvature_factor": 5.0,
-        "curvature_range": [0.0, 1.8],
+        "curvature_factor": 1.0,
+        "curvature_range": [1.2, 1.6],
+        "min_intensity": 0.5,
+        "max_intensity": 1.0,
         "noise_prob": 0.7,
         "noise_range": [0.0, 0.5],
         "branches": false,
-        "allow_self_cross": true,
+        "allow_self_cross": false,
         "self_cross_prob": 0.3
       },
       "training": { "strict_stop": false }
@@ -91,16 +92,57 @@
     {
       "stage_id": 6,
       "name": "Bin6_Advanced_Random",
-      "episodes": 50000,
+      "episodes": 10000,
       "learning_rate": 5e-5,
       "curve_generation": {
         "width_range": [0.1, 6],
-        "curvature_factor": 5.0,
-        "curvature_range": [0.0, 1.8],
-        "noise_prob": 0.7,
+        "curvature_factor": 1.0,
+        "curvature_range": [1.2, 1.6],
+        "noise_prob": 1.0,
         "noise_range": [0.0, 0.5],
-        "branches": true,
-        "allow_self_cross": true,
+        "min_intensity": 0.2,
+        "max_intensity": 8.0,
+        "branches": false,
+        "allow_self_cross": false,
+        "self_cross_prob": 0.3
+      },
+      "training": { "strict_stop": false }
+    },
+    {
+      "stage_id": 6,
+      "name": "Bin6_Advanced_Random",
+      "episodes": 10000,
+      "learning_rate": 5e-5,
+      "curve_generation": {
+        "width_range": [0.1, 6],
+        "curvature_factor": 1.0,
+        "curvature_range": [1.2, 1.6],
+        "noise_prob": 1.0,
+        "noise_range": [0.0, 0.5],
+        "min_intensity": 0.2,
+        "max_intensity": 8.0,
+        "branches": false,
+        "allow_self_cross": false,
+        "self_cross_prob": 0.3
+      },
+      "training": { "strict_stop": false }
+    },
+
+    {
+      "stage_id": 7,
+      "name": "Bin6_Advanced_Random",
+      "episodes": 10000,
+      "learning_rate": 5e-5,
+      "curve_generation": {
+        "width_range": [0.1, 6],
+        "curvature_factor": 1.0,
+        "curvature_range": [0.0, 1.8],
+        "noise_prob": 1.0,
+        "noise_range": [0.0, 0.5],
+        "min_intensity": 0.2,
+        "max_intensity": 8.0,
+        "branches": false,
+        "allow_self_cross": false,
         "self_cross_prob": 0.3
       },
       "training": { "strict_stop": false }
