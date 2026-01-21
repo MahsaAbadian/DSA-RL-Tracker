@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Interactive Step-by-Step Debugger.
-Updated to strictly follow curve_config.json parameter resolution.
-Press 'I' to toggle Invert Background (Dark vs Light).
+Updated to strictly follow curve_config.json parameter resolution logic.
+Dynamically adapts to the available CurveMaker arguments.
 """
 import argparse
 import numpy as np
@@ -12,6 +12,7 @@ import matplotlib.gridspec as gridspec
 import os
 import sys
 import json
+import inspect  # Required for dynamic argument checking
 
 # Add parent directory
 _script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -78,7 +79,7 @@ def fixed_window_history(ahist_list, K, n_actions):
 
 def resolve_param(config, key_base, default_val):
     """
-    Resolve a parameter from the config (Ranges > Explicit > Prob > Default)
+    Resolve a parameter using Trainer priority: Range -> Key -> Prob -> Default
     """
     range_key = f"{key_base}_range"
     if range_key in config:
@@ -97,9 +98,7 @@ class InteractiveSession:
         self.config = config
         self.stage_id = stage_id
         self.step_alpha = 1.0 
-        
-        # Toggle state for Inversion
-        self.force_invert = None # None = use config, True/False = override
+        self.force_invert = None
         
         self.fig = plt.figure(figsize=(14, 8))
         gs = gridspec.GridSpec(2, 3, width_ratios=[3, 1, 1])
@@ -112,8 +111,8 @@ class InteractiveSession:
         self.ax_main.set_title("Main View (Press 'N' or 'SPACE' to step)")
         self.fig.canvas.mpl_connect('key_press_event', self.on_key)
         
+        self.gt_polys = []
         self.reset_env()
-        # self.update_plot() # Reset calls update_plot
         
         print("\n--- CONTROLS ---")
         print(" [SPACE] / [N] : Step Forward")
@@ -127,7 +126,6 @@ class InteractiveSession:
         h = self.config.get('image', {}).get('height', 128)
         w = self.config.get('image', {}).get('width', 128)
         
-        # 1. Locate Stage Config
         stages = self.config.get('training_stages', [])
         target_stage = next((s for s in stages if s['stage_id'] == self.stage_id), None)
         
@@ -135,14 +133,13 @@ class InteractiveSession:
             print(f"⚠️ Stage {self.stage_id} not found. Using defaults.")
             gen_cfg = {}
         else:
-            # Merge gen and training configs like the trainer
             gen_cfg = target_stage.get('curve_generation', {}).copy()
             gen_cfg.update(target_stage.get('training', {}))
 
-        # 2. Init Maker
+        # Use a random seed for every reset to get variety
         maker = CurveMakerFlexible(h=h, w=w, seed=np.random.randint(0, 100000), config=self.config)
         
-        # 3. Resolve Parameters (Consistent with Trainer)
+        # --- PARAMETER RESOLUTION (MATCHING TRAINER LOGIC) ---
         w_range = tuple(gen_cfg.get('width_range', [2, 4]))
         
         if 'curvature_range' in gen_cfg:
@@ -163,7 +160,6 @@ class InteractiveSession:
         else:
             bg_int = gen_cfg.get('background_intensity', 0.0)
 
-        # Intensity Resolution
         min_int = resolve_param(gen_cfg, 'min_intensity', 0.1)
         max_int = resolve_param(gen_cfg, 'max_intensity', 1.0)
         
@@ -173,51 +169,76 @@ class InteractiveSession:
         if max_int > 1.0: max_int = 1.0
         if min_int > 1.0: min_int = 1.0
 
-        # Invert Logic
+        gap_prob = resolve_param(gen_cfg, 'gap', 0.0)
+        grid_prob = resolve_param(gen_cfg, 'grid', 0.0)
+
         if self.force_invert is not None:
             invert_prob = 1.0 if self.force_invert else 0.0
         else:
             invert_prob = gen_cfg.get('invert_prob', 0.0)
 
-        # 4. Generate
         print(f"\nGenerating Curve | Stage {self.stage_id}")
-        print(f"  Params: Curv={curv:.2f}, Int={min_int:.2f}-{max_int:.2f}, BG={bg_int:.2f}, Noise={noise_prob:.2f}")
+        print(f"  Params: Curv={curv:.2f}, Int={min_int:.2f}-{max_int:.2f}, Noise={noise_prob:.2f}, Gap={gap_prob:.2f}")
 
-        img, _, pts_all = maker.sample_curve(
-            width_range=w_range,
-            noise_prob=noise_prob,
-            invert_prob=invert_prob,
-            min_intensity=min_int,
-            max_intensity=max_int,
-            background_intensity=bg_int,
-            branches=gen_cfg.get('branches', False),
-            curvature_factor=curv,
-            allow_self_cross=gen_cfg.get('allow_self_cross', False),
-            self_cross_prob=gen_cfg.get('self_cross_prob', 0.0),
-            width_variation=gen_cfg.get('width_variation', 'none'),
-            start_width=gen_cfg.get('start_width', None),
-            end_width=gen_cfg.get('end_width', None),
-            intensity_variation=gen_cfg.get('intensity_variation', 'none'),
-            start_intensity=gen_cfg.get('start_intensity', None),
-            end_intensity=gen_cfg.get('end_intensity', None)
-        )
+        # --- DYNAMIC CALL CONSTRUCTION ---
+        # We only pass gap_prob/grid_prob if the CurveMaker accepts them.
+        # This allows using this stepper with OLD or NEW model code without crashing.
+        
+        call_kwargs = {
+            'width_range': w_range,
+            'noise_prob': noise_prob,
+            'invert_prob': invert_prob,
+            'min_intensity': min_int,
+            'max_intensity': max_int,
+            'background_intensity': bg_int,
+            'branches': gen_cfg.get('branches', False),
+            'curvature_factor': curv,
+            'allow_self_cross': gen_cfg.get('allow_self_cross', False),
+            'self_cross_prob': gen_cfg.get('self_cross_prob', 0.0),
+            'width_variation': gen_cfg.get('width_variation', 'none'),
+            'start_width': gen_cfg.get('start_width', None),
+            'end_width': gen_cfg.get('end_width', None),
+            'intensity_variation': gen_cfg.get('intensity_variation', 'none'),
+            'start_intensity': gen_cfg.get('start_intensity', None),
+            'end_intensity': gen_cfg.get('end_intensity', None)
+        }
+
+        # Inspect the function signature to see what it supports
+        sig = inspect.signature(maker.sample_curve)
+        if 'gap_prob' in sig.parameters:
+            call_kwargs['gap_prob'] = gap_prob
+        if 'grid_prob' in sig.parameters:
+            call_kwargs['grid_prob'] = grid_prob
+
+        # Generate
+        img, _, pts_all = maker.sample_curve(**call_kwargs)
         
         self.img = img
-        self.gt_poly = pts_all[0]
+        self.gt_polys = pts_all 
+        main_poly = pts_all[0]
         
         # 5. Initialize Agent State
-        start_pt = self.gt_poly[0]
-        p_next = self.gt_poly[min(5, len(self.gt_poly)-1)]
-        vec = p_next - start_pt
-        
-        self.agent = (float(start_pt[0]), float(start_pt[1]))
-        
-        mag = np.linalg.norm(vec) + 1e-6
-        dy, dx = (vec[0]/mag), (vec[1]/mag)
-        p_prev1 = (self.agent[0] - dy, self.agent[1] - dx)
-        p_prev2 = (self.agent[0] - 2*dy, self.agent[1] - 2*dx)
-        
-        self.history_pos = [p_prev2, p_prev1, self.agent]
+        if gen_cfg.get('mixed_start', False) and np.random.rand() < 0.5:
+            start_pt = main_poly[0]
+            self.history_pos = [tuple(start_pt)] * 3
+            self.agent = (float(start_pt[0]), float(start_pt[1]))
+            if len(main_poly) > 1:
+                vec = main_poly[1] - main_poly[0]
+                dy, dx = vec[0], vec[1]
+            else:
+                dy, dx = 0, 0
+        else:
+            start_idx = 5 if len(main_poly) > 10 else 0
+            start_pt = main_poly[start_idx]
+            p_prev1 = main_poly[max(0, start_idx-1)]
+            p_prev2 = main_poly[max(0, start_idx-2)]
+            
+            self.agent = (float(start_pt[0]), float(start_pt[1]))
+            self.history_pos = [tuple(p_prev2), tuple(p_prev1), self.agent]
+            
+            vec = start_pt - p_prev1
+            dy, dx = vec[0], vec[1]
+
         self.path = [self.agent]
         self.path_mask = np.zeros_like(img)
         self.path_mask[int(self.agent[0]), int(self.agent[1])] = 1.0
@@ -257,11 +278,9 @@ class InteractiveSession:
         
         self.last_probs = probs
         
-        # Sample or Argmax? Argmax for debugging usually better
         action = np.argmax(probs)
         self.last_action = action
         
-        # Check Stop
         if action == 8: # STOP
             print("🛑 Agent chose STOP")
             self.done = True
@@ -292,13 +311,15 @@ class InteractiveSession:
 
     def update_plot(self):
         self.ax_main.clear()
-        
-        # Use vmin/vmax to force full dynamic range rendering so we see faint lines
         self.ax_main.imshow(self.img, cmap='gray', vmin=0, vmax=1)
         
-        gt_y = self.gt_poly[:, 0]
-        gt_x = self.gt_poly[:, 1]
-        self.ax_main.plot(gt_x, gt_y, 'g--', linewidth=1, alpha=0.3, label="GT")
+        # Draw ALL paths (Main + Branches)
+        for i, poly in enumerate(self.gt_polys):
+            gt_y = poly[:, 0]
+            gt_x = poly[:, 1]
+            style = 'g--' if i == 0 else 'y--'
+            label = "GT Main" if i == 0 else (f"GT Branch {i}" if i==1 else None)
+            self.ax_main.plot(gt_x, gt_y, style, linewidth=1, alpha=0.4, label=label)
         
         path = np.array(self.path)
         if len(path) > 0:
@@ -324,7 +345,6 @@ class InteractiveSession:
         
         self.ax_probs.clear()
         
-        # Handle 8 vs 9 actions in display
         display_names = ACTION_NAMES if len(self.last_probs) == 9 else ACTION_NAMES[:8]
         
         bars = self.ax_probs.bar(display_names, self.last_probs, color='skyblue')
@@ -339,7 +359,6 @@ class InteractiveSession:
         if event.key in [' ', 'n', 'N']: self.step()
         elif event.key in ['r', 'R']: self.reset_env()
         elif event.key in ['q', 'Q', 'escape']: plt.close()
-        # TRI-STATE TOGGLE: None -> True -> False -> None
         elif event.key in ['i', 'I']: 
             if self.force_invert is None: self.force_invert = True
             elif self.force_invert is True: self.force_invert = False
@@ -358,7 +377,6 @@ def main():
     config, config_path = load_curve_config(args.config)
     print(f"Loaded config from: {config_path}")
     
-    # Auto-detect actions based on weights is safer, but assuming N_ACTIONS=9 for new training
     print(f"Initializing Model with N_ACTIONS={N_ACTIONS}...")
     model = ActorOnly(n_actions=N_ACTIONS, K=K).to(DEVICE)
     
@@ -366,25 +384,19 @@ def main():
         print(f"Loading weights from {args.weights}...")
         loaded = torch.load(args.weights, map_location=DEVICE)
         
-        # Handle full model vs actor-only checks
         clean_weights = {}
         for k, v in loaded.items():
             if k.startswith('actor_'):
                 clean_weights[k] = v
             elif 'critic' not in k and 'actor_' not in k:
-                # Try to map unknown keys to actor if they look right
                 clean_weights[f"actor_{k}"] = v
         
-        # Check action head dimension
+        # Check dimensionality
         for k, v in clean_weights.items():
             if 'actor_head.2.bias' in k:
                 loaded_actions = v.shape[0]
                 if loaded_actions != N_ACTIONS:
                     print(f"⚠️ Warning: Weights have {loaded_actions} actions, Code has {N_ACTIONS}.")
-                    # If loading old 8-action model into 9-action code, adapt
-                    if loaded_actions == 8 and N_ACTIONS == 9:
-                        print("   -> Adapting 8-action weights to 9 actions (copying last)")
-                        # (Adaptation logic would go here if needed, or just warn)
                 break
 
         model.load_state_dict(clean_weights, strict=False)

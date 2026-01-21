@@ -87,20 +87,20 @@
       "learning_rate": 2e-5,
       "curve_generation": {
         
-        "width_range": [1, 8],
+        "width_range": [1, 2],
         "width_variation": "custom", 
 
         "curvature_range": [0.0, 1.6],
         "allow_self_cross": true,
         "self_cross_prob": 0.3,
 
-        "min_intensity": 0.15,
-        "max_intensity": 1.0,
+        "min_intensity": 0.3,
+        "max_intensity": 1.0, 
         "intensity_variation": "custom",
-        "background_intensity_range": [0.0, 0.4],
+        "background_intensity_range": [0.1, 0.4],
 
-        "noise_prob": 0.8,
-        "noise_range": [0.0, 0.4],
+        "noise_prob": 1.0,  
+        
         "invert_prob": 0.5,
 
         "branches": false
