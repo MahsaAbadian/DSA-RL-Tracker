@@ -12,6 +12,9 @@
       "curve_generation": {
         "width_range": [3, 5],
         "curvature_factor": 0.1,
+        "min_intensity": 6.0,
+        "max_intensity": 1.0,
+        "intensity_variation": "none",
         "curvature_range": [0.0, 0.2],
         "noise_prob": 0.0,
         "branches": false,

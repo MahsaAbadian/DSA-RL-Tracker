@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Visualize sample curves for each training stage in Experiment3_Refine.
-Shows what the model sees during training for each stage.
+Visualize sample curves for each training stage.
+Ensures parameters (ranges, intensities, noise) are resolved exactly like the trainer.
 """
 import argparse
 import json
@@ -9,200 +9,194 @@ import os
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
-from pathlib import Path
 
-# Add parent directory to path
+# Ensure local imports work
 _script_dir = os.path.dirname(os.path.abspath(__file__))
-_parent_dir = os.path.dirname(_script_dir)
-if _parent_dir not in sys.path:
-    sys.path.insert(0, _parent_dir)
+if _script_dir not in sys.path:
+    sys.path.insert(0, _script_dir)
 
-# Import from train_deeper_model.py where CurveMakerFlexible is defined
-from src.train_deeper_model import CurveMakerFlexible, load_curve_config
+# Try importing from local directory first, then src if needed
+try:
+    from train_deeper_model import CurveMakerFlexible, load_curve_config
+except ImportError:
+    try:
+        from src.train_deeper_model import CurveMakerFlexible, load_curve_config
+    except ImportError:
+        print("❌ Error: Could not import 'train_deeper_model'. Make sure it is in the same directory or src/.")
+        sys.exit(1)
 
-def format_params(cfg):
-    """Format curve generation parameters for display."""
-    params = []
-    params.append(f"Width: {cfg.get('width_range', [])}")
-    params.append(f"Intensity: {cfg.get('min_intensity', 0):.2f}-{cfg.get('max_intensity', 1.0):.2f}")
-    params.append(f"Curvature: {cfg.get('curvature_factor', 1.0):.2f}")
-    params.append(f"Noise: {cfg.get('noise_prob', 0.0):.2f}")
+def resolve_param(config, key_base, default_val):
+    """
+    Resolve a parameter from the config using the same priority as the trainer:
+    1. *_range (sample uniform)
+    2. Exact key
+    3. *_prob key
+    4. Default
+    """
+    range_key = f"{key_base}_range"
+    if range_key in config:
+        val_range = config[range_key]
+        return np.random.uniform(val_range[0], val_range[1])
+    elif key_base in config:
+        return config[key_base]
+    elif f"{key_base}_prob" in config:
+        return config[f"{key_base}_prob"]
+    return default_val
+
+def generate_stage_sample(maker, stage_config):
+    """
+    Generate a single sample using the exact logic from CurveEnvUnified.reset()
+    """
+    # 1. Resolve Parameters
+    w_range = tuple(stage_config.get('width_range', [2, 4]))
     
-    if cfg.get('background_intensity') is not None:
-        params.append(f"BG: {cfg.get('background_intensity'):.2f}")
+    # Curvature
+    if 'curvature_range' in stage_config:
+        cr = stage_config['curvature_range']
+        curvature = np.random.uniform(cr[0], cr[1])
+    else:
+        curvature = stage_config.get('curvature_factor', 1.0)
+
+    # Noise
+    if 'noise_range' in stage_config:
+        nr = stage_config['noise_range']
+        noise_prob = np.random.uniform(nr[0], nr[1])
+    else:
+        noise_prob = stage_config.get('noise_prob', 0.0)
+
+    # Background
+    if 'background_intensity_range' in stage_config:
+        br = stage_config['background_intensity_range']
+        bg_int = np.random.uniform(br[0], br[1])
+    else:
+        bg_int = stage_config.get('background_intensity', 0.0)
+
+    # Intensity Logic (Exact match to trainer)
+    min_int = resolve_param(stage_config, 'min_intensity', 0.1)
+    max_int = resolve_param(stage_config, 'max_intensity', 1.0)
     
-    if cfg.get('allow_self_cross', False):
-        params.append(f"Self-cross: {cfg.get('self_cross_prob', 0.0):.2f}")
+    # Enforce Visibility Constraints (Reduced margin)
+    if min_int < bg_int + 0.02: min_int = bg_int + 0.02
+    if max_int < min_int: max_int = min_int + 0.05
+    if max_int > 1.0: max_int = 1.0
+    if min_int > 1.0: min_int = 1.0
+
+    # 2. Generate Curve
+    img, mask, _ = maker.sample_curve(
+        width_range=w_range,
+        noise_prob=noise_prob,
+        invert_prob=stage_config.get('invert_prob', 0.0),
+        min_intensity=min_int,
+        max_intensity=max_int,
+        background_intensity=bg_int,
+        branches=stage_config.get('branches', False),
+        curvature_factor=curvature,
+        allow_self_cross=stage_config.get('allow_self_cross', False),
+        self_cross_prob=stage_config.get('self_cross_prob', 0.0),
+        width_variation=stage_config.get('width_variation', 'none'),
+        start_width=stage_config.get('start_width', None),
+        end_width=stage_config.get('end_width', None),
+        intensity_variation=stage_config.get('intensity_variation', 'none'),
+        start_intensity=stage_config.get('start_intensity', None),
+        end_intensity=stage_config.get('end_intensity', None)
+    )
     
-    width_var = cfg.get('width_variation', 'none')
-    if width_var != 'none':
-        params.append(f"Width var: {width_var}")
-    
-    intensity_var = cfg.get('intensity_variation', 'none')
-    if intensity_var != 'none':
-        params.append(f"Intensity var: {intensity_var}")
-    
-    return ", ".join(params)
+    # 3. Apply Tissue Noise (if enabled)
+    if stage_config.get('tissue', False):
+        sigma_range = [2.0, 5.0] 
+        intensity_range = [0.2, 0.4] 
+        
+        from scipy.ndimage import gaussian_filter
+        noise = np.random.randn(*img.shape)
+        tissue = gaussian_filter(noise, sigma=np.random.uniform(*sigma_range))
+        tissue = (tissue - tissue.min()) / (tissue.max() - tissue.min())
+        tissue = tissue * np.random.uniform(*intensity_range)
+        
+        is_white_bg = np.mean([img[0,0], img[0,-1]]) > 0.5
+        if is_white_bg:
+            img = np.clip(img - tissue, 0.0, 1.0)
+        else:
+            img = np.clip(img + tissue, 0.0, 1.0)
+
+    # Store params for display
+    params_used = {
+        "curv": f"{curvature:.2f}",
+        "int": f"{min_int:.2f}-{max_int:.2f}",
+        "bg": f"{bg_int:.2f}",
+        "noise": f"{noise_prob:.2f}",
+        "inv": stage_config.get('invert_prob', 0.0)
+    }
+    return img, params_used
 
 def visualize_stage_samples(config_path, samples_per_stage=6, seed=42, save_dir=None):
-    """
-    Generate and visualize sample curves for each training stage.
-    
-    Args:
-        config_path: Path to curve_config.json
-        samples_per_stage: Number of sample images to generate per stage
-        seed: Random seed for reproducibility
-        save_dir: Directory to save images (if None, just displays)
-    """
+
     # Load config
     curve_config, config_file_path = load_curve_config(config_path)
-    if curve_config is None:
-        print(f"Error: Could not load config from {config_path}")
-        return
     
-    stages = curve_config.get('training_stages', [])
-    if not stages:
-        print("Error: No training stages found in config")
-        return
-    
-    print(f"✅ Loaded config: {config_file_path}")
-    print(f"✅ Found {len(stages)} training stages")
-    print(f"✅ Generating {samples_per_stage} samples per stage\n")
-    
-    # Create curve generator
+    # Get image dimensions
     h = curve_config.get('image', {}).get('height', 128)
     w = curve_config.get('image', {}).get('width', 128)
     
-    # Visualize each stage
-    for stage_idx, stage in enumerate(stages):
-        stage_id = stage.get('stage_id', stage_idx + 1)
-        stage_name = stage.get('name', f'Stage{stage_id}')
-        curve_cfg = stage.get('curve_generation', {})
+    stages = curve_config.get('training_stages', [])
+    if not stages:
+        print("❌ No training stages found in config.")
+        return
+
+    print(f"✅ Loaded Config: {config_file_path}")
+    print(f"✅ Found {len(stages)} stages. Generating {samples_per_stage} samples each.\n")
+
+    for i, stage in enumerate(stages):
+        stage_name = stage.get('name', f"Stage {i+1}")
+        print(f"🎨 Visualizing: {stage_name}")
         
-        print(f"📊 Stage {stage_id}: {stage_name}")
-        print(f"   {format_params(curve_cfg)}")
+        # Merge config just like the trainer
+        merged_config = stage.get('curve_generation', {}).copy()
+        merged_config.update(stage.get('training', {}))
         
-        # Create figure for this stage
-        n_cols = 3
-        n_rows = (samples_per_stage + n_cols - 1) // n_cols
-        fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 5 * n_rows))
-        if n_rows == 1:
-            axes = axes.reshape(1, -1)
+        # Setup Plot
+        cols = 3
+        rows = (samples_per_stage + cols - 1) // cols
+        fig, axes = plt.subplots(rows, cols, figsize=(4 * cols, 4 * rows))
         axes = axes.flatten()
         
-        # Generate samples
-        for sample_idx in range(samples_per_stage):
-            # Use different seed for each sample
-            sample_seed = seed + stage_id * 1000 + sample_idx
-            curve_maker = CurveMakerFlexible(h=h, w=w, seed=sample_seed, config=curve_config)
+        fig.suptitle(f"{stage_name}\nConfig: {json.dumps(merged_config, indent=1)}", fontsize=8, y=0.99)
+        
+        # Generate Samples
+        for j in range(samples_per_stage):
+            # Unique seed per sample
+            sample_seed = seed + (i * 1000) + j
+            maker = CurveMakerFlexible(h=h, w=w, seed=sample_seed, config=curve_config)
             
-            # Extract parameters from stage config
-            width_range = tuple(curve_cfg.get('width_range', [3, 5]))
-            noise_prob = curve_cfg.get('noise_prob', 0.0)
-            invert_prob = curve_cfg.get('invert_prob', 0.0)
-            min_intensity = curve_cfg.get('min_intensity', 0.6)
-            max_intensity = curve_cfg.get('max_intensity', None)
-            branches = curve_cfg.get('branches', False)
-            curvature_factor = curve_cfg.get('curvature_factor', 1.0)
-            width_variation = curve_cfg.get('width_variation', 'none')
-            start_width = curve_cfg.get('start_width', None)
-            end_width = curve_cfg.get('end_width', None)
-            intensity_variation = curve_cfg.get('intensity_variation', 'none')
-            start_intensity = curve_cfg.get('start_intensity', None)
-            end_intensity = curve_cfg.get('end_intensity', None)
-            background_intensity = curve_cfg.get('background_intensity', None)
-            allow_self_cross = curve_cfg.get('allow_self_cross', False)
-            self_cross_prob = curve_cfg.get('self_cross_prob', 0.0)
+            img, p = generate_stage_sample(maker, merged_config)
             
-            # Generate curve
-            img, mask, pts_all = curve_maker.sample_curve(
-                width_range=width_range,
-                noise_prob=noise_prob,
-                invert_prob=invert_prob,
-                min_intensity=min_intensity,
-                max_intensity=max_intensity,
-                branches=branches,
-                curvature_factor=curvature_factor,
-                width_variation=width_variation,
-                start_width=start_width,
-                end_width=end_width,
-                intensity_variation=intensity_variation,
-                start_intensity=start_intensity,
-                end_intensity=end_intensity,
-                background_intensity=background_intensity,
-                allow_self_cross=allow_self_cross,
-                self_cross_prob=self_cross_prob
-            )
-            
-            # Display
-            ax = axes[sample_idx]
+            ax = axes[j]
             ax.imshow(img, cmap='gray', vmin=0, vmax=1)
-            ax.set_title(f'Sample {sample_idx + 1}', fontsize=10)
+            ax.set_title(f"C:{p['curv']} I:{p['int']}\nBG:{p['bg']} N:{p['noise']}", fontsize=9)
             ax.axis('off')
-        
+
         # Hide unused subplots
-        for idx in range(samples_per_stage, len(axes)):
-            axes[idx].axis('off')
+        for j in range(samples_per_stage, len(axes)):
+            axes[j].axis('off')
+            
+        plt.tight_layout(rect=[0, 0, 1, 0.90]) # Make room for suptitle
         
-        # Add main title
-        fig.suptitle(
-            f'Stage {stage_id}: {stage_name}\n{format_params(curve_cfg)}',
-            fontsize=14,
-            y=0.98
-        )
-        plt.tight_layout(rect=[0, 0, 1, 0.96])
-        
-        # Save or show
         if save_dir:
             os.makedirs(save_dir, exist_ok=True)
-            save_path = os.path.join(save_dir, f'stage_{stage_id:02d}_{stage_name}.png')
-            plt.savefig(save_path, dpi=150, bbox_inches='tight')
-            print(f"   💾 Saved: {save_path}")
+            fname = f"{stage_name.replace(' ', '_')}.png"
+            path = os.path.join(save_dir, fname)
+            plt.savefig(path, dpi=150)
+            print(f"   💾 Saved to {path}")
+            plt.close()
         else:
             plt.show()
-        
-        plt.close()
-        print()
-    
-    print("✅ Visualization complete!")
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Visualize sample curves for each training stage"
-    )
-    parser.add_argument(
-        '--config',
-        type=str,
-        default='../config/curve_config.json',
-        help='Path to curve_config.json (default: ../config/curve_config.json)'
-    )
-    parser.add_argument(
-        '--samples',
-        type=int,
-        default=6,
-        help='Number of samples per stage (default: 6)'
-    )
-    parser.add_argument(
-        '--seed',
-        type=int,
-        default=42,
-        help='Random seed (default: 42)'
-    )
-    parser.add_argument(
-        '--save_dir',
-        type=str,
-        default=None,
-        help='Directory to save images (default: None, displays instead)'
-    )
-    args = parser.parse_args()
-    
-    visualize_stage_samples(
-        config_path=args.config,
-        samples_per_stage=args.samples,
-        seed=args.seed,
-        save_dir=args.save_dir
-    )
 
 if __name__ == '__main__':
-    main()
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', type=str, default="config/curve_config_test.json", help="Path to curve_config.json")
+    parser.add_argument('--samples', type=int, default=6)
+    parser.add_argument('--seed', type=int, default=87)
+    parser.add_argument('--save_dir', type=str, default=None, help="Save images to directory instead of showing")
+    
+    args = parser.parse_args()
+    
+    visualize_stage_samples(args.config, args.samples, args.seed, args.save_dir)

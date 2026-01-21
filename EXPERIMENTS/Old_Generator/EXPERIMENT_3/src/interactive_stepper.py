@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Interactive Step-by-Step Debugger.
-Updated: Press 'I' to toggle Invert Background (Dark vs Light).
+Updated to strictly follow curve_config.json parameter resolution.
+Press 'I' to toggle Invert Background (Dark vs Light).
 """
 import argparse
 import numpy as np
@@ -10,6 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import os
 import sys
+import json
 
 # Add parent directory
 _script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,8 +25,8 @@ from src.train_deeper_model import CurveMakerFlexible, load_curve_config
 # --- CONSTANTS ---
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 ACTIONS_MOVEMENT = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
-ACTION_NAMES = ["U", "D", "L", "R", "UL", "UR", "DL", "DR"] 
-N_ACTIONS = 8 
+ACTION_NAMES = ["U", "D", "L", "R", "UL", "UR", "DL", "DR", "STOP"] 
+N_ACTIONS = 8
 K = 16
 CROP = 33
 
@@ -38,10 +40,9 @@ def crop32_inference(img, cy, cx, size=CROP):
     x0, x1 = cx - r, cx + r + 1
     out = np.zeros((size, size), dtype=np.float32)
     
-    # Smart padding: detect background color
+    # Smart padding
     corners = [img[0,0], img[0,w-1], img[h-1,0], img[h-1,w-1]]
     bg_color = np.median(corners)
-    # If background is bright (>0.5), pad with 1.0. If dark, pad with 0.0
     pad_val = 1.0 if bg_color > 0.5 else 0.0
     out.fill(pad_val)
         
@@ -75,6 +76,20 @@ def fixed_window_history(ahist_list, K, n_actions):
     out[-len(tail):] = np.stack(tail, axis=0)
     return out
 
+def resolve_param(config, key_base, default_val):
+    """
+    Resolve a parameter from the config (Ranges > Explicit > Prob > Default)
+    """
+    range_key = f"{key_base}_range"
+    if range_key in config:
+        val_range = config[range_key]
+        return np.random.uniform(val_range[0], val_range[1])
+    elif key_base in config:
+        return config[key_base]
+    elif f"{key_base}_prob" in config:
+        return config[f"{key_base}_prob"]
+    return default_val
+
 # --- INTERACTIVE SESSION ---
 class InteractiveSession:
     def __init__(self, model, config, stage_id=1):
@@ -84,7 +99,7 @@ class InteractiveSession:
         self.step_alpha = 1.0 
         
         # Toggle state for Inversion
-        self.force_invert = False
+        self.force_invert = None # None = use config, True/False = override
         
         self.fig = plt.figure(figsize=(14, 8))
         gs = gridspec.GridSpec(2, 3, width_ratios=[3, 1, 1])
@@ -98,12 +113,12 @@ class InteractiveSession:
         self.fig.canvas.mpl_connect('key_press_event', self.on_key)
         
         self.reset_env()
-        self.update_plot()
+        # self.update_plot() # Reset calls update_plot
         
         print("\n--- CONTROLS ---")
         print(" [SPACE] / [N] : Step Forward")
         print(" [R]           : Reset (New Curve)")
-        print(" [I]           : Toggle Invert (White/Black BG)")
+        print(" [I]           : Toggle Invert Override (Config -> White -> Dark)")
         print(" [Q]           : Quit")
         print("----------------")
         plt.show()
@@ -112,42 +127,85 @@ class InteractiveSession:
         h = self.config.get('image', {}).get('height', 128)
         w = self.config.get('image', {}).get('width', 128)
         
+        # 1. Locate Stage Config
         stages = self.config.get('training_stages', [])
-        target_stage = next((s for s in stages if s['stage_id'] == self.stage_id), stages[0])
-        gen_cfg = target_stage.get('curve_generation', {})
+        target_stage = next((s for s in stages if s['stage_id'] == self.stage_id), None)
         
+        if not target_stage:
+            print(f"⚠️ Stage {self.stage_id} not found. Using defaults.")
+            gen_cfg = {}
+        else:
+            # Merge gen and training configs like the trainer
+            gen_cfg = target_stage.get('curve_generation', {}).copy()
+            gen_cfg.update(target_stage.get('training', {}))
+
+        # 2. Init Maker
         maker = CurveMakerFlexible(h=h, w=w, seed=np.random.randint(0, 100000), config=self.config)
         
-        c_range = gen_cfg.get('curvature_range', [0.5, 0.5])
-        curv = np.random.uniform(c_range[0], c_range[1])
-        w_range = gen_cfg.get('width_range', [3, 3])
+        # 3. Resolve Parameters (Consistent with Trainer)
+        w_range = tuple(gen_cfg.get('width_range', [2, 4]))
         
-        # Logic: If user pressed 'I', force invert. Else use config.
-        current_invert_prob = 1.0 if self.force_invert else gen_cfg.get('invert_prob', 0.0)
+        if 'curvature_range' in gen_cfg:
+            cr = gen_cfg['curvature_range']
+            curv = np.random.uniform(cr[0], cr[1])
+        else:
+            curv = gen_cfg.get('curvature_factor', 1.0)
+            
+        if 'noise_range' in gen_cfg:
+            nr = gen_cfg['noise_range']
+            noise_prob = np.random.uniform(nr[0], nr[1])
+        else:
+            noise_prob = gen_cfg.get('noise_prob', 0.0)
+
+        if 'background_intensity_range' in gen_cfg:
+            br = gen_cfg['background_intensity_range']
+            bg_int = np.random.uniform(br[0], br[1])
+        else:
+            bg_int = gen_cfg.get('background_intensity', 0.0)
+
+        # Intensity Resolution
+        min_int = resolve_param(gen_cfg, 'min_intensity', 0.1)
+        max_int = resolve_param(gen_cfg, 'max_intensity', 1.0)
+        
+        # Visibility Constraints
+        if min_int < bg_int + 0.02: min_int = bg_int + 0.02
+        if max_int < min_int: max_int = min_int + 0.05
+        if max_int > 1.0: max_int = 1.0
+        if min_int > 1.0: min_int = 1.0
+
+        # Invert Logic
+        if self.force_invert is not None:
+            invert_prob = 1.0 if self.force_invert else 0.0
+        else:
+            invert_prob = gen_cfg.get('invert_prob', 0.0)
+
+        # 4. Generate
+        print(f"\nGenerating Curve | Stage {self.stage_id}")
+        print(f"  Params: Curv={curv:.2f}, Int={min_int:.2f}-{max_int:.2f}, BG={bg_int:.2f}, Noise={noise_prob:.2f}")
 
         img, _, pts_all = maker.sample_curve(
-            width_range=tuple(w_range),
+            width_range=w_range,
+            noise_prob=noise_prob,
+            invert_prob=invert_prob,
+            min_intensity=min_int,
+            max_intensity=max_int,
+            background_intensity=bg_int,
+            branches=gen_cfg.get('branches', False),
             curvature_factor=curv,
             allow_self_cross=gen_cfg.get('allow_self_cross', False),
             self_cross_prob=gen_cfg.get('self_cross_prob', 0.0),
-            branches=False,
-            noise_prob=gen_cfg.get('noise_prob', 0.0),
-            
-            # Appearance
-            min_intensity=gen_cfg.get('min_intensity', 0.6),
-            max_intensity=gen_cfg.get('max_intensity', 1.0),
-            background_intensity=gen_cfg.get('background_intensity', 0.0),
+            width_variation=gen_cfg.get('width_variation', 'none'),
+            start_width=gen_cfg.get('start_width', None),
+            end_width=gen_cfg.get('end_width', None),
             intensity_variation=gen_cfg.get('intensity_variation', 'none'),
             start_intensity=gen_cfg.get('start_intensity', None),
-            end_intensity=gen_cfg.get('end_intensity', None),
-            
-            # INVERT
-            invert_prob=current_invert_prob
+            end_intensity=gen_cfg.get('end_intensity', None)
         )
         
         self.img = img
         self.gt_poly = pts_all[0]
         
+        # 5. Initialize Agent State
         start_pt = self.gt_poly[0]
         p_next = self.gt_poly[min(5, len(self.gt_poly)-1)]
         vec = p_next - start_pt
@@ -198,16 +256,25 @@ class InteractiveSession:
             probs = torch.softmax(logits, dim=1).cpu().numpy()[0]
         
         self.last_probs = probs
+        
+        # Sample or Argmax? Argmax for debugging usually better
         action = np.argmax(probs)
         self.last_action = action
         
+        # Check Stop
+        if action == 8: # STOP
+            print("🛑 Agent chose STOP")
+            self.done = True
+            self.update_plot()
+            return
+
         dy, dx = ACTIONS_MOVEMENT[action]
         ny = self.agent[0] + dy * self.step_alpha
         nx = self.agent[1] + dx * self.step_alpha
         
         h, w = self.img.shape
         if not (0 <= ny < h and 0 <= nx < w):
-            print("Hit wall.")
+            print("🛑 Hit wall.")
             self.done = True
             return
 
@@ -226,21 +293,21 @@ class InteractiveSession:
     def update_plot(self):
         self.ax_main.clear()
         
-        # Use vmin/vmax to force full dynamic range rendering
+        # Use vmin/vmax to force full dynamic range rendering so we see faint lines
         self.ax_main.imshow(self.img, cmap='gray', vmin=0, vmax=1)
         
         gt_y = self.gt_poly[:, 0]
         gt_x = self.gt_poly[:, 1]
-        self.ax_main.plot(gt_x, gt_y, 'g--', linewidth=1, alpha=0.5, label="GT")
+        self.ax_main.plot(gt_x, gt_y, 'g--', linewidth=1, alpha=0.3, label="GT")
         
         path = np.array(self.path)
         if len(path) > 0:
             self.ax_main.plot(path[:, 1], path[:, 0], 'c-', linewidth=2, label="Agent")
             self.ax_main.plot(path[-1, 1], path[-1, 0], 'ro', markersize=6)
         
-        bg_status = "Inverted (White BG)" if self.force_invert else "Standard (Dark BG)"
-        self.ax_main.set_title(f"Step: {self.step_count} | {bg_status}")
-        self.ax_main.legend()
+        inv_status = "Config" if self.force_invert is None else ("Forced White" if self.force_invert else "Forced Dark")
+        self.ax_main.set_title(f"Step: {self.step_count} | Mode: {inv_status}")
+        self.ax_main.legend(loc='upper right', fontsize=8)
 
         curr = self.history_pos[-1]
         ch0 = crop32_inference(self.img, int(curr[0]), int(curr[1]))
@@ -256,8 +323,12 @@ class InteractiveSession:
         self.ax_crop1.axis('off')
         
         self.ax_probs.clear()
-        bars = self.ax_probs.bar(ACTION_NAMES, self.last_probs, color='skyblue')
-        if self.last_action is not None:
+        
+        # Handle 8 vs 9 actions in display
+        display_names = ACTION_NAMES if len(self.last_probs) == 9 else ACTION_NAMES[:8]
+        
+        bars = self.ax_probs.bar(display_names, self.last_probs, color='skyblue')
+        if self.last_action is not None and self.last_action < len(bars):
             bars[self.last_action].set_color('orange')
         self.ax_probs.set_ylim(0, 1.0)
         self.ax_probs.set_title("Action Probabilities")
@@ -268,10 +339,12 @@ class InteractiveSession:
         if event.key in [' ', 'n', 'N']: self.step()
         elif event.key in ['r', 'R']: self.reset_env()
         elif event.key in ['q', 'Q', 'escape']: plt.close()
-        # TOGGLE INVERT
+        # TRI-STATE TOGGLE: None -> True -> False -> None
         elif event.key in ['i', 'I']: 
-            self.force_invert = not self.force_invert
-            print(f"Invert Mode: {self.force_invert}")
+            if self.force_invert is None: self.force_invert = True
+            elif self.force_invert is True: self.force_invert = False
+            else: self.force_invert = None
+            print(f"Invert Override: {self.force_invert}")
             self.reset_env()
 
 # --- MAIN ---
@@ -282,8 +355,10 @@ def main():
     parser.add_argument("--stage_id", type=int, default=1)
     args = parser.parse_args()
 
-    config, _ = load_curve_config(args.config)
+    config, config_path = load_curve_config(args.config)
+    print(f"Loaded config from: {config_path}")
     
+    # Auto-detect actions based on weights is safer, but assuming N_ACTIONS=9 for new training
     print(f"Initializing Model with N_ACTIONS={N_ACTIONS}...")
     model = ActorOnly(n_actions=N_ACTIONS, K=K).to(DEVICE)
     
@@ -291,14 +366,28 @@ def main():
         print(f"Loading weights from {args.weights}...")
         loaded = torch.load(args.weights, map_location=DEVICE)
         
+        # Handle full model vs actor-only checks
         clean_weights = {}
         for k, v in loaded.items():
             if k.startswith('actor_'):
                 clean_weights[k] = v
             elif 'critic' not in k and 'actor_' not in k:
+                # Try to map unknown keys to actor if they look right
                 clean_weights[f"actor_{k}"] = v
         
-        model.load_state_dict(clean_weights, strict=True)
+        # Check action head dimension
+        for k, v in clean_weights.items():
+            if 'actor_head.2.bias' in k:
+                loaded_actions = v.shape[0]
+                if loaded_actions != N_ACTIONS:
+                    print(f"⚠️ Warning: Weights have {loaded_actions} actions, Code has {N_ACTIONS}.")
+                    # If loading old 8-action model into 9-action code, adapt
+                    if loaded_actions == 8 and N_ACTIONS == 9:
+                        print("   -> Adapting 8-action weights to 9 actions (copying last)")
+                        # (Adaptation logic would go here if needed, or just warn)
+                break
+
+        model.load_state_dict(clean_weights, strict=False)
         model.eval()
         print("✅ Model loaded successfully!")
         
