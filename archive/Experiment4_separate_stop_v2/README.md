@@ -22,6 +22,45 @@ This experiment builds on Experiment 2 by giving the **Stop Head** its own dedic
 - **Dedicated Backbone**: Stop head has its own CNN backbone, separate from the movement head.
 - **Context Isolation**: The stop logic is decoupled from navigation, preventing confusion in noisy or blurry sections of the image.
 
+## Stop Model Details (How It Works)
+
+The stop model is **part of the RL policy** and is trained jointly with PPO. It is not a separate post-processor.
+
+### Architecture Summary
+
+- **Movement Head**: Categorical policy over 8 movement actions.
+- **Stop Head**: Bernoulli policy (stop vs continue) with its own CNN backbone.
+- **Shared History**: The stop head consumes the **actor LSTM output** to use recent motion context.
+- **Input Channels for Stop**: Image crop (channel 0) + path mask (channel 3), so the model can detect endpoints and avoid false stops on already-visited paths.
+
+### Action Sampling Logic
+
+At each step, the policy samples a **stop decision first**:
+
+- This is sampled from the stop head’s Bernoulli distribution (`stop_prob = sigmoid(stop_logit)`, then `torch.bernoulli(stop_prob)`), in `src/train.py` and produced by `DecoupledStopBackboneActorCritic` in `src/models.py`.
+- If `stop` is sampled, the environment receives the **stop action index**.
+- If `continue` is sampled, the policy then samples **one of the 8 movement actions** from a categorical distribution over movement logits.
+
+This makes stop a **separate decision** from movement direction, which stabilizes training when stop events are rare.
+
+### PPO Objective (Combined Stop + Move)
+
+The PPO log-prob is constructed as:
+
+- **Stop action**: `log p(stop)`
+- **Move action**: `log p(continue) + log p(move | continue)`
+
+This lets the stop head participate directly in PPO optimization.
+
+### Supervised Stop Signal (Auxiliary Loss)
+
+In addition to PPO, the stop head receives a **binary supervision label**:
+
+- `stop_label = 1` when the agent is **near the end** of the curve (even if it does not stop)
+- `stop_label = 0` otherwise
+
+This adds a BCE loss term (weighted by `lambda_stop`) to reduce class imbalance and improve stopping reliability.
+
 ## Setup
 
 Experiment 4 uses the central CurveGeneratorModule, which requires additional dependencies. Set up the environment:
