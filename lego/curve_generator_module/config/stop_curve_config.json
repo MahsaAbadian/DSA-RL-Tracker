@@ -1,0 +1,58 @@
+{
+  "image": {
+    "height": 128,
+    "width": 128
+  },
+  "bezier": {
+    "n_samples": 1000,
+    "margin": 10,
+    "min_distance": 40.0,
+    "control_point_spread": 0.3,
+    "control_point_factor": 0.6,
+    "topology": "random"
+  },
+  "branches": {
+    "num_branches_range": [
+      1,
+      3
+    ],
+    "start_range": [
+      0.2,
+      0.8
+    ],
+    "thickness_factor": 0.7
+  },
+  "noise": {
+    "num_blobs_range": [
+      1,
+      3
+    ],
+    "blob_sigma_range": [
+      2.0,
+      6.0
+    ],
+    "blob_intensity_range": [
+      0.03,
+      0.12
+    ],
+    "noise_level_range": [
+      0.02,
+      0.08
+    ],
+    "gaussian_blur_prob": 0.3,
+    "gaussian_blur_sigma_range": [
+      0.4,
+      0.9
+    ]
+  },
+  "tissue_noise": {
+    "sigma_range": [
+      2.0,
+      4.0
+    ],
+    "intensity_range": [
+      0.15,
+      0.3
+    ]
+  }
+}

@@ -28,7 +28,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 # 8 movement actions + 1 stop action = 9
 ACTIONS_MOVEMENT = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
 ACTION_STOP_IDX = 8
-N_ACTIONS = 8
+N_ACTIONS = 9
 CROP = 33
 
 def clamp(v, lo, hi):
@@ -224,6 +224,8 @@ def main():
                         help="Sampling temperature (lower=more deterministic). Recommended ~0.3-0.8")
     parser.add_argument("--min_steps_before_stop", type=int, default=20,
                         help="Prevent STOP action before this many steps")
+    parser.add_argument("--stop_logit_bias", type=float, default=1.0,
+                        help="Additive logit bias for STOP after min steps (higher = more likely to stop)")
     parser.add_argument("--step_alpha", type=float, default=2.0,
                         help="Step size per move action (pixels). Must match training/inference behavior you want.")
     args = parser.parse_args()
@@ -387,6 +389,8 @@ def main():
     temperature = max(1e-6, float(args.temperature))
     min_steps_before_stop = int(args.min_steps_before_stop)
 
+    stop_logit_bias = float(args.stop_logit_bias)
+
     while not done:
         obs = env.obs()
         obs_t = torch.tensor(obs[None], dtype=torch.float32, device=DEVICE)
@@ -397,6 +401,10 @@ def main():
         with torch.no_grad():
             logits, _hc = model(obs_t, A_t)
             logits = torch.clamp(logits, -20, 20)
+
+            # Encourage STOP after the minimum steps
+            if ACTION_STOP_IDX < N_ACTIONS and env.steps >= min_steps_before_stop:
+                logits[0, ACTION_STOP_IDX] = logits[0, ACTION_STOP_IDX] + stop_logit_bias
 
             probs = torch.softmax(logits / temperature, dim=1)
 
