@@ -33,6 +33,15 @@ The stop model is **part of the RL policy** and is trained jointly with PPO. It 
 - **Shared History**: The stop head consumes the **actor LSTM output** to use recent motion context.
 - **Input Channels for Stop**: Image crop (channel 0) + path mask (channel 3), so the model can detect endpoints and avoid false stops on already-visited paths.
 
+### Architectural Details (Stop Head)
+
+The stop head is computed inside `DecoupledStopBackboneActorCritic` (`src/models.py`):
+
+- **Stop vision input**: 2 channels formed by concatenating the current image crop (`actor_obs[:, 0:1]`) and the path mask (`actor_obs[:, 3:4]`).
+- **Stop CNN**: 3 conv blocks with dilation (same depth as movement CNN), then global pooling to a 64‑dim feature.
+- **History fusion**: the stop features are concatenated with the **last actor LSTM output** (64‑dim), so the stop decision uses both visual context and recent motion.
+- **Stop MLP**: `Linear(128→64→1)` produces a single **stop logit** (no sigmoid yet).
+
 ### Action Sampling Logic
 
 At each step, the policy samples a **stop decision first**:
@@ -60,6 +69,13 @@ In addition to PPO, the stop head receives a **binary supervision label**:
 - `stop_label = 0` otherwise
 
 This adds a BCE loss term (weighted by `lambda_stop`) to reduce class imbalance and improve stopping reliability.
+
+**How the auxiliary loss influences the stop head**:
+
+- The label is created in the rollout loop (`src/train.py`) using `info.get('reached_end')`.
+- During PPO update, `stop_logit` is passed to `BCEWithLogitsLoss`, and the result is **added to the PPO loss**:
+  `loss = ppo_loss + 0.5 * value_loss + lambda_stop * stop_loss - 0.01 * entropy`.
+- The gradient from `stop_loss` flows **directly into the stop CNN + stop MLP** via `loss.backward()` in `update_ppo` (`src/train.py`), so the stop head learns to fire when the agent is near the end even if PPO samples are sparse.
 
 ## Setup
 
